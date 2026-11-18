@@ -173,6 +173,9 @@ body.menu-open .top{color:#fff}
 .pj-facts{display:flex;flex-wrap:wrap;gap:10px}
 .pj-facts span{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--line);padding:9px 12px}
 .pj-cta{display:flex;flex-wrap:wrap;gap:12px}
+.pj-more{margin-top:16px;max-width:34em}
+.kinds-intro{max-width:46em;margin:0 0 34px}
+@media (min-width:1000px) and (max-height:860px){.projets.h .pj-quote{display:none}.projets.h .pj-more{display:none}}
 .pj-quote{font-family:var(--serif);font-style:italic;font-size:clamp(24px,2.3vw,38px);line-height:1.15;letter-spacing:-.01em;margin:0}
 
 @media (min-width:1000px){
