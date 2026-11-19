@@ -212,6 +212,18 @@
   }));
   addEventListener('pageshow', e => { if (e.persisted) $$('.veil').forEach(v => v.remove()); });
 
+  /* ---------- « C’est Siroxtag, pas Inoxtag » ---------- */
+  $$('.inox').forEach(w => {
+    const b = $('.inox-btn', w), line = w.closest('.inox-line');
+    const set = open => {
+      w.classList.toggle('open', open); b.setAttribute('aria-expanded', String(open));
+      if (open && line) line.style.setProperty('--ax', (b.offsetLeft + b.offsetWidth / 2) + 'px');
+    };
+    b.addEventListener('click', e => { e.stopPropagation(); set(!w.classList.contains('open')); });
+    document.addEventListener('click', e => { if (!w.contains(e.target)) set(false); });
+    addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+  });
+
   /* ---------- 11. cookies : seules les vidéos TikTok en déposent ---------- */
   const KEY = 'sx-consent', MAX = 182 * 24 * 3600 * 1000; // choix gardé 6 mois
   const read = () => { try { const c = JSON.parse(localStorage.getItem(KEY) || 'null'); return c && Date.now() - c.t < MAX ? c : null; } catch (e) { return null; } };

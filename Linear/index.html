@@ -151,6 +151,8 @@ body.portrait #hint .key{padding:13px 30px 11px;border-radius:12px;border-width:
 .box{flex:none;width:28px;height:28px;border:2px solid var(--fg);margin-top:4px;position:relative}
 .box svg{position:absolute;inset:-2px;width:28px;height:28px;overflow:visible}
 .go{cursor:pointer}
+.legal{text-decoration:none;white-space:normal;line-height:1.6}
+.legal:hover{color:var(--fg)}
 .link{display:inline-flex;align-items:center;gap:14px;font-family:var(--mono);font-weight:500;font-size:19px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);padding:14px 18px;margin-left:-18px;border:1px solid var(--line);transition:background .25s ease,color .25s ease}
 .link:hover{background:var(--fg);color:var(--bg)}
 .flow{position:absolute;height:1px;background:var(--fg);transform-origin:0 50%}
@@ -543,6 +545,7 @@ body.portrait #hint .key{padding:13px 30px 11px;border-radius:12px;border-width:
     <div class="vr" style="left:960px;top:746px;height:96px;background:var(--fg)" data-a="liney" data-t="1650"></div>
     <div class="a" style="left:420px;top:752px;width:500px;text-align:right" data-a="up" data-t="1750"><div class="lab">Gérant</div><div class="t5" style="margin-top:10px">Siroxtag LANDER</div></div>
     <div class="a" style="left:1000px;top:752px;width:560px" data-a="up" data-t="1850"><div class="lab">Co-gérant</div><div class="t5" style="margin-top:10px">Jsp qui sera le futur collègue mdr</div></div>
+    <a class="a lab legal" href="/mentions-legales/#fiction" style="left:260px;top:912px;width:1400px;text-align:center" data-a="fade" data-t="2200">Entreprise fictive de jeu de rôle · Sans lien avec Linear Orbit, Inc., Rockstar Games ou Take-Two Interactive · Mentions légales</a>
   </div>
 </section>
 
@@ -862,6 +865,7 @@ body.portrait #hint .key{padding:13px 30px 11px;border-radius:12px;border-width:
     <div class="a" style="left:80px;top:1200px;width:920px;text-align:center" data-a="up" data-t="1750"><div class="lab">Gérant</div><div class="t5" style="margin-top:12px">Siroxtag LANDER</div></div>
     <div class="hr fg" style="left:480px;top:1350px;width:120px" data-a="linex" data-t="1650"></div>
     <div class="a" style="left:80px;top:1390px;width:920px;text-align:center" data-a="up" data-t="1850"><div class="lab">Co-gérant</div><div class="t5" style="margin-top:12px">Jsp qui sera le futur collègue mdr</div></div>
+    <a class="a lab legal" href="/mentions-legales/#fiction" style="left:80px;top:1580px;width:920px;text-align:center" data-a="fade" data-t="2200">Entreprise fictive de jeu de rôle · Sans lien avec Linear Orbit, Inc., Rockstar Games ou Take-Two Interactive · Mentions légales</a>
   </div>
 </section>
 
@@ -1319,6 +1323,7 @@ function fit() {
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key;
+  if (k === 'Enter' && document.activeElement && document.activeElement.closest && document.activeElement.closest('a[href]')) return;
   if (k === ' ' || k === 'Spacebar') { e.preventDefault(); if (e.repeat) return; e.shiftKey ? prev() : next(); }
   else if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || k === 'Enter') { e.preventDefault(); next(); }
   else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); prev(); }
@@ -1330,6 +1335,7 @@ let px = 0, py = 0, pt = 'mouse';
 addEventListener('pointerdown', e => { px = e.clientX; py = e.clientY; pt = e.pointerType; });
 addEventListener('pointerup', e => {
   if (e.button > 0) return;
+  if (e.target.closest('a[href]')) return;
   const dx = e.clientX - px, dy = e.clientY - py;
   const g = e.target.closest('[data-go]');
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { dx < 0 ? next() : prev(); return; }
