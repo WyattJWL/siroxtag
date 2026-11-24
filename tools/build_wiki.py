@@ -63,7 +63,7 @@ FORBID = ['page perso', '/perso', 'plan a', 'plan b', 'plan c', 'plans a', 'troi
           'claude maxxing', 'cette page perso', 'je t’aime']
 SX_CAT = {'aime': 'univers', 'moi': 'univers', 'projets': 'univers', 'police': 'securite'}
 SX_CATS = {'univers': 'L’univers Siroxtag', 'jeux': 'Jeux vidéo', 'artistes': 'Artistes et musique', 'createurs': 'Les créateurs du code',
-           'tech': 'Lexique tech', 'jargon': 'Jargon de dev', 'securite': 'Sécurité en ligne'}
+           'tech': 'Lexique tech', 'jargon': 'Jargon de dev', 'securite': 'Sécurité et justice'}
 
 def sx_keep(a):
     if a['cat'] in SX_EXCLUDE_CATS or a['slug'] in SX_EXCLUDE: return False
@@ -135,7 +135,7 @@ def make_terms(arts):
         for n in set(names):
             n = n.strip()
             if len(n) < 3 or n.startswith('«'): continue
-            terms.append((n, a['slug'], n.isupper() or n in ('Luau',)))
+            terms.append((n, a['slug'], n.isupper() or n in ('Luau', 'Justice', 'Go', 'Lua')))
     terms.sort(key=lambda t: -len(t[0]))
     return terms
 
@@ -202,7 +202,7 @@ GROUPS = {
            ('createurs', 'Les créateurs du <span class="it">code</span>.', 'Les personnes qui ont inventé l’informatique moderne.', 'mini'),
            ('tech', 'Lexique <span class="it">tech</span>.', 'Tous les mots techniques, de A à Z.', 'mini'),
            ('jargon', 'Jargon de <span class="it">dev</span>.', 'Les expressions hors du commun des développeurs.', 'mini'),
-           ('securite', 'Sécurité <span class="it">en ligne</span>.', 'Se protéger, repérer les arnaques, savoir qui appeler.', 'mini')],
+           ('securite', 'Sécurité et <span class="it">justice</span>.', 'Se protéger en ligne, repérer les arnaques, comprendre la police et la justice.', 'mini')],
 }
 SORTED = {'tech', 'jargon', 'moi', 'createurs', 'artistes', 'jeux', 'police', 'securite'}
 
