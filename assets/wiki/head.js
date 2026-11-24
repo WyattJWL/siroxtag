@@ -1,4 +1,4 @@
-/* En-tête animé des pages perso : lettres qui montent, point qui rebondit,
+/* En-tête animé des pages : lettres qui montent, point qui rebondit,
    soulignement qui glisse, barre de lecture, menu plein écran sur mobile. */
 (() => {
   const nav = document.querySelector('[data-nav]'); if (!nav) return;
@@ -35,7 +35,7 @@
     a.addEventListener('pointermove', e => { const r = a.getBoundingClientRect(); a.style.transform = `translate3d(${((e.clientX - r.left) / r.width - .5) * 6}px,${((e.clientY - r.top) / r.height - .5) * 4}px,0)`; a.style.transitionDelay = '0s'; });
     a.addEventListener('pointerleave', () => { a.style.transform = ''; });
   });
-  // section active sur la page d’accueil perso
+  // section active sur la page d’accueil
   const here = location.pathname.replace(/index\.html$/, '');
   const spy = links.map(a => { const u = new URL(a.href, location.href); return (u.pathname.replace(/index\.html$/, '') === here && u.hash) ? [a, document.querySelector(u.hash)] : null; }).filter(x => x && x[1]);
   setTimeout(() => place(active), 900);

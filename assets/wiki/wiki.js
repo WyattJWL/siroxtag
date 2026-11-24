@@ -54,11 +54,13 @@
   $$('[data-rand]').forEach(b => b.addEventListener('click', () => {
     const pool = all.filter(a => a.s !== here); const a = pool[Math.floor(Math.random() * pool.length)];
     b.classList.remove('spin'); void b.offsetWidth; b.classList.add('spin');
-    setTimeout(() => { location.href = '/perso/wiki/' + a.s + '/'; }, reduce ? 0 : 380);
+    setTimeout(() => { location.href = (window.WIKI_BASE || '/wiki/') + a.s + '/'; }, reduce ? 0 : 380);
   }));
 
   // recherche instantanée
   const q = $('[data-search]');
+  const params = new URLSearchParams(location.search);
+  if (params.has('hasard') && all.length) { location.replace(location.pathname + all[Math.floor(Math.random() * all.length)].s + '/'); }
   if (q) {
     const cards = $$('.cat .card'), count = $('[data-count]'), none = $('[data-none]');
     const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -68,13 +70,14 @@
       $$('.cat').forEach(s => { s.hidden = !$$('.card:not(.hide)', s).length; });
       count.textContent = n; none.hidden = n > 0;
     });
+    if (params.get('q')) { q.value = params.get('q'); q.dispatchEvent(new Event('input')); setTimeout(() => q.scrollIntoView({ block: 'center' }), 300); }
   }
 
   // le saviez-vous ?
   const dyk = $('[data-dyk]'), facts = window.DYK || [];
   if (dyk && facts.length) {
     let i = Math.floor(Math.random() * facts.length);
-    const show = () => { const f = facts[i % facts.length]; dyk.textContent = f.t + ' › ' + f.n; dyk.href = '/perso/wiki/' + f.s + '/'; };
+    const show = () => { const f = facts[i % facts.length]; dyk.textContent = f.t + ' › ' + f.n; dyk.href = (window.WIKI_BASE || '/wiki/') + f.s + '/'; };
     show();
     if (!reduce) setInterval(() => {
       dyk.classList.add('out');
