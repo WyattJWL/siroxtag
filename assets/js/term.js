@@ -50,7 +50,7 @@
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const print = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); out.scrollTop = out.scrollHeight; };
   const toast = (() => { const t = document.createElement('div'); t.className = 'tm-toast'; document.body.appendChild(t); let to; return msg => { t.textContent = msg; t.classList.add('show'); clearTimeout(to); to = setTimeout(() => t.classList.remove('show'), 2600); }; })();
-  const go = sel => { const el = document.querySelector(sel); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  const go = sel => { const el = document.querySelector(sel); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); else if (PERSO) location.href = '/perso/' + sel; };
   const shake = () => { document.body.classList.remove('tm-shake'); void document.body.offsetWidth; document.body.classList.add('tm-shake'); };
 
   /* mode fun : des couleurs partout */
@@ -68,7 +68,7 @@
     whoami: { d: 'qui est là ?', f: () => print(PERSO ? 'Wyatt LE. Dieu du code autoproclamé. Classement mondial : premier (selon moi).' : 'Siroxtag. Créateur indépendant. Pas Inoxtag, hein.') },
     contact: { d: 'me contacter', f: () => print(`<a href="mailto:${MAIL}">${MAIL}</a>`) },
     fun: { d: 'des couleurs partout', f: () => { const on = toggleFun(); print(on ? 'Mode fun activé. Les couleurs sont lâchées.' : 'Retour au sérieux. Enfin, presque.'); toast(on ? 'Mode fun activé' : 'Mode fun désactivé'); } },
-    ls: { d: 'les pages du site', f: () => print(PERSO ? '<a href="./">perso/</a>   <a href="/">siroxtag.fr/</a>   <a href="/Linear/">Linear/</a>' : '<a href="/">index.html</a>   <a href="/Linear/">Linear/</a>   <a href="/mentions-legales/">mentions-legales/</a>') },
+    ls: { d: 'les pages du site', f: () => print(PERSO ? '<a href="/perso/">perso/</a>   <a href="/perso/wiki/">wiki/</a>   <a href="/">siroxtag.fr/</a>   <a href="/Linear/">Linear/</a>' : '<a href="/">index.html</a>   <a href="/Linear/">Linear/</a>   <a href="/mentions-legales/">mentions-legales/</a>') },
     date: { d: 'la date', f: () => print(new Date().toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' })) },
     clear: { d: 'nettoyer l’écran', f: () => { out.innerHTML = ''; } },
     exit: { d: 'fermer le terminal', f: () => close() },
@@ -98,6 +98,8 @@
     plans: { d: 'plus tard', f: () => print('Plan A : policier. Plan B : cyberpolicier. Plan C : codeur.\nSpoiler : les trois.') },
     claude: { d: 'Claude Maxxing', f: () => print('Claude Maxxing : activé. Productivité : ×10. Sommeil : toujours null.') },
     github: { d: 'mon GitHub', f: () => print('<a href="https://github.com/ezechielw13" target="_blank" rel="noopener">github.com/ezechielw13</a>') },
+    wiki: { d: 'Wyattpédia, l’encyclopédie', f: () => { print('Ouverture de Wyattpédia…', 'm'); setTimeout(() => { location.href = '/perso/wiki/'; }, 400); } },
+    hasard: { d: 'un article au hasard', f: () => { const l = window.WIKI || []; if (!l.length) { location.href = '/perso/wiki/'; return; } const a = l[Math.floor(Math.random() * l.length)]; print('Article au hasard : ' + a.t + '.', 'm'); setTimeout(() => { location.href = '/perso/wiki/' + a.s + '/'; }, 400); } },
     maman: { f: () => print('Je t’aime maman. (C’était mon tout premier code, en 6e.)') },
     phonk: { f: () => { shake(); print('🔊 BOOM BOOM BOOM'); } }
   };

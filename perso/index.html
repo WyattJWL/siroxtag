@@ -9,6 +9,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FBFBFD">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/perso/head.css">
 <style>
 @font-face{font-family:'Archivo';font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap;src:url(../assets/fonts/archivo.woff2) format('woff2')}
 @font-face{font-family:'Serif';font-style:italic;font-weight:400;font-display:swap;src:url(../assets/fonts/serif-italic.woff2) format('woff2')}
@@ -29,22 +30,12 @@
 }
 html.fun{--bg:#FFF4DE;--bg2:#FFE6EE;--sand:#FFD7A3;--sage:#BFE5B8;--sky:#BCD9FB;--lilac:#D7C8FF;--rose:#FFC2C7;--faint:#E8C9A8}
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.47;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .6s ease}
 a{color:var(--link);text-decoration:none}
 a:hover{text-decoration:underline;text-underline-offset:3px}
 :focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:4px}
 .it{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
-
-/* en-tête translucide */
-.nav{position:fixed;inset:0 0 auto 0;z-index:50;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);background:rgba(251,251,253,.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,0);transition:border-color .4s ease}
-html.fun .nav{background:rgba(255,244,222,.75)}
-.nav.scrolled{border-bottom-color:rgba(0,0,0,.08)}
-.brand{font-weight:600;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
-.brand:hover{text-decoration:none}
-.nav nav{display:flex;gap:24px}
-.nav nav a{font-size:13px;color:var(--ink);opacity:.8}
-.nav nav a:hover{opacity:1;text-decoration:none}
 
 /* héros */
 .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px var(--pad) 70px;position:relative}
@@ -132,10 +123,11 @@ html.fun .t-gray{background:#fff}
 /* bulle d’explication */
 .tip{position:relative;display:inline-block}
 .tip-btn{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;cursor:help;text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:5px}
-.tip-box{position:absolute;left:0;top:calc(100% + 12px);z-index:20;width:min(340px,76vw);padding:16px 18px;background:#fff;color:var(--ink);font-size:15px;font-weight:400;line-height:1.5;letter-spacing:-.005em;text-align:left;border-radius:18px;box-shadow:0 20px 50px -10px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .25s ease,transform .4s var(--ease),visibility 0s linear .4s}
+.tip-box{position:absolute;left:0;top:calc(100% + 12px);z-index:20;width:min(340px,76vw);padding:16px 18px;background:#fff;color:var(--ink);font-size:15px;font-weight:400;line-height:1.5;letter-spacing:-.005em;text-align:left;border-radius:18px;box-shadow:0 20px 50px -10px rgba(0,0,0,.25);display:none}
+@keyframes tipin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .tip-box b{display:block;font-size:13px;color:var(--mut);font-weight:600;margin-bottom:4px}
-.tip.open .tip-box{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease,transform .4s var(--ease),visibility 0s}
-@media (hover:hover){.tip:hover .tip-box,.tip:focus-within .tip-box{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease,transform .4s var(--ease),visibility 0s}}
+.tip.open .tip-box{display:block;animation:tipin .4s var(--ease)}
+@media (hover:hover){.tip:hover .tip-box,.tip:focus-within .tip-box{display:block;animation:tipin .4s var(--ease)}}
 
 /* premier code */
 .first{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);align-items:center}
@@ -217,6 +209,22 @@ html.fun .t-gray{background:#fff}
 .mu-off{display:block;margin:8px auto 0;background:none;border:0;font:inherit;font-size:12px;color:var(--mut);text-decoration:underline;cursor:pointer}
 .mu-play.show ~ .mu-foot{opacity:0!important}
 @media (max-width:760px){.mu-play{bottom:22px;left:16px;width:calc(100% - 92px);transform:translateY(24px)}.mu-play.show{transform:none}.mu-off{margin-top:6px}}
+.wl{font-weight:600;color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+a.plan{text-decoration:none!important;position:relative}
+a.plan .pa{margin-left:auto;font-size:15px;font-weight:600;opacity:0;transform:translateX(-10px);transition:opacity .3s ease,transform .5s var(--ease)}
+a.plan:hover .pa,a.plan:focus-visible .pa{opacity:1;transform:none}
+.wkt{overflow:hidden}
+.band.wband{background:transparent;border:0;margin:0 calc(var(--pad) * -1);padding:10px 0 0}
+.wband .row a{color:var(--ink);text-decoration:none!important;padding-right:.4em;transition:color .3s ease}
+.wband .row a:hover{color:var(--sky-ink)}
+.wband .r2 a{color:transparent}
+.wband .r2 a:hover{color:var(--ink)}
+.wband .r2 .dt{-webkit-text-stroke:0;color:#C8643B}
+.wband .dt{color:#C8643B}
+.wcta{text-align:center;margin:clamp(30px,4vw,50px) 0 0;font-size:clamp(19px,1.8vw,24px);font-weight:600}
+.wcta a{display:inline-block;transition:transform .5s var(--ease)}
+.wcta a:hover{transform:translateX(6px);text-decoration:none}
+@media (max-width:760px){a.plan .pa{margin-left:0;opacity:1;transform:none}}
 /* plans */
 .plans{max-width:1000px;margin:0 auto;display:grid;gap:clamp(12px,1.4vw,18px)}
 .plan{display:flex;align-items:baseline;gap:clamp(16px,3vw,40px);padding:clamp(26px,3.4vw,46px) clamp(26px,3.4vw,50px);border-radius:28px;opacity:0;transform:translate3d(-60px,0,0);transition:opacity 1s ease,transform 1.2s var(--ease),background-color .6s ease}
@@ -295,7 +303,6 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   .disc{--cw:min(38vw,190px)}
   .disc .meta{width:max(100%,min(300px,78vw))}
   .mu-stick{padding-top:64px}
-  .nav nav a:not(:last-child){display:none}
   .grid{grid-template-columns:1fr}
   .reveal{height:220vh}
   .bubble{left:50%;top:auto;bottom:calc(100% + 10px);transform-origin:50% 100%;translate:-50% 0;border-radius:18px}
@@ -313,17 +320,13 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
 </style>
 </head>
 <body>
-<header class="nav">
-  <a class="brand" href="./">Wyatt LE</a>
-  <nav aria-label="Navigation">
-    <a href="#projets">Projets</a>
-    <a href="#fun">Fun facts</a>
-    <a href="#jeux">Jeux</a>
-    <a href="#musique">Musique</a>
-    <a href="#contact">Contact</a>
-    <a href="/">Siroxtag ›</a>
-  </nav>
+<header class="nav" data-nav>
+  <a class="brand" href="/perso/" aria-label="Wyatt LE, accueil perso"><span class="bl">Wyatt LE</span><span class="dot" aria-hidden="true">.</span></a>
+  <nav class="nlinks" aria-label="Navigation"><a href="/perso/#projets">Projets</a><a href="/perso/#fun">Fun facts</a><a href="/perso/#jeux">Jeux</a><a href="/perso/#musique">Musique</a><a href="/perso/wiki/">Wyattpédia</a><a href="/perso/#contact">Contact</a><a href="/">Siroxtag ›</a><span class="ind" aria-hidden="true"></span></nav>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><i></i><i></i></button>
+  <span class="prog" aria-hidden="true"></span>
 </header>
+<div class="menu" id="menu" hidden><nav aria-label="Menu"><a href="/perso/#projets" style="--i:0"><span>Projets</span></a><a href="/perso/#fun" style="--i:1"><span>Fun facts</span></a><a href="/perso/#jeux" style="--i:2"><span>Jeux</span></a><a href="/perso/#musique" style="--i:3"><span>Musique</span></a><a href="/perso/wiki/" style="--i:4"><span><em>Wyattpédia</em></span></a><a href="/perso/#contact" style="--i:5"><span>Contact</span></a><a href="/" style="--i:6"><span>Siroxtag ›</span></a></nav><p>Écris-moi : <a href="mailto:contact@siroxtag.fr">contact@siroxtag.fr</a></p></div>
 
 <main>
   <section class="hero">
@@ -433,10 +436,10 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     <h2 class="sh" data-split>Fun <span class="it">facts</span>.</h2>
     <p class="intro">Des faits. Vérifiés. Par moi.</p>
     <div class="facts">
-      <div class="fact t-sky"><div><p class="k">Record de nuit blanche</p><span class="big"><span data-count="4">0</span> jours</span></div><p>D’où le <code>sommeil: null</code> plus haut. Ne faites pas ça chez vous.</p></div>
-      <div class="fact t-rose wide"><div><p class="k">Mon pire bug</p><span class="big">Le cache fantôme en production, combiné à une erreur d’hydratation silencieuse.</span></div><p>Rien ne plantait. Tout était faux. J’en fais encore des cauchemars.</p></div>
-      <div class="fact t-sand"><div><p class="k">Ce que je mange en codant</p><span class="big">Tout.</span></div><p>Vraiment tout. Le clavier a déjà vu des choses.</p></div>
-      <div class="fact t-sage"><div><p class="k">Ma manie</p><span class="big"><span class="semi">;</span></span></div><p>Je vérifie chaque point-virgule en JavaScript. Un par un. Même ceux qui ne servent à rien.</p></div>
+      <div class="fact t-sky"><div><p class="k">Record de nuit blanche</p><span class="big"><span data-count="4">0</span> jours</span></div><p>D’où le <code>sommeil: null</code> plus haut. Ne faites pas ça chez vous. <a class="wl" href="wiki/nuit-blanche/">L’article ›</a></p></div>
+      <div class="fact t-rose wide"><div><p class="k">Mon pire bug</p><span class="big">Le cache fantôme en production, combiné à une erreur d’hydratation silencieuse.</span></div><p>Rien ne plantait. Tout était faux. J’en fais encore des cauchemars. <a class="wl" href="wiki/bug/">Comprendre ce bug ›</a></p></div>
+      <div class="fact t-sand"><div><p class="k">Ce que je mange en codant</p><span class="big">Tout.</span></div><p>Vraiment tout. Le clavier a déjà vu des choses. <a class="wl" href="wiki/manger-en-codant/">L’article ›</a></p></div>
+      <div class="fact t-sage"><div><p class="k">Ma manie</p><span class="big"><span class="semi">;</span></span></div><p>Je vérifie chaque point-virgule en JavaScript. Un par un. Même ceux qui ne servent à rien. <a class="wl" href="wiki/javascript/">L’article ›</a></p></div>
       <div class="fact t-lilac"><div><p class="k">Mon arme secrète</p><span class="big" style="font-size:clamp(30px,3vw,44px);line-height:1.05"><span class="tip"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="tip-claude">Claude Maxxing</button><span class="tip-box" id="tip-claude"><b>C’est quoi&nbsp;?</b>Claude, c’est l’assistant d’intelligence artificielle de la société Anthropic. Le « Claude Maxxing », c’est l’utiliser à fond pour coder plus vite. Aucun lien avec Anthropic : la petite bestiole à côté est un dessin maison, pas leur mascotte.</span></span></span></div><div class="bot" aria-hidden="true" data-bot></div></div>
     </div>
   </section>
@@ -483,11 +486,21 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     <h2 class="sh" data-split>Quand je serai <span class="it">grand</span>.</h2>
     <p class="intro">J’ai un plan. Trois, en fait.</p>
     <div class="plans">
-      <div class="plan t-sky"><span class="l">Plan A</span><span class="v">Policier, sur le terrain.</span></div>
-      <div class="plan t-rose"><span class="l">Plan B</span><span class="v">Cyberpolicier, derrière l’écran.</span></div>
-      <div class="plan t-sage"><span class="l">Plan C</span><span class="v">Codeur.</span></div>
+      <a class="plan t-sky" href="wiki/policier/"><span class="l">Plan A</span><span class="v">Policier, sur le terrain.</span><span class="pa" aria-hidden="true">Lire ›</span></a>
+      <a class="plan t-rose" href="wiki/cyberpolicier/"><span class="l">Plan B</span><span class="v">Cyberpolicier, derrière l’écran.</span><span class="pa" aria-hidden="true">Lire ›</span></a>
+      <a class="plan t-sage" href="wiki/developpeur/"><span class="l">Plan C</span><span class="v">Codeur.</span><span class="pa" aria-hidden="true">Lire ›</span></a>
     </div>
     <p class="spoiler">Spoiler : je compte faire les trois. Attraper les méchants dans la rue <em>et</em> dans le code.</p>
+  </section>
+
+  <section class="sec alt wkt" id="wyattpedia">
+    <h2 class="sh" data-split>Wyatt<span class="it">pédia</span>.</h2>
+    <p class="intro">Tout ce que j’aime et tout ce que je veux faire, expliqué comme dans une encyclopédie. 23 articles. Sources : moi.</p>
+    <div class="band wband" aria-hidden="true">
+      <div class="row" data-dir="-1"><a href="wiki/code/" tabindex="-1">Code<span class="dt">.</span></a><a href="wiki/python/" tabindex="-1">Python<span class="dt">.</span></a><a href="wiki/javascript/" tabindex="-1">JavaScript<span class="dt">.</span></a><a href="wiki/sites-saas/" tabindex="-1">Sites web et SaaS<span class="dt">.</span></a><a href="wiki/hacking-ethique/" tabindex="-1">Hacking éthique<span class="dt">.</span></a><a href="wiki/bots-discord/" tabindex="-1">Bots Discord<span class="dt">.</span></a><a href="wiki/claude-maxxing/" tabindex="-1">Claude Maxxing<span class="dt">.</span></a><a href="wiki/vs-code/" tabindex="-1">VS Code<span class="dt">.</span></a><a href="wiki/github/" tabindex="-1">GitHub<span class="dt">.</span></a><a href="wiki/discord/" tabindex="-1">Discord<span class="dt">.</span></a><a href="wiki/phonk/" tabindex="-1">Phonk<span class="dt">.</span></a><a href="wiki/gta-vi/" tabindex="-1">GTA VI<span class="dt">.</span></a></div>
+      <div class="row r2" data-dir="1"><a href="wiki/gta-rp/" tabindex="-1">GTA RP<span class="dt">.</span></a><a href="wiki/black-ops-6/" tabindex="-1">Call of Duty : Black Ops 6<span class="dt">.</span></a><a href="wiki/warzone/" tabindex="-1">Call of Duty : Warzone<span class="dt">.</span></a><a href="wiki/tiktok/" tabindex="-1">TikTok<span class="dt">.</span></a><a href="wiki/nuit-blanche/" tabindex="-1">Nuit blanche<span class="dt">.</span></a><a href="wiki/manger-en-codant/" tabindex="-1">Manger en codant<span class="dt">.</span></a><a href="wiki/bug/" tabindex="-1">Le cache fantôme<span class="dt">.</span></a><a href="wiki/policier/" tabindex="-1">Policier<span class="dt">.</span></a><a href="wiki/cyberpolicier/" tabindex="-1">Cyberpolicier<span class="dt">.</span></a><a href="wiki/developpeur/" tabindex="-1">Développeur<span class="dt">.</span></a><a href="wiki/filiere-generale/" tabindex="-1">Filière générale<span class="dt">.</span></a></div>
+    </div>
+    <p class="wcta"><a href="wiki/">Ouvrir Wyattpédia ›</a></p>
   </section>
 
   <section class="sec" id="contact">
@@ -502,7 +515,7 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
 
   <section class="sec alt end">
     <h2 class="sh" data-split>La suite <span class="it">arrive</span>.</h2>
-    <p>Je suis en train de la coder. Évidemment. Psst : ouvre le terminal en bas à droite.</p>
+    <p>Je suis en train de la coder. Évidemment. Psst : ouvre le terminal en bas à droite. Ou lis <a href="wiki/">Wyattpédia</a>.</p>
     <a href="/">Retour sur siroxtag.fr ›</a>
   </section>
 </main>
@@ -671,6 +684,9 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   const rows = $$('.band .row'); rows.forEach(r => r.innerHTML += r.innerHTML);
   let lastY = scrollY, vel = 0, drift = 0;
 
+  /* bulles : jamais hors de l’écran */
+  const fit = t => { const bx = $('.tip-box', t); if (!bx) return; bx.style.marginLeft = '0px'; requestAnimationFrame(() => { const r = bx.getBoundingClientRect(); if (!r.width) return; const over = r.right - (innerWidth - 12), under = 12 - r.left; bx.style.marginLeft = (over > 0 ? -over : under > 0 ? under : 0) + 'px'; }); };
+  $$('.tip').forEach(t => { t.addEventListener('mouseenter', () => fit(t)); t.addEventListener('focusin', () => fit(t)); t.addEventListener('click', () => fit(t)); });
   /* bulles */
   const toggles = [[$('.me'), $('.me')], ...$$('.tip').map(t => [t, $('.tip-btn', t)])];
   toggles.forEach(([wrap, btn]) => {
@@ -681,10 +697,9 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   addEventListener('keydown', e => { if (e.key === 'Escape') toggles.forEach(([w]) => w && w.classList.remove('open')); });
 
   /* scroll */
-  const nav = $('.nav'), heroRig = $('.hero .rig'), reveal = $('.reveal'), arts = $$('.tile .art');
+  const heroRig = $('.hero .rig'), reveal = $('.reveal'), arts = $$('.tile .art');
   function frame() {
     const y = scrollY, vh = innerHeight;
-    nav.classList.toggle('scrolled', y > 10);
     if (!reduce) {
       const k = Math.min(1, y / (vh * .8));
       heroRig.style.transform = `translate3d(0,${(-k * 90).toFixed(1)}px,0) scale(${(1 - k * .2).toFixed(3)})`; heroRig.style.filter = `blur(${(k * 8).toFixed(1)}px)`;
@@ -734,6 +749,7 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   requestAnimationFrame(frame);
 })();
 </script>
+<script src="/perso/head.js" defer></script>
 <script src="../assets/js/term.js" data-site="perso" defer></script>
 </body>
 </html>
