@@ -225,6 +225,10 @@ a.plan:hover .pa,a.plan:focus-visible .pa{opacity:1;transform:none}
 .wcta a{display:inline-block;transition:transform .5s var(--ease)}
 .wcta a:hover{transform:translateX(6px);text-decoration:none}
 @media (max-width:760px){a.plan .pa{margin-left:0;opacity:1;transform:none}}
+.mores{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;position:relative;margin-top:20px}
+.mores .more{margin-top:0}
+.tile .wk-l{opacity:.75;transition:opacity .3s ease,transform .5s var(--ease)}
+.tile .wk-l:hover{opacity:1;transform:translateX(4px);text-decoration:none}
 /* plans */
 .plans{max-width:1000px;margin:0 auto;display:grid;gap:clamp(12px,1.4vw,18px)}
 .plan{display:flex;align-items:baseline;gap:clamp(16px,3vw,40px);padding:clamp(26px,3.4vw,46px) clamp(26px,3.4vw,50px);border-radius:28px;opacity:0;transform:translate3d(-60px,0,0);transition:opacity 1s ease,transform 1.2s var(--ease),background-color .6s ease}
@@ -378,32 +382,32 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
       <article class="tile t-gray">
         <div class="clip"><span class="art" aria-hidden="true">↻</span></div>
         <div><p class="k">Sites web et SaaS</p><h3>Mon truc préféré.</h3><p>Coder des sites et des SaaS, c’est là où je m’amuse le plus. Comme celui-ci. Oui, tu es dedans, là.</p></div>
-        <a class="more" href="/">Voir siroxtag.fr ›</a>
+        <div class="mores"><a class="more" href="/">Voir siroxtag.fr ›</a><a class="more wk-l" href="wiki/sites-saas/">L’article Wyattpédia ›</a></div>
       </article>
       <article class="tile t-rose">
         <div class="clip"><span class="art" aria-hidden="true">#</span></div>
         <div><p class="k">Sécurité</p><h3>2 failles en 2 jours.</h3><p>Testeur sécurité sur <span class="tip"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="tip-ywh">YesWeHack</button><span class="tip-box" id="tip-ywh"><b>C’est quoi&nbsp;?</b>YesWeHack est une plateforme européenne de bug bounty : des entreprises y invitent des chercheurs à trouver les failles de leurs sites, légalement et avec leur accord. J’y participe en indépendant : je ne suis ni employé, ni partenaire de YesWeHack, et ce site n’est pas affilié à eux.</span></span>. Je casse des sites… avec leur permission. Promis.</p></div>
-        <span class="more">Hacking éthique uniquement</span>
+        <div class="mores"><span class="more">Hacking éthique uniquement</span><a class="more wk-l" href="wiki/hacking-ethique/">L’article Wyattpédia ›</a></div>
       </article>
       <article class="tile t-sage">
         <div class="clip"><span class="art" aria-hidden="true">{ }</span></div>
         <div><p class="k">Bots Discord</p><h3>J’ai codé un fisc.</h3><p>Des bots pour des serveurs RP : impôts, candidatures, rôles. Oui, j’ai inventé les impôts sur Discord. Pardon.</p></div>
-        <a class="more" href="https://github.com/ezechielw13" target="_blank" rel="noopener noreferrer">Mon GitHub ›</a>
+        <div class="mores"><a class="more" href="https://github.com/ezechielw13" target="_blank" rel="noopener noreferrer">Mon GitHub ›</a><a class="more wk-l" href="wiki/bot-impots/">L’article Wyattpédia ›</a></div>
       </article>
       <article class="tile t-sky">
         <div class="clip"><span class="art" aria-hidden="true">9</span></div>
         <div><p class="k">Jeu vidéo</p><h3>J’ai fait un jeu qui fait peur.</h3><p>BLACKOUT, sur Roblox. Neuf chapitres, jusqu’à douze joueurs, et une créature qui déteste la lumière. Comme moi le matin.</p></div>
-        <a class="more" href="https://blackouthorror.fr/" target="_blank" rel="noopener noreferrer">Découvrir BLACKOUT ›</a>
+        <div class="mores"><a class="more" href="https://blackouthorror.fr/" target="_blank" rel="noopener noreferrer">Découvrir BLACKOUT ›</a><a class="more wk-l" href="wiki/blackout/">L’article Wyattpédia ›</a></div>
       </article>
       <article class="tile t-sand">
         <div class="clip"><span class="art" aria-hidden="true">▶</span></div>
         <div><p class="k">Vidéos</p><h3>Je fais rire TikTok.</h3><p>Parodies, edits, humour. Ma vidéo la plus vue&nbsp;? Moi qui fais semblant d’être Ariana Grande. 45&nbsp;300 vues. Je ne regrette rien.</p></div>
-        <a class="more" href="https://www.tiktok.com/@siroxletag" target="_blank" rel="noopener noreferrer">Voir sur TikTok ›</a>
+        <div class="mores"><a class="more" href="https://www.tiktok.com/@siroxletag" target="_blank" rel="noopener noreferrer">Voir sur TikTok ›</a><a class="more wk-l" href="wiki/tiktok/">L’article Wyattpédia ›</a></div>
       </article>
       <article class="tile t-lilac">
         <div class="clip"><span class="art" aria-hidden="true">L.</span></div>
         <div><p class="k">Jeu de rôle</p><h3>Je dirige une boîte qui n’existe pas.</h3><p>Sur GTA RP, je suis Siroxtag LANDER, gérant de Linear. Une entreprise fictive, avec un vrai dossier en 17 plans. Normal.</p></div>
-        <a class="more" href="/Linear/">Voir le dossier ›</a>
+        <div class="mores"><a class="more" href="/Linear/">Voir le dossier ›</a><a class="more wk-l" href="wiki/linear/">L’article Wyattpédia ›</a></div>
       </article>
     </div>
   </section>
@@ -495,10 +499,10 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
 
   <section class="sec alt wkt" id="wyattpedia">
     <h2 class="sh" data-split>Wyatt<span class="it">pédia</span>.</h2>
-    <p class="intro">Tout ce que j’aime et tout ce que je veux faire, expliqué comme dans une encyclopédie. 23 articles. Sources : moi.</p>
+    <p class="intro">Tout ce que j’aime et tout ce que je veux faire, expliqué comme dans une encyclopédie. Plus les projets, et tous les mots bizarres du code. 98 articles. Sources : moi.</p>
     <div class="band wband" aria-hidden="true">
-      <div class="row" data-dir="-1"><a href="wiki/code/" tabindex="-1">Code<span class="dt">.</span></a><a href="wiki/python/" tabindex="-1">Python<span class="dt">.</span></a><a href="wiki/javascript/" tabindex="-1">JavaScript<span class="dt">.</span></a><a href="wiki/sites-saas/" tabindex="-1">Sites web et SaaS<span class="dt">.</span></a><a href="wiki/hacking-ethique/" tabindex="-1">Hacking éthique<span class="dt">.</span></a><a href="wiki/bots-discord/" tabindex="-1">Bots Discord<span class="dt">.</span></a><a href="wiki/claude-maxxing/" tabindex="-1">Claude Maxxing<span class="dt">.</span></a><a href="wiki/vs-code/" tabindex="-1">VS Code<span class="dt">.</span></a><a href="wiki/github/" tabindex="-1">GitHub<span class="dt">.</span></a><a href="wiki/discord/" tabindex="-1">Discord<span class="dt">.</span></a><a href="wiki/phonk/" tabindex="-1">Phonk<span class="dt">.</span></a><a href="wiki/gta-vi/" tabindex="-1">GTA VI<span class="dt">.</span></a></div>
-      <div class="row r2" data-dir="1"><a href="wiki/gta-rp/" tabindex="-1">GTA RP<span class="dt">.</span></a><a href="wiki/black-ops-6/" tabindex="-1">Call of Duty : Black Ops 6<span class="dt">.</span></a><a href="wiki/warzone/" tabindex="-1">Call of Duty : Warzone<span class="dt">.</span></a><a href="wiki/tiktok/" tabindex="-1">TikTok<span class="dt">.</span></a><a href="wiki/nuit-blanche/" tabindex="-1">Nuit blanche<span class="dt">.</span></a><a href="wiki/manger-en-codant/" tabindex="-1">Manger en codant<span class="dt">.</span></a><a href="wiki/bug/" tabindex="-1">Le cache fantôme<span class="dt">.</span></a><a href="wiki/policier/" tabindex="-1">Policier<span class="dt">.</span></a><a href="wiki/cyberpolicier/" tabindex="-1">Cyberpolicier<span class="dt">.</span></a><a href="wiki/developpeur/" tabindex="-1">Développeur<span class="dt">.</span></a><a href="wiki/filiere-generale/" tabindex="-1">Filière générale<span class="dt">.</span></a></div>
+      <div class="row" data-dir="-1"><a href="wiki/code/" tabindex="-1">Code<span class="dt">.</span></a><a href="wiki/python/" tabindex="-1">Python<span class="dt">.</span></a><a href="wiki/html/" tabindex="-1">HTML<span class="dt">.</span></a><a href="wiki/css/" tabindex="-1">CSS<span class="dt">.</span></a><a href="wiki/php/" tabindex="-1">PHP<span class="dt">.</span></a><a href="wiki/javascript/" tabindex="-1">JavaScript<span class="dt">.</span></a><a href="wiki/blackout/" tabindex="-1">BLACKOUT<span class="dt">.</span></a><a href="wiki/linear/" tabindex="-1">Linear<span class="dt">.</span></a><a href="wiki/phonk/" tabindex="-1">Phonk<span class="dt">.</span></a><a href="wiki/gta-vi/" tabindex="-1">GTA VI<span class="dt">.</span></a><a href="wiki/heisenbug/" tabindex="-1">Heisenbug<span class="dt">.</span></a><a href="wiki/json/" tabindex="-1">JSON<span class="dt">.</span></a></div>
+      <div class="row r2" data-dir="1"><a href="wiki/canard-en-caoutchouc/" tabindex="-1">Canard en caoutchouc<span class="dt">.</span></a><a href="wiki/bot-impots/" tabindex="-1">Le bot des impôts<span class="dt">.</span></a><a href="wiki/api/" tabindex="-1">API<span class="dt">.</span></a><a href="wiki/dns/" tabindex="-1">DNS<span class="dt">.</span></a><a href="wiki/cyberpolicier/" tabindex="-1">Cyberpolicier<span class="dt">.</span></a><a href="wiki/nan/" tabindex="-1">NaN<span class="dt">.</span></a><a href="wiki/konami-code/" tabindex="-1">Code Konami<span class="dt">.</span></a><a href="wiki/react/" tabindex="-1">React<span class="dt">.</span></a><a href="wiki/seo/" tabindex="-1">SEO<span class="dt">.</span></a><a href="wiki/yak-shaving/" tabindex="-1">Tondre un yak<span class="dt">.</span></a><a href="wiki/tiktok/" tabindex="-1">TikTok<span class="dt">.</span></a><a href="wiki/boucle-infinie/" tabindex="-1">Boucle infinie<span class="dt">.</span></a></div>
     </div>
     <p class="wcta"><a href="wiki/">Ouvrir Wyattpédia ›</a></p>
   </section>

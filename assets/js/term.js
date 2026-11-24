@@ -104,6 +104,16 @@
     phonk: { f: () => { shake(); print('🔊 BOOM BOOM BOOM'); } }
   };
   const cmds = Object.assign({}, common, PERSO ? perso : main);
+  /* code Konami : ↑ ↑ ↓ ↓ ← → ← → B A */
+  const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a']; let kpos = 0;
+  addEventListener('keydown', e => {
+    const k = (e.key || '').toLowerCase();
+    kpos = k === KONAMI[kpos] ? kpos + 1 : (k === KONAMI[0] ? 1 : 0);
+    if (kpos === KONAMI.length) {
+      kpos = 0; setFun(true);
+      shake(); toast('Code Konami activé : +30 vies. Mode fun débloqué.');
+    }
+  });
 
   const hist = []; let hi = 0;
   function run(raw) {
