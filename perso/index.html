@@ -372,17 +372,7 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
         <div><p class="k">Bots Discord</p><h3>J’ai codé un fisc.</h3><p>Des bots pour des serveurs RP : impôts, candidatures, rôles. Oui, j’ai inventé les impôts sur Discord. Pardon.</p></div>
         <a class="more" href="https://github.com/ezechielw13" target="_blank" rel="noopener noreferrer">Mon GitHub ›</a>
       </article>
-      <article class="tile t-rose up">
-        <div class="clip"><span class="art" aria-hidden="true">#</span></div>
-        <div><p class="k">Sécurité</p><h3>2 failles en 2 jours.</h3><p>Testeur sécurité sur <span class="tip"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="tip-ywh">YesWeHack</button><span class="tip-box" id="tip-ywh"><b>C’est quoi&nbsp;?</b>YesWeHack est une plateforme européenne de bug bounty : des entreprises y invitent des chercheurs à trouver les failles de leurs sites, légalement et avec leur accord. J’y participe en indépendant : je ne suis ni employé, ni partenaire de YesWeHack, et ce site n’est pas affilié à eux.</span></span>. Je casse des sites… avec leur permission. Promis.</p></div>
-        <span class="more">Hacking éthique uniquement</span>
-      </article>
-      <article class="tile t-sage up">
-        <div class="clip"><span class="art" aria-hidden="true">{ }</span></div>
-        <div><p class="k">Bots Discord</p><h3>J’ai codé un fisc.</h3><p>Des bots pour des serveurs RP : impôts, candidatures, rôles. Oui, j’ai inventé les impôts sur Discord. Pardon.</p></div>
-        <a class="more" href="https://github.com/ezechielw13" target="_blank" rel="noopener noreferrer">Mon GitHub ›</a>
-      </article>
-      <article class="tile t-sky up">
+      <article class="tile t-sky">
         <div class="clip"><span class="art" aria-hidden="true">9</span></div>
         <div><p class="k">Jeu vidéo</p><h3>J’ai fait un jeu qui fait peur.</h3><p>BLACKOUT, sur Roblox. Neuf chapitres, jusqu’à douze joueurs, et une créature qui déteste la lumière. Comme moi le matin.</p></div>
         <a class="more" href="https://blackouthorror.fr/" target="_blank" rel="noopener noreferrer">Découvrir BLACKOUT ›</a>
@@ -523,14 +513,6 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   }
   requestAnimationFrame(() => document.documentElement.classList.add('ready'));
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-  /* petite bestiole en pixels (dessin original) */
-  const BOT = ['...o...o...', '....o.o....', '.ooooooooo.', 'ooooooooooo', 'oowwoooowwo', 'oowwoooowwo', 'ooooooooooo', '.ooddddddo.', '..oo...oo..'];
-  const bot = $('[data-bot]');
-  if (bot) {
-    BOT.join('').split('').forEach(c => { const i = document.createElement('i'); if (c === 'o') i.className = 'o'; else if (c === 'w') i.className = 'w'; else if (c === 'd') i.className = 'd'; bot.appendChild(i); });
-    if (!reduce) setInterval(() => { bot.classList.add('blink'); setTimeout(() => bot.classList.remove('blink'), 160); }, 3200);
-  }
 
   /* petite bestiole en pixels (dessin original) */
   const BOT = ['...o...o...', '....o.o....', '.ooooooooo.', 'ooooooooooo', 'oowwoooowwo', 'oowwoooowwo', 'ooooooooooo', '.ooddddddo.', '..oo...oo..'];
