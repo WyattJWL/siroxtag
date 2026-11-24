@@ -6,11 +6,26 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from wiki_content import ARTICLES as BASE
 from wiki_more import MORE
+from wiki_ext import EXT
+from wiki_ext2 import EXT2
+from wiki_filieres import FILIERES
+from wiki_moi import MOI
 
-ARTICLES = BASE + MORE
-CATS = {'aime': 'Ce que j’aime', 'projets': 'Mes projets', 'veux': 'Ce que je veux faire', 'tech': 'Lexique tech', 'jargon': 'Jargon de dev'}
+ARTICLES = BASE + MORE + FILIERES + MOI
+CATS = {'aime': 'Ce que j’aime', 'moi': 'Ce qui me décrit', 'projets': 'Mes projets', 'veux': 'Ce que je veux faire',
+        'police': 'Police et cyber', 'ecole': 'École et études', 'tech': 'Lexique tech', 'jargon': 'Jargon de dev'}
 BY = {a['slug']: a for a in ARTICLES}
 assert len(BY) == len(ARTICLES), 'slug en double'
+for k, secs in list(EXT.items()) + list(EXT2.items()):
+    assert k in BY, ('ext', k)
+    BY[k]['sections'] = list(BY[k]['sections']) + secs
+missing = [a['slug'] for a in BASE + MORE if a['slug'] not in EXT and a['slug'] not in EXT2]
+assert not missing, ('pas rallongés', missing)
+PATHS = {'policier': ['gardien-de-la-paix', 'policier-adjoint', 'cadets-republique', 'concours', 'ecole-de-police', 'gendarmerie', 'deontologie', 'numeros-urgence'],
+         'cyberpolicier': ['cybercriminalite', 'pharos', 'forensique', 'osint', 'ctf', 'pentest', 'anssi', 'cnil', 'code-penal-323'],
+         'developpeur': ['but-informatique', 'bts-sio', 'licence-informatique', 'ecole-ingenieur', 'alternance', 'portfolio', 'full-stack'],
+         'filiere-generale': ['college', 'brevet', 'stage-3e', 'orientation', 'seconde', 'snt', 'specialite-nsi', 'maths', 'bac-general', 'grand-oral', 'parcoursup']}
+for k, v in PATHS.items(): BY[k]['uses'] = v
 
 ALIAS_EXTRA = {'bots-discord': ['bot Discord', 'bots Discord'], 'hacking-ethique': ['bug bounty', 'hacking éthique'], 'sites-saas': ['SaaS'],
   'claude-maxxing': ['Claude'], 'vs-code': ['Visual Studio Code'], 'gta-vi': ['Grand Theft Auto VI'], 'page-perso': ['page perso'],
@@ -38,8 +53,10 @@ def strip(s): return re.sub(r'<[^>]+>', '', s)
 
 # ---------- liens automatiques entre articles ----------
 TERMS = []
+LINK_ALIAS = {'seconde': ['seconde générale']}
 for a in ARTICLES:
-    names = [a['title']] + list(a.get('alias') or [])
+    if a['cat'] == 'moi' and a['slug'] not in ('siroxtag', 'pas-inoxtag'): continue
+    names = LINK_ALIAS.get(a['slug']) or ([a['title']] + list(a.get('alias') or []))
     for n in set(names):
         n = n.strip()
         if len(n) < 3 or n.startswith('«'): continue
@@ -136,7 +153,8 @@ def article(a, prev, nxt):
     lead = autolink(a['lead'], a['slug'], done)
     sections = [(h, autolink(b, a['slug'], done)) for h, b in a['sections']]
     projs = [s for s in USED_IN.get(a['slug'], []) if BY[s]['cat'] == 'projets']
-    others = [s for s in USED_IN.get(a['slug'], []) if BY[s]['cat'] != 'projets']
+    goals = [s for s in USED_IN.get(a['slug'], []) if BY[s]['cat'] == 'veux']
+    others = [s for s in USED_IN.get(a['slug'], []) if BY[s]['cat'] not in ('projets', 'veux')]
     uses = a.get('uses', [])
     toc = ''.join(f'<li><a href="#s{i+1}"><span>{i+1}</span>{h}</a></li>' for i, (h, _) in enumerate(sections))
     toc += '<li><a href="#voir"><span>→</span>Voir aussi</a></li><li><a href="#refs"><span>¹</span>Références</a></li>'
@@ -144,8 +162,8 @@ def article(a, prev, nxt):
     box = ''.join(f'<tr><th>{k}</th><td>{v}</td></tr>' for k, v in a['box'])
     see = ''.join(card(BY[s], i) for i, s in enumerate(a['see']))
     refs = ''.join(f'<li>{r}</li>' for r in a['refs'])
-    blocks = chips(uses, 'Fabriqué avec, et lié à') if a['cat'] == 'projets' else ''
-    blocks += chips(projs, 'Utilisé dans mes projets') + chips(others, 'Lié aussi à')
+    blocks = chips(uses, 'Fabriqué avec, et lié à') if a['cat'] == 'projets' else chips(uses, 'Le chemin pour y arriver') if a['cat'] == 'veux' else ''
+    blocks += chips(goals, 'Une étape vers mes plans') + chips(projs, 'Utilisé dans mes projets') + chips(others, 'Lié aussi à')
     plan = (" · " + a["plan"]) if a.get("plan") else ""
     body = f'''{nav('wiki')}
 <main class="wk">
@@ -181,8 +199,11 @@ def sortkey(a):
 
 GROUPS = [
     ('aime', 'Ce que j’<span class="it">aime</span>.', 'Mes passions, mes outils et mes mauvaises habitudes.', ''),
+    ('moi', 'Ce qui me <span class="it">décrit</span>.', 'Une soixantaine de mots pour me résumer. Objectivité : discutable.', 'mini'),
     ('projets', 'Mes <span class="it">projets</span>.', 'Ce que j’ai construit. Chaque projet est relié aux technos qu’il utilise.', 'big'),
     ('veux', 'Ce que je veux <span class="it">faire</span>.', 'Mes plans pour plus tard. Spoiler : je compte tous les faire.', 'big'),
+    ('police', 'Police et <span class="it">cyber</span>.', 'Tout ce qui touche à mes plans A et B : métiers, concours, menaces, protections.', ''),
+    ('ecole', 'École et <span class="it">études</span>.', 'Du collège aux études d’informatique : le chemin vers mes plans.', ''),
     ('tech', 'Lexique <span class="it">tech</span>.', 'Tous les mots techniques, de A à Z. Expliqués simplement, avec des blagues.', 'mini'),
     ('jargon', 'Jargon de <span class="it">dev</span>.', 'Les expressions hors du commun que les développeurs utilisent entre eux.', ''),
 ]
@@ -191,7 +212,7 @@ def index():
     secs = ''
     for cat, h2, intro, kind in GROUPS:
         items = [a for a in ARTICLES if a['cat'] == cat]
-        if cat in ('tech', 'jargon'): items.sort(key=sortkey)
+        if cat in ('tech', 'jargon', 'moi'): items.sort(key=sortkey)
         secs += f'''  <section class="cat" id="{cat}">
     <h2 class="r">{h2}</h2>
     <p class="intro r">{len(items)} articles. {intro}</p>
@@ -205,7 +226,7 @@ def index():
   <header class="wh">
     <p class="kick r">L’encyclopédie libre*</p>
     <h1 data-split>Wyattpédia<span class="dt">.</span></h1>
-    <p class="sub r">Tout ce que j’aime, tout ce que je construis, tout ce que je veux faire, et tous les mots bizarres du code. Expliqué comme dans une encyclopédie, mais en plus drôle.</p>
+    <p class="sub r">Tout ce que j’aime, ce qui me décrit, ce que je construis, ce que je veux faire, et tous les mots bizarres du code. Expliqué comme dans une encyclopédie, mais en plus drôle.</p>
     <p class="star r">* Libre, mais c’est moi qui écris.</p>
     <div class="tools r">
       <label class="search"><span class="sr">Chercher un article</span><input type="search" placeholder="Chercher : HTML, phonk, heisenbug…" autocomplete="off" data-search></label>
