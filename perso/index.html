@@ -202,6 +202,21 @@ html.fun .t-gray{background:#fff}
 @keyframes eq{0%,100%{height:4px}50%{height:16px}}
 .mu-foot{font-weight:600;font-size:clamp(16px,1.6vw,21px);text-align:center;margin:0;opacity:var(--mo,0)}
 .mu-foot small{display:block;font-weight:400;font-size:12px;color:var(--mut);margin-top:6px}
+.mu-play{position:absolute;left:50%;bottom:22px;z-index:30;width:min(480px,calc(100% - 32px));transform:translate(-50%,24px);opacity:0;visibility:hidden;transition:opacity .35s ease,transform .6s var(--ease),visibility 0s linear .6s}
+.mu-play.show{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .35s ease,transform .6s var(--ease),visibility 0s}
+.mu-ask{background:#fff;color:var(--ink);border-radius:20px;padding:16px 18px;box-shadow:0 24px 60px -16px rgba(0,0,0,.3);font-size:15px;line-height:1.45}
+.mu-ask b{display:block;font-size:16px;margin-bottom:2px}
+.mu-ask .row{display:flex;gap:10px;margin-top:12px}
+.mu-ask button{font:inherit;font-weight:600;font-size:14px;border:0;border-radius:10px;padding:9px 14px;cursor:pointer}
+.mu-ask .ok{background:var(--ink);color:#fff}
+.mu-ask .no{background:var(--bg2);color:var(--ink)}
+.mu-ask small{display:block;margin-top:10px;font-size:12px;color:var(--mut)}
+.mu-ask small a{color:var(--mut);text-decoration:underline}
+.mu-frame{border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -16px rgba(0,0,0,.35);background:#282828;min-height:80px}
+.mu-frame iframe{display:block;width:100%;border:0}
+.mu-off{display:block;margin:8px auto 0;background:none;border:0;font:inherit;font-size:12px;color:var(--mut);text-decoration:underline;cursor:pointer}
+.mu-play.show ~ .mu-foot{opacity:0!important}
+@media (max-width:760px){.mu-play{bottom:22px;left:16px;width:calc(100% - 92px);transform:translateY(24px)}.mu-play.show{transform:none}.mu-off{margin-top:6px}}
 /* plans */
 .plans{max-width:1000px;margin:0 auto;display:grid;gap:clamp(12px,1.4vw,18px)}
 .plan{display:flex;align-items:baseline;gap:clamp(16px,3vw,40px);padding:clamp(26px,3.4vw,46px) clamp(26px,3.4vw,50px);border-radius:28px;opacity:0;transform:translate3d(-60px,0,0);transition:opacity 1s ease,transform 1.2s var(--ease),background-color .6s ease}
@@ -443,16 +458,24 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     <div class="mu-stick">
       <div class="mu-head"><h2 class="sh" data-split>Dans mes <span class="it">oreilles</span>.</h2><p class="intro">Du phonk à fond, toujours. Et en ce moment, deux sons de GTA VI en boucle.</p></div>
       <div class="stage">
-        <div class="disc d1">
+        <div class="disc d1" data-uri="spotify:track:4HCOHRCSQelz2GPX8iTamO">
           <button type="button" class="sl" aria-pressed="false" aria-label="Faire tourner le vinyle de Flower In A Hurricane"><span class="vy"><i style="background-image:url(https://i.scdn.co/image/ab67616d0000b2734c4af9f49f2c276dca687ced)"></i></span><img src="https://i.scdn.co/image/ab67616d0000b2734c4af9f49f2c276dca687ced" alt="Pochette de Flower In A Hurricane" width="640" height="640" loading="lazy" referrerpolicy="no-referrer"></button>
-          <div class="meta"><h3>Flower In A Hurricane<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></h3><p>Justice feat. Tame Impala, SZA, King Gizzard &amp; the Lizard Wizard · From GTAVI: Original Score</p><a href="https://open.spotify.com/track/4HCOHRCSQelz2GPX8iTamO" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette.</span></div>
+          <div class="meta"><h3>Flower In A Hurricane<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></h3><p>Justice feat. Tame Impala, SZA, King Gizzard &amp; the Lizard Wizard · From GTAVI: Original Score</p><a href="https://open.spotify.com/track/4HCOHRCSQelz2GPX8iTamO" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette pour un extrait.</span></div>
         </div>
-        <div class="disc d2">
+        <div class="disc d2" data-uri="spotify:track:30YpKShBDGUAGfUx2BfVIb">
           <button type="button" class="sl" aria-pressed="false" aria-label="Faire tourner le vinyle de Burn This Shit Down"><span class="vy"><i style="background-image:url(https://i.scdn.co/image/ab67616d0000b2732fa89435dbcfc1d7d4c2e30a)"></i></span><img src="https://i.scdn.co/image/ab67616d0000b2732fa89435dbcfc1d7d4c2e30a" alt="Pochette de Burn This Shit Down" width="640" height="640" loading="lazy" referrerpolicy="no-referrer"></button>
-          <div class="meta"><h3><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span> Burn This Shit Down</h3><p>Travis Scott · From GTAVI: The Album</p><a href="https://open.spotify.com/track/30YpKShBDGUAGfUx2BfVIb" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette.</span></div>
+          <div class="meta"><h3><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span> Burn This Shit Down</h3><p>Travis Scott · From GTAVI: The Album</p><a href="https://open.spotify.com/track/30YpKShBDGUAGfUx2BfVIb" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette pour un extrait.</span></div>
         </div>
       </div>
-      <p class="mu-foot">Volume conseillé : trop fort.<small>Pochettes et titres © leurs ayants droit, affichés depuis Spotify. Aucune affiliation.</small></p>
+      <div class="mu-play" aria-live="polite">
+        <div class="mu-ask" hidden>
+          <b>On lance un extrait ?</b>Ça charge le lecteur officiel de Spotify, qui dépose ses propres cookies. Sans compte Spotify, tu entends un extrait d’environ 30 secondes.
+          <div class="row"><button type="button" class="ok">OK, on y va</button><button type="button" class="no">Non merci</button></div>
+          <small>Ton choix est gardé 6 mois. <a href="/mentions-legales/#cookies">En savoir plus</a></small>
+        </div>
+        <div class="mu-live" hidden><div class="mu-frame"><div id="mu-embed"></div></div><button type="button" class="mu-off">Couper Spotify et oublier mon choix</button></div>
+      </div>
+      <p class="mu-foot">Volume conseillé : trop fort.<small>Pochettes, titres et extraits © leurs ayants droit, diffusés par le lecteur officiel de Spotify. Aucune affiliation.</small></p>
     </div>
   </section>
 
@@ -484,7 +507,7 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   </section>
 </main>
 
-<footer>Page perso de Wyatt LE · non référencée · <a href="mailto:contact@siroxtag.fr">contact@siroxtag.fr</a><br>YesWeHack, Claude (Anthropic), TikTok, Roblox, GTA, Call of Duty, GitHub, Visual Studio Code et Discord sont des marques de leurs propriétaires respectifs ; aucune affiliation. Titres et pochettes musicaux : © leurs ayants droit, affichés depuis Spotify (marque de Spotify AB). <a href="/mentions-legales/#marques">Mentions légales</a></footer>
+<footer>Page perso de Wyatt LE · non référencée · <a href="mailto:contact@siroxtag.fr">contact@siroxtag.fr</a><br>YesWeHack, Claude (Anthropic), TikTok, Roblox, GTA, Call of Duty, GitHub, Visual Studio Code et Discord sont des marques de leurs propriétaires respectifs ; aucune affiliation. Titres, pochettes et extraits musicaux : © leurs ayants droit, diffusés par Spotify (marque de Spotify AB) via son lecteur officiel. <a href="/mentions-legales/#marques">Mentions légales</a></footer>
 
 <script>
 (() => {
@@ -606,7 +629,44 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
 
   /* musique */
   const mu = $('.mu'), muHead = $('.mu-head'), muFoot = $('.mu-foot'), discs = $$('.disc');
-  discs.forEach(d => { const b = $('.sl', d); b.addEventListener('click', () => { const on = !d.classList.contains('on'); d.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); });
+  /* lecteur Spotify officiel, chargé seulement après accord */
+  const SPK = 'sx-spotify', SPMAX = 182 * 24 * 3600 * 1000;
+  const play = $('.mu-play'), ask = $('.mu-ask', play), live = $('.mu-live', play);
+  const getOk = () => { try { const v = JSON.parse(localStorage.getItem(SPK)); return v && v.ok && Date.now() - v.t < SPMAX; } catch (e) { return false; } };
+  const setOk = ok => { try { ok ? localStorage.setItem(SPK, JSON.stringify({ ok: 1, t: Date.now() })) : localStorage.removeItem(SPK); } catch (e) {} };
+  let ctrl = null, apiLoading = false, pending = null, refused = false, current = null;
+  function loadApi(cb) {
+    if (ctrl) return cb();
+    pending = cb; if (apiLoading) return; apiLoading = true;
+    window.onSpotifyIframeApiReady = API => {
+      if (ctrl || !$('#mu-embed')) return;
+      API.createController($('#mu-embed'), { uri: current, width: '100%', height: 80 }, c => { ctrl = c; const f = pending; pending = null; f && f(); });
+    };
+    const sc = document.createElement('script'); sc.src = 'https://open.spotify.com/embed/iframe-api/v1'; sc.async = true; document.head.appendChild(sc);
+    // secours : lecteur simple si l’outil de Spotify ne répond pas
+    setTimeout(() => { if (ctrl || !apiLoading) return; plain(current); }, 5000);
+  }
+  function plain(uri) {
+    const id = uri.split(':').pop(), box = $('.mu-frame', play);
+    box.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${id}" height="80" allow="autoplay; clipboard-write; encrypted-media" loading="lazy" title="Lecteur Spotify"></iframe>`;
+    ctrl = { loadUri: u => { if (u !== uri) plain(u); }, play() {}, pause() {}, destroy() {} };
+  }
+  function startTrack(uri) {
+    current = uri; ask.hidden = true; live.hidden = false; play.classList.add('show');
+    loadApi(() => { ctrl.loadUri(uri); setTimeout(() => { try { ctrl.play(); } catch (e) {} }, 350); });
+  }
+  function stopAll() { discs.forEach(x => { x.classList.remove('on'); $('.sl', x).setAttribute('aria-pressed', 'false'); }); if (ctrl) try { ctrl.pause(); } catch (e) {} }
+  discs.forEach(d => { const b = $('.sl', d); b.addEventListener('click', () => {
+    const on = !d.classList.contains('on');
+    discs.forEach(x => { if (x !== d) { x.classList.remove('on'); $('.sl', x).setAttribute('aria-pressed', 'false'); } });
+    d.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+    if (!on) { if (ctrl) try { ctrl.pause(); } catch (e) {} if (!ask.hidden) play.classList.remove('show'); return; }
+    if (getOk()) startTrack(d.dataset.uri);
+    else if (!refused) { current = d.dataset.uri; live.hidden = true; ask.hidden = false; play.classList.add('show'); $('.ok', ask).focus({ preventScroll: true }); }
+  }); });
+  $('.ok', ask).addEventListener('click', () => { setOk(true); startTrack(current); });
+  $('.no', ask).addEventListener('click', () => { refused = true; play.classList.remove('show'); });
+  $('.mu-off', play).addEventListener('click', () => { setOk(false); stopAll(); play.classList.remove('show'); if (ctrl) { try { ctrl.destroy(); } catch (e) {} } ctrl = null; apiLoading = false; const h = $('.mu-frame', play); h.innerHTML = '<div id="mu-embed"></div>'; });
   /* bandeau défilant */
   const rows = $$('.band .row'); rows.forEach(r => r.innerHTML += r.innerHTML);
   let lastY = scrollY, vel = 0, drift = 0;
