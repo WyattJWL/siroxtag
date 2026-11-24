@@ -324,3 +324,19 @@ body.menu-open .top{color:#fff}
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important;transition-delay:0ms!important}
   [data-rv],.wi,.hero-title .ch,.intro-fade{opacity:1!important;transform:none!important}
 }
+
+/* ---------- easter egg : mode fun ---------- */
+.dark,.light{transition:background-color .6s ease,color .6s ease}
+html.fun .dark{--bg:#25145A;--fg:#FFF0D1;--mut:rgba(255,240,209,.74);--line:rgba(255,240,209,.24)}
+html.fun .light{--bg:#FFE1D6;--fg:#2A0F45;--mut:rgba(42,15,69,.7);--line:rgba(42,15,69,.18)}
+html.fun .hero{--bg:#2E1065}
+html.fun .marquee{--bg:#FFD35C;--fg:#25145A}
+html.fun #a-propos{--bg:#7A1F3D}
+html.fun #videos{--bg:#0E4D57}
+html.fun .projets{--bg:#13235B}
+html.fun #contact{--bg:#DDF2C9}
+html.fun #faq{--bg:#FFE9A8}
+html.fun .foot{--bg:#3D0F3A}
+html.fun .vframe{background:rgba(0,0,0,.22)}
+/* ---------- easter egg : « blackout » ---------- */
+html.lights-off body::after{content:"";position:fixed;inset:0;z-index:85;pointer-events:none;background:radial-gradient(circle 170px at var(--lx,50%) var(--ly,50%),transparent 0,rgba(0,0,0,.6) 45%,rgba(0,0,0,.96) 100%)}

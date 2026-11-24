@@ -27,9 +27,10 @@
   --ease:cubic-bezier(.16,1,.3,1);
   --pad:clamp(20px,5vw,72px);
 }
+html.fun{--bg:#FFF4DE;--bg2:#FFE6EE;--sand:#FFD7A3;--sage:#BFE5B8;--sky:#BCD9FB;--lilac:#D7C8FF;--rose:#FFC2C7;--faint:#E8C9A8}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.47;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.47;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .6s ease}
 a{color:var(--link);text-decoration:none}
 a:hover{text-decoration:underline;text-underline-offset:3px}
 :focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:4px}
@@ -37,37 +38,38 @@ a:hover{text-decoration:underline;text-underline-offset:3px}
 
 /* en-tête translucide */
 .nav{position:fixed;inset:0 0 auto 0;z-index:50;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);background:rgba(251,251,253,.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,0);transition:border-color .4s ease}
+html.fun .nav{background:rgba(255,244,222,.75)}
 .nav.scrolled{border-bottom-color:rgba(0,0,0,.08)}
 .brand{font-weight:600;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
 .brand:hover{text-decoration:none}
-.nav nav{display:flex;gap:26px}
+.nav nav{display:flex;gap:24px}
 .nav nav a{font-size:13px;color:var(--ink);opacity:.8}
 .nav nav a:hover{opacity:1;text-decoration:none}
 
 /* héros */
 .hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px var(--pad) 70px;position:relative}
 .hero .rig{will-change:transform,opacity}
-.me{position:relative;display:inline-block;margin:0 0 30px;cursor:pointer;opacity:0;transform:scale(.85) translateY(20px);filter:blur(8px);transition:opacity 1s ease,transform 1.2s var(--ease),filter 1s ease}
+.me{position:relative;display:inline-block;margin:0 0 30px;cursor:pointer;background:none;border:0;padding:0;opacity:0;transform:scale(.85) translateY(20px);filter:blur(8px);transition:opacity 1s ease,transform 1.2s var(--ease),filter 1s ease}
 .ready .me{opacity:1;transform:none;filter:none}
 .me img{display:block;width:clamp(120px,13vw,170px);height:auto;aspect-ratio:2/3;object-fit:cover;border-radius:34px;box-shadow:0 30px 60px -20px rgba(0,0,0,.25)}
 .me:hover img,.me.open img{animation:wave .7s var(--ease)}
 @keyframes wave{0%,100%{transform:none}25%{transform:rotate(-5deg)}55%{transform:rotate(4deg)}80%{transform:rotate(-2deg)}}
 .bubble{position:absolute;left:calc(100% + 14px);top:18%;white-space:nowrap;background:var(--ink);color:#fff;font-size:15px;font-weight:500;padding:10px 14px;border-radius:18px 18px 18px 4px;opacity:0;transform:translateY(6px) scale(.9);transform-origin:0 100%;transition:opacity .25s ease,transform .45s var(--ease);pointer-events:none}
 .me:hover .bubble,.me.open .bubble{opacity:1;transform:none}
-.eyebrow{font-size:clamp(17px,1.6vw,21px);font-weight:600;color:var(--mut);margin:0 0 14px;letter-spacing:-.01em}
 .hero h1{font-weight:700;font-size:clamp(50px,9vw,140px);line-height:1;letter-spacing:-.045em;margin:0}
 .hero h1 .it{font-weight:400;letter-spacing:-.03em}
 .hero p.sub{font-size:clamp(19px,2vw,28px);line-height:1.25;color:var(--mut);margin:22px auto 0;max-width:24em;font-weight:500;letter-spacing:-.02em}
 .w{display:inline-block;overflow:hidden;vertical-align:top;padding:.04em .06em .12em;margin:-.04em -.06em -.12em}
 .wi{display:inline-block;transform:translate3d(0,105%,0);transition:transform 1.2s var(--ease);transition-delay:calc(var(--i)*80ms + 350ms)}
-.ready .wi{transform:none}
+.ready .hero .wi,.sh.in .wi{transform:none}
+.sh .wi{transition-delay:calc(var(--i)*70ms)}
 .fade{opacity:0;transform:translate3d(0,18px,0);transition:opacity 1.2s ease,transform 1.2s var(--ease);transition-delay:1.1s}
 .ready .fade{opacity:1;transform:none}
 .cue{position:absolute;bottom:30px;left:50%;width:22px;height:36px;margin-left:-11px;border:1.5px solid var(--faint);border-radius:12px}
 .cue::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:var(--mut);animation:cue 1.8s var(--ease) infinite}
 @keyframes cue{0%{transform:translateY(0);opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
 
-/* texte qui s’allume au scroll */
+/* texte qui s’allume */
 .reveal{position:relative;height:260vh}
 .reveal .stick{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center;padding:0 var(--pad)}
 .reveal p{max-width:19em;margin:0;font-weight:600;font-size:clamp(30px,4.6vw,64px);line-height:1.12;letter-spacing:-.035em}
@@ -75,27 +77,45 @@ a:hover{text-decoration:underline;text-underline-offset:3px}
 .reveal p span.on{color:var(--ink)}
 .reveal p span.it.on{color:var(--sky-ink)}
 
-/* code qui se tape tout seul */
-.codebox{max-width:820px;margin:0 auto;background:var(--code);color:#E8E8ED;border-radius:28px;padding:22px 0 30px;box-shadow:0 40px 80px -30px rgba(0,0,0,.35);opacity:0;transform:translate3d(0,50px,0) scale(.97);transition:opacity 1s ease,transform 1.2s var(--ease)}
-.codebox.in{opacity:1;transform:none}
+/* apparitions génériques */
+.up{opacity:0;transform:translate3d(0,50px,0) scale(.97);transition:opacity 1s ease,transform 1.2s var(--ease)}
+.up.in{opacity:1;transform:none}
+
+/* code tapé */
+.codebox{max-width:820px;margin:0 auto;background:var(--code);color:#E8E8ED;border-radius:28px;padding:22px 0 30px;box-shadow:0 40px 80px -30px rgba(0,0,0,.35)}
 .codebox .bar{display:flex;gap:8px;padding:0 22px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
 .codebox .bar i{width:12px;height:12px;border-radius:50%;background:#48484A}
 .codebox .bar span{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:#8E8E93}
-.codebox pre{margin:0;padding:24px 30px 0;font-family:var(--mono);font-size:clamp(14px,1.5vw,18px);line-height:1.75;white-space:pre-wrap;min-height:13.5em}
-.codebox .caret{display:inline-block;width:.55em;height:1.15em;vertical-align:-.2em;background:#E8E8ED;animation:blink 1s steps(1) infinite}
+.codebox pre{margin:0;padding:24px 30px 0;font-family:var(--mono);font-size:clamp(13.5px,1.5vw,18px);line-height:1.75;white-space:pre-wrap;min-height:15.5em}
+.caret{display:inline-block;width:.55em;height:1.15em;vertical-align:-.2em;background:#E8E8ED;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .c-k{color:#FF9F8A}.c-s{color:#F2D49B}.c-n{color:#A8D8B9}.c-c{color:#8E8E93}.c-p{color:#9CC4F2}
-.code-cap{text-align:center;color:var(--mut);margin:22px 0 0;font-size:15px}
+.cap{text-align:center;color:var(--mut);margin:22px 0 0;font-size:15px}
 
-/* sections & tuiles */
+/* sections */
 .sec{padding:clamp(90px,12vw,170px) var(--pad)}
-.sec h2{font-weight:700;font-size:clamp(40px,6vw,80px);line-height:1.04;letter-spacing:-.04em;margin:0 0 14px;text-align:center}
-.sec .intro{text-align:center;color:var(--mut);font-size:clamp(19px,1.8vw,24px);margin:0 auto clamp(40px,5vw,70px);max-width:30em}
+.alt{background:var(--bg2);transition:background-color .6s ease}
+.sec h2,.mu h2,.hz h2{font-weight:700;font-size:clamp(40px,6vw,80px);line-height:1.04;letter-spacing:-.04em;margin:0 0 14px;text-align:center}
+.sec .intro,.mu .intro{text-align:center;color:var(--mut);font-size:clamp(19px,1.8vw,24px);margin:0 auto clamp(40px,5vw,70px);max-width:30em}
+
+/* outils */
+.tools{max-width:980px;margin:0 auto;display:grid;gap:14px}
+.tool{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center;background:#fff;border-radius:24px;padding:26px 30px}
+html.fun .tool{background:rgba(255,255,255,.7)}
+.tool h3{margin:0;font-size:clamp(24px,2.4vw,32px);letter-spacing:-.03em;font-weight:700}
+.tool p{margin:4px 0 0;color:var(--mut);font-size:15px}
+.lvl{position:relative}
+.lvl .track{height:10px;border-radius:6px;background:var(--bg2);overflow:visible;position:relative}
+.lvl .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:6px;transition:width 1.6s var(--ease)}
+.tool.in .fill{width:100%}
+.lvl .over{position:absolute;right:-6px;top:-34px;font-weight:700;font-size:15px;opacity:0;transform:translateY(8px) rotate(-8deg);transition:opacity .4s ease 1.5s,transform .6s var(--ease) 1.5s}
+.tool.in .over{opacity:1;transform:rotate(-8deg)}
+.lvl small{display:block;margin-top:10px;font-size:13px;color:var(--mut)}
+
+/* tuiles */
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,1.6vw,22px);max-width:1180px;margin:0 auto}
-.tile{position:relative;border-radius:28px;padding:clamp(28px,3.4vw,52px);min-height:clamp(360px,36vw,520px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,60px,0) scale(.96);transition:opacity 1s ease,transform 1.2s var(--ease)}
-.tile.in{opacity:1;transform:none}
+.tile{position:relative;border-radius:28px;padding:clamp(28px,3.4vw,52px);min-height:clamp(340px,34vw,500px);display:flex;flex-direction:column;justify-content:space-between;transition:background-color .6s ease}
 .tile .clip{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
-.tile:nth-child(even){transition-delay:.12s}
 .tile .k{font-size:15px;font-weight:600;letter-spacing:-.01em;opacity:.75;margin:0}
 .tile h3{font-weight:700;font-size:clamp(32px,3.6vw,54px);line-height:1.02;letter-spacing:-.04em;margin:10px 0 0}
 .tile p{font-size:clamp(16px,1.3vw,19px);line-height:1.45;margin:14px 0 0;max-width:25em;opacity:.88;position:relative}
@@ -107,44 +127,171 @@ a:hover{text-decoration:underline;text-underline-offset:3px}
 .t-lilac{background:var(--lilac);color:var(--lilac-ink)}.t-lilac .more{color:var(--lilac-ink)}
 .t-rose{background:var(--rose);color:var(--rose-ink)}.t-rose .more{color:var(--rose-ink)}
 .t-gray{background:var(--bg2);color:var(--ink)}
+html.fun .t-gray{background:#fff}
 
-/* mot avec bulle d’explication */
+/* bulle d’explication */
 .tip{position:relative;display:inline-block}
 .tip-btn{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;cursor:help;text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:5px}
-.tip-box{position:absolute;left:0;top:calc(100% + 12px);z-index:20;width:min(340px,76vw);padding:16px 18px;background:#fff;color:var(--ink);font-size:15px;font-weight:400;line-height:1.5;letter-spacing:-.005em;border-radius:18px;box-shadow:0 20px 50px -10px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .25s ease,transform .4s var(--ease),visibility 0s linear .4s}
+.tip-box{position:absolute;left:0;top:calc(100% + 12px);z-index:20;width:min(340px,76vw);padding:16px 18px;background:#fff;color:var(--ink);font-size:15px;font-weight:400;line-height:1.5;letter-spacing:-.005em;text-align:left;border-radius:18px;box-shadow:0 20px 50px -10px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .25s ease,transform .4s var(--ease),visibility 0s linear .4s}
 .tip-box b{display:block;font-size:13px;color:var(--mut);font-weight:600;margin-bottom:4px}
 .tip.open .tip-box{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease,transform .4s var(--ease),visibility 0s}
 @media (hover:hover){.tip:hover .tip-box,.tip:focus-within .tip-box{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease,transform .4s var(--ease),visibility 0s}}
 
-/* plus tard */
+/* premier code */
+.first{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);align-items:center}
+.first h2{text-align:left}
+.first p{font-size:clamp(19px,1.7vw,23px);line-height:1.45;color:var(--mut);margin:0 0 18px}
+.first p strong{color:var(--ink);font-weight:600}
+.canvas{background:#fff;border-radius:28px;aspect-ratio:1/1;box-shadow:0 30px 60px -30px rgba(0,0,0,.2);position:relative;overflow:hidden}
+.canvas svg{position:absolute;inset:0;width:100%;height:100%}
+.canvas .lbl{position:absolute;left:18px;top:16px;font-family:var(--mono);font-size:12px;color:var(--mut)}
+.next-step{display:inline-block;margin-top:8px;font-weight:600;color:var(--ink)}
+
+/* fun facts */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.6vw,22px);max-width:1180px;margin:0 auto}
+.fact{border-radius:28px;padding:clamp(26px,2.8vw,40px);min-height:280px;display:flex;flex-direction:column;justify-content:space-between;transition:background-color .6s ease}
+.fact .big{font-weight:800;font-size:clamp(56px,6.4vw,100px);line-height:.9;letter-spacing:-.05em}
+.fact .k{font-size:15px;font-weight:600;opacity:.75;margin:0 0 8px}
+.fact p{margin:10px 0 0;font-size:clamp(16px,1.25vw,18px);line-height:1.45;opacity:.9}
+.fact.wide{grid-column:span 2}
+.fact.wide .big{font-size:clamp(28px,2.8vw,42px);line-height:1.1;letter-spacing:-.03em}
+.semi{display:inline-block;animation:semi 2.4s var(--ease) infinite}
+@keyframes semi{0%,70%,100%{transform:none}78%{transform:translateY(-14px) rotate(-12deg)}88%{transform:none}}
+.bot{display:grid;grid-template-columns:repeat(11,1fr);width:clamp(110px,10vw,140px);aspect-ratio:11/9;animation:bob 2.2s ease-in-out infinite}
+.bot i{display:block}
+.bot i.o{background:#C8643B}.bot i.d{background:#8E3E1F}.bot i.w{background:#fff}
+.bot.blink i.w{background:#C8643B}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* jeux */
+.games{max-width:980px;margin:0 auto;border-top:1px solid rgba(0,0,0,.1)}
+.game{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:20px;align-items:baseline;padding:26px 0;border-bottom:1px solid rgba(0,0,0,.1)}
+.game .n{font-weight:700;font-size:15px;color:var(--mut)}
+.game h3{margin:0;font-size:clamp(26px,3.2vw,44px);letter-spacing:-.035em;font-weight:700;line-height:1.05}
+.game p{margin:6px 0 0;color:var(--mut);font-size:16px}
+.game.fav h3::after{content:" ★";color:#C8643B}
+
+/* musique : pochettes qui grandissent et s’écartent au scroll */
+.mu{position:relative;height:300vh}
+.mu-stick{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px var(--pad) 30px}
+.mu-head{text-align:center;will-change:transform,opacity}
+.mu-head h2{margin-bottom:10px}
+.mu-head .intro{margin-bottom:0}
+.stage{position:relative;width:100%;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.disc{position:absolute;left:50%;top:50%;width:var(--cw);--cw:clamp(150px,24vmin,300px);margin:calc(var(--cw)/-2) 0 0 calc(var(--cw)/-2);will-change:transform}
+.disc .sl{position:relative;display:block;width:100%;aspect-ratio:1/1;cursor:pointer;background:none;border:0;padding:0}
+.disc .sl img{position:relative;z-index:2;display:block;width:100%;height:100%;object-fit:cover;border-radius:12px;box-shadow:0 30px 60px -20px rgba(0,0,0,.45);transition:transform .6s var(--ease)}
+.disc .sl:hover img{transform:translateY(-4px)}
+.disc .vy{position:absolute;inset:4%;z-index:1;border-radius:50%;background:radial-gradient(circle,#F2F1EC 0 7%,#111 8% 12%,#232325 13% 100%);transition:transform 1s var(--ease)}
+.disc .vy::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,rgba(255,255,255,.06) 0 1px,transparent 1px 4px)}
+.disc .vy i{position:absolute;inset:30%;border-radius:50%;background-size:cover;background-position:center;animation:spin 2.6s linear infinite;animation-play-state:paused}
+.disc.on .vy i{animation-play-state:running}
+@keyframes spin{to{transform:rotate(360deg)}}
+.d1.on .vy{transform:translateX(-46%)}
+.d2.on .vy{transform:translateX(46%)}
+.disc .meta{position:absolute;top:calc(100% + 18px);width:max(100%,min(380px,80vw));opacity:var(--mo,0);transform:translateY(calc((1 - var(--mo,0)) * 20px))}
+.d1 .meta{left:0;text-align:left}.d2 .meta{right:0;text-align:right}
+.disc h3{margin:0;font-size:clamp(17px,1.7vw,24px);letter-spacing:-.025em;font-weight:700;line-height:1.2}
+.disc p{margin:5px 0 0;color:var(--mut);font-size:14px;line-height:1.4}
+.disc a{display:inline-block;margin-top:8px;font-size:14px;font-weight:600}
+.disc .hint{display:block;margin-top:6px;font-size:13px;color:var(--mut)}
+.eq{display:inline-flex;gap:3px;align-items:flex-end;height:16px;vertical-align:middle;margin-left:8px;opacity:0;transition:opacity .3s ease}
+.disc.on .eq{opacity:1}
+.eq i{width:3px;border-radius:2px;background:var(--ink);animation:eq 1s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.45s}
+@keyframes eq{0%,100%{height:4px}50%{height:16px}}
+.mu-foot{font-weight:600;font-size:clamp(16px,1.6vw,21px);text-align:center;margin:0;opacity:var(--mo,0)}
+.mu-foot small{display:block;font-weight:400;font-size:12px;color:var(--mut);margin-top:6px}
+/* plans */
 .plans{max-width:1000px;margin:0 auto;display:grid;gap:clamp(12px,1.4vw,18px)}
-.plan{display:flex;align-items:baseline;gap:clamp(16px,3vw,40px);padding:clamp(26px,3.4vw,46px) clamp(26px,3.4vw,50px);border-radius:28px;opacity:0;transform:translate3d(-60px,0,0);transition:opacity 1s ease,transform 1.2s var(--ease)}
+.plan{display:flex;align-items:baseline;gap:clamp(16px,3vw,40px);padding:clamp(26px,3.4vw,46px) clamp(26px,3.4vw,50px);border-radius:28px;opacity:0;transform:translate3d(-60px,0,0);transition:opacity 1s ease,transform 1.2s var(--ease),background-color .6s ease}
 .plan.in{opacity:1;transform:none}
 .plan:nth-child(2){transition-delay:.15s}.plan:nth-child(3){transition-delay:.3s}
 .plan .l{font-size:15px;font-weight:600;opacity:.7;min-width:5.5em}
 .plan .v{font-weight:700;font-size:clamp(30px,4.4vw,60px);letter-spacing:-.04em;line-height:1.05}
-.spoiler{text-align:center;margin:clamp(40px,5vw,60px) 0 0;font-size:clamp(22px,2.4vw,32px);font-weight:600;letter-spacing:-.02em;opacity:0;transform:scale(.9);transition:opacity 1s ease .2s,transform 1.2s var(--ease) .2s}
-.spoiler.in{opacity:1;transform:none}
+.spoiler{text-align:center;margin:clamp(40px,5vw,60px) 0 0;font-size:clamp(22px,2.4vw,32px);font-weight:600;letter-spacing:-.02em}
+
+/* contact */
+.links{max-width:980px;margin:0 auto;border-top:1px solid rgba(0,0,0,.1)}
+.lk{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:26px 0;border-bottom:1px solid rgba(0,0,0,.1);color:var(--ink)}
+.lk:hover{text-decoration:none}
+.lk span{font-size:15px;color:var(--mut);font-weight:600}
+.lk b{font-size:clamp(22px,3.2vw,44px);letter-spacing:-.035em;font-weight:700;overflow-wrap:anywhere;transition:color .3s ease}
+.lk:hover b{color:var(--link)}
 
 /* fin */
-.end{text-align:center;background:var(--bg2)}
+.end{text-align:center}
 .end h2{margin-bottom:18px}
 .end p{color:var(--mut);font-size:clamp(19px,1.8vw,24px);margin:0 0 26px}
 .end a{font-size:clamp(17px,1.4vw,21px)}
-footer{padding:26px var(--pad) 40px;background:var(--bg2);text-align:center;font-size:12px;line-height:1.6;color:var(--mut);border-top:1px solid rgba(0,0,0,.06)}
+footer{padding:26px var(--pad) 100px;background:var(--bg2);text-align:center;font-size:12px;line-height:1.6;color:var(--mut);border-top:1px solid rgba(0,0,0,.06);transition:background-color .6s ease}
 footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
 
+
+/* ---------- motion design renforcé ---------- */
+.blobs{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+.blob{position:absolute;width:44vmax;height:44vmax;border-radius:50%;filter:blur(70px);opacity:.75;will-change:transform}
+.b1{background:var(--sky);left:-12vmax;top:-10vmax}
+.b2{background:var(--rose);right:-14vmax;top:10vmax}
+.b3{background:var(--sage);left:20vw;bottom:-22vmax}
+.hero{isolation:isolate}
+.band{overflow:hidden;padding:clamp(30px,5vw,60px) 0;background:var(--bg);border-block:1px solid rgba(0,0,0,.06)}
+.band .row{display:flex;white-space:nowrap;font-weight:800;font-size:clamp(54px,9vw,140px);line-height:1;letter-spacing:-.05em;will-change:transform}
+.band .row span{padding-right:.35em}
+.band .row .it{font-weight:400;color:var(--mut)}
+.band .r2{color:transparent;-webkit-text-stroke:1.5px var(--ink);margin-top:.12em}
+.band .r2 .it{-webkit-text-stroke:0;color:var(--sky-ink)}
+.tile{will-change:transform,opacity;transform-style:preserve-3d}
+.tile h3,.tile .k{transform:translateZ(30px)}
+.fact{opacity:0;transform:translate3d(0,70px,0) rotate(-3deg) scale(.94);transition:opacity .9s ease,transform 1.2s var(--ease),background-color .6s ease}
+.fact.in{opacity:1;transform:none}
+.facts .fact:nth-child(2){transition-delay:.12s}.facts .fact:nth-child(3){transition-delay:.24s}.facts .fact:nth-child(4){transition-delay:.36s}.facts .fact:nth-child(5){transition-delay:.48s}
+.lk b{display:inline-block;transition:color .3s ease,transform .6s var(--ease)}
+.lk:hover b{transform:translateX(-14px)}
+.lk::after{content:"→";font-size:clamp(22px,3.2vw,44px);font-weight:700;opacity:0;transform:translateX(-20px);transition:opacity .3s ease,transform .6s var(--ease);margin-left:-.6em}
+.lk:hover::after{opacity:1;transform:none}
+/* jeux : défilement horizontal épinglé */
+.hz{position:relative;background:var(--bg2);transition:background-color .6s ease}
+.hz-stick{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,4vh,48px)}
+.hz-head{padding:0 var(--pad);display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.hz-head h2{margin:0;text-align:left}
+.hz-head p{margin:0;color:var(--mut);font-size:clamp(17px,1.6vw,22px)}
+.hz-track{display:flex;gap:clamp(14px,1.6vw,22px);padding:0 var(--pad);width:max-content;will-change:transform;perspective:1400px}
+.gcard{position:relative;flex:none;width:clamp(270px,36vw,500px);height:clamp(320px,52vh,520px);border-radius:28px;padding:clamp(26px,3vw,44px);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;transition:background-color .6s ease;will-change:transform}
+.gcard .gn{font-weight:800;font-size:clamp(110px,13vw,200px);line-height:.8;letter-spacing:-.06em;opacity:.16}
+.gcard .tag{font-size:14px;font-weight:600;opacity:.75}
+.gcard h3{margin:8px 0 0;font-size:clamp(32px,3.6vw,54px);letter-spacing:-.04em;line-height:1.02;font-weight:700}
+.gcard p{margin:12px 0 0;font-size:clamp(16px,1.3vw,19px);line-height:1.45;opacity:.88}
+.hz-bar{margin:0 var(--pad);height:3px;border-radius:2px;background:rgba(0,0,0,.08);overflow:hidden}
+.hz-bar i{display:block;height:100%;width:100%;background:var(--ink);transform-origin:0 50%;transform:scaleX(0)}
+@media (prefers-reduced-motion:reduce){
+  .hz{height:auto!important}.hz-stick{position:static;height:auto;padding:100px 0}.hz-track{overflow-x:auto;width:auto}
+  .fact{opacity:1!important;transform:none!important}
+  .mu{height:auto!important}.mu-stick{position:static;height:auto;padding:110px var(--pad)}.disc{transform:none!important}
+  .blob{display:none}
+}
+@media (max-width:860px){
+  .first{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .fact.wide{grid-column:auto}
+  .tool{grid-template-columns:1fr}
+}
 @media (max-width:760px){
+  .disc{--cw:min(38vw,190px)}
+  .disc .meta{width:max(100%,min(300px,78vw))}
+  .mu-stick{padding-top:64px}
   .nav nav a:not(:last-child){display:none}
   .grid{grid-template-columns:1fr}
-  .tile:nth-child(even){transition-delay:0s}
   .reveal{height:220vh}
   .bubble{left:50%;top:auto;bottom:calc(100% + 10px);transform-origin:50% 100%;translate:-50% 0;border-radius:18px}
   .plan{flex-direction:column;gap:6px}
+  .game{grid-template-columns:44px minmax(0,1fr)}
+  .game .tag{grid-column:2}
+  .lk{flex-direction:column;gap:4px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important;transition-delay:0ms!important}
-  .wi,.fade,.tile,.me,.codebox,.plan,.spoiler{opacity:1!important;transform:none!important;filter:none!important}
+  .wi,.fade,.up,.me,.plan{opacity:1!important;transform:none!important;filter:none!important}
   .reveal{height:auto}.reveal .stick{position:static;height:auto;padding:120px var(--pad)}
   .reveal p span{color:var(--ink)}
 }
@@ -154,17 +301,20 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
 <header class="nav">
   <a class="brand" href="./">Wyatt LE</a>
   <nav aria-label="Navigation">
-    <a href="#moi">Moi</a>
     <a href="#projets">Projets</a>
-    <a href="#plus-tard">Plus tard</a>
+    <a href="#fun">Fun facts</a>
+    <a href="#jeux">Jeux</a>
+    <a href="#musique">Musique</a>
+    <a href="#contact">Contact</a>
     <a href="/">Siroxtag ›</a>
   </nav>
 </header>
 
 <main>
   <section class="hero">
+    <div class="blobs" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
     <div class="rig">
-      <button type="button" class="me" aria-label="Photo de Wyatt" style="background:none;border:0;padding:0">
+      <button type="button" class="me" aria-label="Photo de Wyatt">
         <img src="../assets/img/wyatt.webp" alt="Wyatt" width="210" height="315">
         <span class="bubble">Oui, c’est vraiment moi.</span>
       </button>
@@ -180,53 +330,134 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     </div>
   </section>
 
+  <div class="band" aria-hidden="true">
+    <div class="row" data-dir="-1"><span>Code</span><span class="it">encore</span><span>Code</span><span class="it">toujours</span><span>Code</span><span class="it">encore</span><span>Code</span><span class="it">toujours</span></div>
+    <div class="row r2" data-dir="1"><span>Dormir</span><span class="it">(non)</span><span>Manger</span><span class="it">(en codant)</span><span>Dormir</span><span class="it">(non)</span><span>Manger</span><span class="it">(en codant)</span></div>
+  </div>
+
   <section class="sec" aria-label="Moi en code">
-    <div class="codebox" data-type>
+    <div class="codebox up" data-type>
       <div class="bar"><i></i><i></i><i></i><span>wyatt.js</span></div>
-      <pre aria-label="Code : const wyatt, passions code code code, sommeil null, plan police, cyberpolice et dev, boucle infinie de code"><code></code><span class="caret"></span></pre>
+      <pre aria-label="Le profil de Wyatt écrit en JavaScript"><code></code><span class="caret"></span></pre>
     </div>
-    <p class="code-cap">Oui, il tourne vraiment en boucle. Non, je ne dors pas.</p>
+    <p class="cap">Oui, il tourne vraiment en boucle. Non, je ne dors pas.</p>
+  </section>
+
+  <section class="sec alt" id="outils">
+    <h2 class="sh" data-split>Mes <span class="it">outils</span>.</h2>
+    <p class="intro">Niveau : dieu du code. Classement mondial : premier. Selon moi. Mdr.</p>
+    <div class="tools">
+      <div class="tool up"><div><h3>VS Code</h3><p>Là où je vis.</p></div><div class="lvl"><div class="track"><span class="fill" style="background:#1F4470"></span><span class="over" style="color:#1F4470">112 %</span></div><small>Niveau : dieu</small></div></div>
+      <div class="tool up"><div><h3>GitHub</h3><p>Là où je range tout. Enfin, presque tout.</p></div><div class="lvl"><div class="track"><span class="fill" style="background:#2F5236"></span><span class="over" style="color:#2F5236">108 %</span></div><small>Niveau : dieu</small></div></div>
+      <div class="tool up"><div><h3>Discord</h3><p>Là où vivent mes bots.</p></div><div class="lvl"><div class="track"><span class="fill" style="background:#45397A"></span><span class="over" style="color:#45397A">110 %</span></div><small>Niveau : dieu (et modérateur de mes propres bots)</small></div></div>
+    </div>
   </section>
 
   <section class="sec" id="projets">
-    <h2>Mes <span class="it">projets</span>.</h2>
+    <h2 class="sh" data-split>Mes <span class="it">projets</span>.</h2>
     <p class="intro">Le portfolio. Tout est fait maison, même les bugs.</p>
     <div class="grid">
-      <article class="tile t-sand">
-        <div class="clip"><span class="art" aria-hidden="true">▶</span></div>
-        <div><p class="k">Vidéos</p><h3>Je fais rire TikTok.</h3><p>Parodies, edits, humour. Ma vidéo la plus vue&nbsp;? Moi qui fais semblant d’être Ariana Grande. 45&nbsp;300 vues. Je ne regrette rien.</p></div>
-        <a class="more" href="https://www.tiktok.com/@siroxletag" target="_blank" rel="noopener noreferrer">Voir sur TikTok ›</a>
+      <article class="tile t-gray">
+        <div class="clip"><span class="art" aria-hidden="true">↻</span></div>
+        <div><p class="k">Sites web et SaaS</p><h3>Mon truc préféré.</h3><p>Coder des sites et des SaaS, c’est là où je m’amuse le plus. Comme celui-ci. Oui, tu es dedans, là.</p></div>
+        <a class="more" href="/">Voir siroxtag.fr ›</a>
+      </article>
+      <article class="tile t-rose">
+        <div class="clip"><span class="art" aria-hidden="true">#</span></div>
+        <div><p class="k">Sécurité</p><h3>2 failles en 2 jours.</h3><p>Testeur sécurité sur <span class="tip"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="tip-ywh">YesWeHack</button><span class="tip-box" id="tip-ywh"><b>C’est quoi&nbsp;?</b>YesWeHack est une plateforme européenne de bug bounty : des entreprises y invitent des chercheurs à trouver les failles de leurs sites, légalement et avec leur accord. J’y participe en indépendant : je ne suis ni employé, ni partenaire de YesWeHack, et ce site n’est pas affilié à eux.</span></span>. Je casse des sites… avec leur permission. Promis.</p></div>
+        <span class="more">Hacking éthique uniquement</span>
+      </article>
+      <article class="tile t-sage">
+        <div class="clip"><span class="art" aria-hidden="true">{ }</span></div>
+        <div><p class="k">Bots Discord</p><h3>J’ai codé un fisc.</h3><p>Des bots pour des serveurs RP : impôts, candidatures, rôles. Oui, j’ai inventé les impôts sur Discord. Pardon.</p></div>
+        <a class="more" href="https://github.com/ezechielw13" target="_blank" rel="noopener noreferrer">Mon GitHub ›</a>
       </article>
       <article class="tile t-sky">
         <div class="clip"><span class="art" aria-hidden="true">9</span></div>
         <div><p class="k">Jeu vidéo</p><h3>J’ai fait un jeu qui fait peur.</h3><p>BLACKOUT, sur Roblox. Neuf chapitres, jusqu’à douze joueurs, et une créature qui déteste la lumière. Comme moi le matin.</p></div>
         <a class="more" href="https://blackouthorror.fr/" target="_blank" rel="noopener noreferrer">Découvrir BLACKOUT ›</a>
       </article>
-      <article class="tile t-sage">
-        <div class="clip"><span class="art" aria-hidden="true">{ }</span></div>
-        <div><p class="k">Bots Discord</p><h3>J’ai codé un fisc.</h3><p>Des bots pour des serveurs RP : impôts, candidatures, rôles. Oui, j’ai inventé les impôts sur Discord. Pardon.</p></div>
-        <span class="more" aria-hidden="true">&lt;/&gt;</span>
-      </article>
-      <article class="tile t-rose">
-        <div class="clip"><span class="art" aria-hidden="true">#</span></div>
-        <div><p class="k">Sécurité</p><h3>Je cherche les failles.</h3><p>Testeur sécurité sur <span class="tip"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="tip-ywh">YesWeHack</button><span class="tip-box" id="tip-ywh"><b>C’est quoi&nbsp;?</b>YesWeHack est une plateforme européenne de bug bounty : des entreprises y invitent des chercheurs à trouver les failles de leurs sites, légalement et avec leur accord. J’y participe en indépendant : je ne suis ni employé, ni partenaire de YesWeHack, et ce site n’est pas affilié à eux.</span></span>. Je casse des sites… avec leur permission. Promis.</p></div>
-        <span class="more">Hacking éthique uniquement</span>
+      <article class="tile t-sand">
+        <div class="clip"><span class="art" aria-hidden="true">▶</span></div>
+        <div><p class="k">Vidéos</p><h3>Je fais rire TikTok.</h3><p>Parodies, edits, humour. Ma vidéo la plus vue&nbsp;? Moi qui fais semblant d’être Ariana Grande. 45&nbsp;300 vues. Je ne regrette rien.</p></div>
+        <a class="more" href="https://www.tiktok.com/@siroxletag" target="_blank" rel="noopener noreferrer">Voir sur TikTok ›</a>
       </article>
       <article class="tile t-lilac">
         <div class="clip"><span class="art" aria-hidden="true">L.</span></div>
         <div><p class="k">Jeu de rôle</p><h3>Je dirige une boîte qui n’existe pas.</h3><p>Sur GTA RP, je suis Siroxtag LANDER, gérant de Linear. Une entreprise fictive, avec un vrai dossier en 17 plans. Normal.</p></div>
         <a class="more" href="/Linear/">Voir le dossier ›</a>
       </article>
-      <article class="tile t-gray">
-        <div class="clip"><span class="art" aria-hidden="true">↻</span></div>
-        <div><p class="k">Sites web</p><h3>Ce site.</h3><p>Oui, celui-ci. Tu es dedans, là. Et siroxtag.fr juste à côté.</p></div>
-        <a class="more" href="/">Voir siroxtag.fr ›</a>
-      </article>
     </div>
   </section>
 
-  <section class="sec" id="plus-tard" style="background:var(--bg2)">
-    <h2>Quand je serai <span class="it">grand</span>.</h2>
+  <section class="sec alt" id="premier-code">
+    <div class="first">
+      <div>
+        <h2 class="sh" data-split>Mon premier <span class="it">code</span>.</h2>
+        <p><strong>En 6e, en Python.</strong> Une petite tortue qui dessine un cœur et écrit « Je t’aime maman ». Le code le plus important de ma vie, et toujours zéro bug.</p>
+        <p>Depuis, je n’ai jamais arrêté.</p>
+        <span class="next-step">Prochaine étape : la filière générale.</span>
+      </div>
+      <div class="canvas up" data-turtle>
+        <span class="lbl">turtle.py</span>
+        <svg viewBox="0 0 400 400" aria-label="Une tortue dessine un cœur et écrit Je t’aime maman">
+          <path class="heart" d="M200 330 C 130 280 70 230 70 160 C 70 115 105 85 145 85 C 172 85 192 102 200 125 C 208 102 228 85 255 85 C 295 85 330 115 330 160 C 330 230 270 280 200 330 Z" fill="none" stroke="#C8643B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+          <text class="love" x="200" y="378" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="30" fill="#1D1D1F" opacity="0">Je t’aime maman</text>
+          <g class="turtle" opacity="0">
+            <ellipse cx="0" cy="0" rx="13" ry="10" fill="#2F5236"/>
+            <circle cx="15" cy="0" r="5" fill="#3E6B47"/>
+            <circle cx="-8" cy="-9" r="3.5" fill="#3E6B47"/><circle cx="-8" cy="9" r="3.5" fill="#3E6B47"/>
+            <circle cx="7" cy="-9" r="3.5" fill="#3E6B47"/><circle cx="7" cy="9" r="3.5" fill="#3E6B47"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="fun">
+    <h2 class="sh" data-split>Fun <span class="it">facts</span>.</h2>
+    <p class="intro">Des faits. Vérifiés. Par moi.</p>
+    <div class="facts">
+      <div class="fact t-sky"><div><p class="k">Record de nuit blanche</p><span class="big"><span data-count="4">0</span> jours</span></div><p>D’où le <code>sommeil: null</code> plus haut. Ne faites pas ça chez vous.</p></div>
+      <div class="fact t-rose wide"><div><p class="k">Mon pire bug</p><span class="big">Le cache fantôme en production, combiné à une erreur d’hydratation silencieuse.</span></div><p>Rien ne plantait. Tout était faux. J’en fais encore des cauchemars.</p></div>
+      <div class="fact t-sand"><div><p class="k">Ce que je mange en codant</p><span class="big">Tout.</span></div><p>Vraiment tout. Le clavier a déjà vu des choses.</p></div>
+      <div class="fact t-sage"><div><p class="k">Ma manie</p><span class="big"><span class="semi">;</span></span></div><p>Je vérifie chaque point-virgule en JavaScript. Un par un. Même ceux qui ne servent à rien.</p></div>
+      <div class="fact t-lilac"><div><p class="k">Mon arme secrète</p><span class="big" style="font-size:clamp(30px,3vw,44px);line-height:1.05"><span class="tip"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="tip-claude">Claude Maxxing</button><span class="tip-box" id="tip-claude"><b>C’est quoi&nbsp;?</b>Claude, c’est l’assistant d’intelligence artificielle de la société Anthropic. Le « Claude Maxxing », c’est l’utiliser à fond pour coder plus vite. Aucun lien avec Anthropic : la petite bestiole à côté est un dessin maison, pas leur mascotte.</span></span></span></div><div class="bot" aria-hidden="true" data-bot></div></div>
+    </div>
+  </section>
+
+  <section class="hz" id="jeux">
+    <div class="hz-stick">
+      <div class="hz-head"><h2 class="sh" data-split>Mes <span class="it">jeux</span>.</h2><p>Quand je ne code pas. C’est-à-dire rarement.</p></div>
+      <div class="hz-track">
+        <article class="gcard t-sand"><span class="gn">01</span><div><span class="tag">Le préféré ★</span><h3>GTA VI</h3><p>Mon préféré. Mais GTA V me manque quand même, on ne va pas se mentir.</p></div></article>
+        <article class="gcard t-lilac"><span class="gn">02</span><div><span class="tag">Jeu de rôle</span><h3>GTA RP</h3><p>Là où Siroxtag LANDER dirige Linear. Une carrière fictive, mais très sérieuse.</p></div></article>
+        <article class="gcard t-sky"><span class="gn">03</span><div><span class="tag">Campagne</span><h3>Call of Duty : Black Ops 6</h3><p>Surtout pour la campagne. L’histoire d’abord, le reste après.</p></div></article>
+        <article class="gcard t-rose"><span class="gn">04</span><div><span class="tag">En ligne</span><h3>Call of Duty : Warzone</h3><p>Le dernier en date. Mon temps de survie moyen reste classé secret-défense.</p></div></article>
+      </div>
+      <div class="hz-bar" aria-hidden="true"><i></i></div>
+    </div>
+  </section>
+
+  <section class="mu" id="musique">
+    <div class="mu-stick">
+      <div class="mu-head"><h2 class="sh" data-split>Dans mes <span class="it">oreilles</span>.</h2><p class="intro">Du phonk à fond, toujours. Et en ce moment, deux sons de GTA VI en boucle.</p></div>
+      <div class="stage">
+        <div class="disc d1">
+          <button type="button" class="sl" aria-pressed="false" aria-label="Faire tourner le vinyle de Flower In A Hurricane"><span class="vy"><i style="background-image:url(https://i.scdn.co/image/ab67616d0000b2734c4af9f49f2c276dca687ced)"></i></span><img src="https://i.scdn.co/image/ab67616d0000b2734c4af9f49f2c276dca687ced" alt="Pochette de Flower In A Hurricane" width="640" height="640" loading="lazy" referrerpolicy="no-referrer"></button>
+          <div class="meta"><h3>Flower In A Hurricane<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></h3><p>Justice feat. Tame Impala, SZA, King Gizzard &amp; the Lizard Wizard · From GTAVI: Original Score</p><a href="https://open.spotify.com/track/4HCOHRCSQelz2GPX8iTamO" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette.</span></div>
+        </div>
+        <div class="disc d2">
+          <button type="button" class="sl" aria-pressed="false" aria-label="Faire tourner le vinyle de Burn This Shit Down"><span class="vy"><i style="background-image:url(https://i.scdn.co/image/ab67616d0000b2732fa89435dbcfc1d7d4c2e30a)"></i></span><img src="https://i.scdn.co/image/ab67616d0000b2732fa89435dbcfc1d7d4c2e30a" alt="Pochette de Burn This Shit Down" width="640" height="640" loading="lazy" referrerpolicy="no-referrer"></button>
+          <div class="meta"><h3><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span> Burn This Shit Down</h3><p>Travis Scott · From GTAVI: The Album</p><a href="https://open.spotify.com/track/30YpKShBDGUAGfUx2BfVIb" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette.</span></div>
+        </div>
+      </div>
+      <p class="mu-foot">Volume conseillé : trop fort.<small>Pochettes et titres © leurs ayants droit, affichés depuis Spotify. Aucune affiliation.</small></p>
+    </div>
+  </section>
+
+  <section class="sec alt" id="plus-tard">
+    <h2 class="sh" data-split>Quand je serai <span class="it">grand</span>.</h2>
     <p class="intro">J’ai un plan. Trois, en fait.</p>
     <div class="plans">
       <div class="plan t-sky"><span class="l">Plan A</span><span class="v">Policier, sur le terrain.</span></div>
@@ -236,14 +467,24 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     <p class="spoiler">Spoiler : je compte faire les trois. Attraper les méchants dans la rue <em>et</em> dans le code.</p>
   </section>
 
-  <section class="sec end">
-    <h2>La suite <span class="it">arrive</span>.</h2>
-    <p>Je suis en train de la coder. Évidemment.</p>
+  <section class="sec" id="contact">
+    <h2 class="sh" data-split>Me <span class="it">parler</span>.</h2>
+    <p class="intro">Je réponds. Souvent la nuit, vu le <code>sommeil: null</code>.</p>
+    <div class="links">
+      <a class="lk up" href="mailto:contact@siroxtag.fr"><span>E-mail</span><b>contact@siroxtag.fr</b></a>
+      <a class="lk up" href="https://github.com/ezechielw13" target="_blank" rel="noopener noreferrer"><span>GitHub</span><b>ezechielw13</b></a>
+      <a class="lk up" href="https://www.tiktok.com/@siroxletag" target="_blank" rel="noopener noreferrer"><span>TikTok</span><b>@siroxletag</b></a>
+    </div>
+  </section>
+
+  <section class="sec alt end">
+    <h2 class="sh" data-split>La suite <span class="it">arrive</span>.</h2>
+    <p>Je suis en train de la coder. Évidemment. Psst : ouvre le terminal en bas à droite.</p>
     <a href="/">Retour sur siroxtag.fr ›</a>
   </section>
 </main>
 
-<footer>Page perso de Wyatt LE · non référencée.<br>YesWeHack, TikTok, Roblox et GTA sont des marques de leurs propriétaires respectifs ; aucune affiliation. <a href="/mentions-legales/#marques">Mentions légales</a></footer>
+<footer>Page perso de Wyatt LE · non référencée · <a href="mailto:contact@siroxtag.fr">contact@siroxtag.fr</a><br>YesWeHack, Claude (Anthropic), TikTok, Roblox, GTA, Call of Duty, GitHub, Visual Studio Code et Discord sont des marques de leurs propriétaires respectifs ; aucune affiliation. Titres et pochettes musicaux : © leurs ayants droit, affichés depuis Spotify (marque de Spotify AB). <a href="/mentions-legales/#marques">Mentions légales</a></footer>
 
 <script>
 (() => {
@@ -251,7 +492,6 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const parts = el => { const out = []; el.childNodes.forEach(n => out.push(n.nodeType === 3 ? { t: n.textContent } : { t: n.textContent, cls: n.className })); return out; };
 
-  /* titre : mot par mot */
   $$('[data-split]').forEach(el => {
     const ps = parts(el); el.textContent = ''; let i = 0;
     ps.forEach(p => p.t.split(/(\s+)/).forEach(bit => {
@@ -262,8 +502,6 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
       w.appendChild(wi); el.appendChild(w);
     }));
   });
-
-  /* texte qui s’allume */
   const light = $('[data-light]'); const words = [];
   if (light) {
     const ps = parts(light); light.textContent = '';
@@ -274,32 +512,61 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     }));
   }
   requestAnimationFrame(() => document.documentElement.classList.add('ready'));
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  /* petite bestiole en pixels (dessin original) */
+  const BOT = ['...o...o...', '....o.o....', '.ooooooooo.', 'ooooooooooo', 'oowwoooowwo', 'oowwoooowwo', 'ooooooooooo', '.ooddddddo.', '..oo...oo..'];
+  const bot = $('[data-bot]');
+  if (bot) {
+    BOT.join('').split('').forEach(c => { const i = document.createElement('i'); if (c === 'o') i.className = 'o'; else if (c === 'w') i.className = 'w'; else if (c === 'd') i.className = 'd'; bot.appendChild(i); });
+    if (!reduce) setInterval(() => { bot.classList.add('blink'); setTimeout(() => bot.classList.remove('blink'), 160); }, 3200);
+  }
 
   /* code tapé */
   const CODE = [
     ['c-k', 'const '], ['c-p', 'wyatt'], ['', ' = {\n'],
     ['', '  passions: ['], ['c-s', '"code"'], ['', ', '], ['c-s', '"code"'], ['', ', '], ['c-s', '"code"'], ['', '],\n'],
-    ['', '  sommeil: '], ['c-n', 'null'], ['', ',\n'],
+    ['', '  sommeil: '], ['c-n', 'null'], ['', ',  '], ['c-c', '// record : 4 jours\n'],
+    ['', '  jeu: '], ['c-s', '"GTA VI"'], ['', ',\n'],
     ['', '  plan: '], ['c-s', '"police + cyberpolice + dev"'], ['', ',\n'],
     ['', '  humour: '], ['c-n', 'Infinity'], ['', '\n};\n\n'],
     ['c-k', 'while '], ['', '('], ['c-n', 'true'], ['', ') '], ['c-p', 'code'], ['', '();  '], ['c-c', '// au secours']
   ];
   const box = $('[data-type]'), out = box && $('code', box);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   function type() {
     if (!out || out.dataset.done) return; out.dataset.done = 1;
-    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
     if (reduce) { out.innerHTML = CODE.map(([c, t]) => c ? `<span class="${c}">${esc(t)}</span>` : esc(t)).join(''); return; }
     let seg = 0, ch = 0, html = '';
     const tick = () => {
       if (seg >= CODE.length) return;
-      const [c, t] = CODE[seg];
-      ch++;
+      const [c, t] = CODE[seg]; ch++;
       const cur = t.slice(0, ch);
       out.innerHTML = html + (c ? `<span class="${c}">${esc(cur)}</span>` : esc(cur));
       if (ch >= t.length) { html += c ? `<span class="${c}">${esc(t)}</span>` : esc(t); seg++; ch = 0; }
-      setTimeout(tick, t[ch - 1] === '\n' ? 140 : 28 + Math.random() * 40);
+      setTimeout(tick, t[ch - 1] === '\n' ? 140 : 26 + Math.random() * 38);
     };
-    setTimeout(tick, 500);
+    setTimeout(tick, 400);
+  }
+
+  /* la tortue dessine le cœur */
+  const turtle = $('[data-turtle]');
+  function draw() {
+    if (!turtle || turtle.dataset.done) return; turtle.dataset.done = 1;
+    const path = $('.heart', turtle), t = $('.turtle', turtle), love = $('.love', turtle);
+    if (reduce) { path.style.strokeDashoffset = 0; love.setAttribute('opacity', 1); return; }
+    const L = path.getTotalLength(), dur = 3200, t0 = performance.now() + 300;
+    t.setAttribute('opacity', 1);
+    const step = now => {
+      const p = Math.min(1, Math.max(0, (now - t0) / dur));
+      const a = path.getPointAtLength(p * L), b = path.getPointAtLength(Math.min(L, p * L + 1));
+      const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+      t.setAttribute('transform', `translate(${a.x} ${a.y}) rotate(${ang})`);
+      path.style.strokeDashoffset = 1 - p;
+      if (p < 1) requestAnimationFrame(step);
+      else { love.style.transition = 'opacity 1s ease'; love.setAttribute('opacity', 1); }
+    };
+    requestAnimationFrame(step);
   }
 
   /* apparitions */
@@ -307,10 +574,44 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     if (!e.isIntersecting) return;
     e.target.classList.add('in'); io.unobserve(e.target);
     if (e.target === box) type();
+    if (e.target === turtle) draw();
   }), { threshold: .2 });
-  $$('.tile, .codebox, .plan, .spoiler').forEach(t => io.observe(t));
+  $$('.up, .plan, .fact, .track, .sh').forEach(t => io.observe(t));
+  $$('.hero .sh').forEach(h => h.classList.add('in'));
 
-  /* bulles (photo + YesWeHack) */
+  /* compteur */
+  const cio = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; cio.unobserve(e.target);
+    const el = e.target, to = +el.dataset.count; if (reduce) { el.textContent = to; return; }
+    const t0 = performance.now(); const st = now => { const p = Math.min(1, (now - t0) / 1400); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(st); }; requestAnimationFrame(st);
+  }), { threshold: .6 });
+  $$('[data-count]').forEach(el => cio.observe(el));
+
+  /* tilt des tuiles à la souris */
+  const tiles = $$('.tile');
+  if (fine && !reduce) tiles.forEach(t => {
+    t.addEventListener('pointermove', e => { const r = t.getBoundingClientRect(); t._tx = ((e.clientX - r.left) / r.width - .5) * 8; t._ty = ((e.clientY - r.top) / r.height - .5) * -8; });
+    t.addEventListener('pointerleave', () => { t._tx = 0; t._ty = 0; });
+  });
+
+  /* souris pour les blobs */
+  let mx = 0, my = 0, bx = 0, by = 0;
+  addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+  const blobs = $$('.blob');
+
+  /* jeux en horizontal */
+  const hz = $('.hz'), hzTrack = $('.hz-track'), hzBar = $('.hz-bar i'), gcards = $$('.gcard');
+  function sizeHz() { if (!hz || reduce) return; hz.style.height = (hzTrack.scrollWidth - innerWidth + innerHeight) + 'px'; }
+  sizeHz(); addEventListener('resize', sizeHz);
+
+  /* musique */
+  const mu = $('.mu'), muHead = $('.mu-head'), muFoot = $('.mu-foot'), discs = $$('.disc');
+  discs.forEach(d => { const b = $('.sl', d); b.addEventListener('click', () => { const on = !d.classList.contains('on'); d.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); });
+  /* bandeau défilant */
+  const rows = $$('.band .row'); rows.forEach(r => r.innerHTML += r.innerHTML);
+  let lastY = scrollY, vel = 0, drift = 0;
+
+  /* bulles */
   const toggles = [[$('.me'), $('.me')], ...$$('.tip').map(t => [t, $('.tip-btn', t)])];
   toggles.forEach(([wrap, btn]) => {
     if (!wrap || !btn) return;
@@ -326,7 +627,7 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     nav.classList.toggle('scrolled', y > 10);
     if (!reduce) {
       const k = Math.min(1, y / (vh * .8));
-      heroRig.style.transform = `translate3d(0,${(-k * 60).toFixed(1)}px,0) scale(${(1 - k * .12).toFixed(3)})`;
+      heroRig.style.transform = `translate3d(0,${(-k * 90).toFixed(1)}px,0) scale(${(1 - k * .2).toFixed(3)})`; heroRig.style.filter = `blur(${(k * 8).toFixed(1)}px)`;
       heroRig.style.opacity = (1 - k * 1.1).toFixed(3);
       if (reveal && words.length) {
         const r = reveal.getBoundingClientRect();
@@ -335,11 +636,44 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
         words.forEach((w, i) => w.classList.toggle('on', i < n));
       }
       arts.forEach(a => { const r = a.closest('.tile').getBoundingClientRect(); a.style.setProperty('--py', ((r.top + r.height / 2 - vh / 2) * -0.12).toFixed(1) + 'px'); });
+      // vitesse de scroll
+      vel += ((y - lastY) - vel) * .15; lastY = y; drift += .6;
+      rows.forEach(r => { const d = +r.dataset.dir, w = r.scrollWidth / 2; let x = ((y * .5 + drift) * d) % w; if (x > 0) x -= w; r.style.transform = `translate3d(${x.toFixed(1)}px,0,0) skewX(${Math.max(-12, Math.min(12, -vel * .25 * d)).toFixed(2)}deg)`; });
+      // blobs
+      bx += (mx - bx) * .05; by += (my - by) * .05;
+      blobs.forEach((b, i) => { const k = (i + 1) * 40; b.style.transform = `translate3d(${(bx * k).toFixed(1)}px,${(by * k + y * (.15 + i * .1)).toFixed(1)}px,0)`; });
+      // tuiles : entrée en 3D liée au scroll + tilt
+      tiles.forEach(t => {
+        const r = t.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .55)));
+        const e = 1 - Math.pow(1 - p, 3); t._cx = (t._cx || 0) + ((t._tx || 0) - (t._cx || 0)) * .1; t._cy = (t._cy || 0) + ((t._ty || 0) - (t._cy || 0)) * .1;
+        t.style.opacity = (.15 + e * .85).toFixed(3);
+        t.style.transform = `perspective(1200px) translate3d(0,${((1 - e) * 120).toFixed(1)}px,0) rotateX(${((1 - e) * 18 + t._cy).toFixed(2)}deg) rotateY(${t._cx.toFixed(2)}deg) scale(${(.88 + e * .12).toFixed(3)})`;
+      });
+      // musique : les pochettes grandissent puis partent à gauche et à droite
+      if (mu) {
+        const r = mu.getBoundingClientRect(), p = Math.min(1, Math.max(0, -r.top / (mu.offsetHeight - vh)));
+        const g = Math.min(1, p / .45), sp = Math.min(1, Math.max(0, (p - .3) / .45));
+        const eg = 1 - Math.pow(1 - g, 3), es = 1 - Math.pow(1 - sp, 3);
+        const narrow = innerWidth < 760, cw = discs[0].offsetWidth;
+        const dx = narrow ? 0 : Math.min(innerWidth * .24, 380) * es, dy = narrow ? (cw * .52 + 48) * es : 0;
+        const sc = (narrow ? .5 : .6) + eg * (narrow ? .4 : .55);
+        discs.forEach((d, i) => { const s1 = i ? 1 : -1; d.style.transform = `translate3d(${(s1 * dx).toFixed(1)}px,${(s1 * dy - (narrow ? 46 : 30) * es).toFixed(1)}px,0) rotate(${(s1 * (1 - es) * 8).toFixed(2)}deg) scale(${(narrow ? sc * (1 - es * .1) : sc * (1 - es * .2)).toFixed(3)})`; d.style.setProperty('--mo', Math.max(0, (es - .6) / .4).toFixed(3)); d.style.zIndex = i; });
+        muHead.style.opacity = (1 - Math.max(0, (p - .55) / .3) * 0).toFixed(3);
+        muFoot.style.setProperty('--mo', Math.max(0, (p - .7) / .25).toFixed(3));
+      }
+      // jeux
+      if (hz) {
+        const r = hz.getBoundingClientRect(), len = hz.offsetHeight - vh, p = Math.min(1, Math.max(0, -r.top / len));
+        const max = hzTrack.scrollWidth - innerWidth; hzTrack.style.transform = `translate3d(${(-p * max).toFixed(1)}px,0,0)`;
+        hzBar.style.transform = `scaleX(${p.toFixed(4)})`;
+        gcards.forEach(g => { const gr = g.getBoundingClientRect(); const c = (gr.left + gr.width / 2) / innerWidth - .5; g.style.transform = `rotateY(${(c * -18).toFixed(2)}deg) translateY(${(Math.abs(c) * 30).toFixed(1)}px)`; });
+      }
     }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 })();
 </script>
+<script src="../assets/js/term.js" data-site="perso" defer></script>
 </body>
 </html>
