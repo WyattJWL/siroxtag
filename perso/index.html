@@ -466,13 +466,13 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
     <div class="mu-stick">
       <div class="mu-head"><h2 class="sh" data-split>Dans mes <span class="it">oreilles</span>.</h2><p class="intro">Du phonk à fond, toujours. Et en ce moment, deux sons de GTA VI en boucle.</p></div>
       <div class="stage">
-        <div class="disc d1" data-uri="spotify:track:4HCOHRCSQelz2GPX8iTamO">
+        <div class="disc d1" data-uri="spotify:track:4HCOHRCSQelz2GPX8iTamO" data-start="60">
           <button type="button" class="sl" aria-pressed="false" aria-label="Faire tourner le vinyle de Flower In A Hurricane"><span class="vy"><i style="background-image:url(https://i.scdn.co/image/ab67616d0000b2734c4af9f49f2c276dca687ced)"></i></span><img src="https://i.scdn.co/image/ab67616d0000b2734c4af9f49f2c276dca687ced" alt="Pochette de Flower In A Hurricane" width="640" height="640" loading="lazy" referrerpolicy="no-referrer"></button>
-          <div class="meta"><h3>Flower In A Hurricane<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></h3><p>Justice feat. Tame Impala, SZA, King Gizzard &amp; the Lizard Wizard · From GTAVI: Original Score</p><a href="https://open.spotify.com/track/4HCOHRCSQelz2GPX8iTamO" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette pour un extrait.</span></div>
+          <div class="meta"><h3>Flower In A Hurricane<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span></h3><p>Justice feat. Tame Impala, SZA, King Gizzard &amp; the Lizard Wizard · From GTAVI: Original Score</p><a href="https://open.spotify.com/track/4HCOHRCSQelz2GPX8iTamO" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette : ça démarre à 1:00.</span></div>
         </div>
-        <div class="disc d2" data-uri="spotify:track:30YpKShBDGUAGfUx2BfVIb">
+        <div class="disc d2" data-uri="spotify:track:30YpKShBDGUAGfUx2BfVIb" data-start="170">
           <button type="button" class="sl" aria-pressed="false" aria-label="Faire tourner le vinyle de Burn This Shit Down"><span class="vy"><i style="background-image:url(https://i.scdn.co/image/ab67616d0000b2732fa89435dbcfc1d7d4c2e30a)"></i></span><img src="https://i.scdn.co/image/ab67616d0000b2732fa89435dbcfc1d7d4c2e30a" alt="Pochette de Burn This Shit Down" width="640" height="640" loading="lazy" referrerpolicy="no-referrer"></button>
-          <div class="meta"><h3><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span> Burn This Shit Down</h3><p>Travis Scott · From GTAVI: The Album</p><a href="https://open.spotify.com/track/30YpKShBDGUAGfUx2BfVIb" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette pour un extrait.</span></div>
+          <div class="meta"><h3><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span> Burn This Shit Down</h3><p>Travis Scott · From GTAVI: The Album</p><a href="https://open.spotify.com/track/30YpKShBDGUAGfUx2BfVIb" target="_blank" rel="noopener noreferrer">Écouter sur Spotify ›</a><span class="hint">Clique sur la pochette : ça démarre à 2:50.</span></div>
         </div>
       </div>
       <div class="mu-play" aria-live="polite">
@@ -652,13 +652,23 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   const play = $('.mu-play'), ask = $('.mu-ask', play), live = $('.mu-live', play);
   const getOk = () => { try { const v = JSON.parse(localStorage.getItem(SPK)); return v && v.ok && Date.now() - v.t < SPMAX; } catch (e) { return false; } };
   const setOk = ok => { try { ok ? localStorage.setItem(SPK, JSON.stringify({ ok: 1, t: Date.now() })) : localStorage.removeItem(SPK); } catch (e) {} };
-  let ctrl = null, apiLoading = false, pending = null, refused = false, current = null;
+  let ctrl = null, apiLoading = false, pending = null, refused = false, current = null, seekTo = null;
+  const startOf = uri => { const d = discs.find(x => x.dataset.uri === uri); return d ? +d.dataset.start || 0 : 0; };
   function loadApi(cb) {
     if (ctrl) return cb();
     pending = cb; if (apiLoading) return; apiLoading = true;
     window.onSpotifyIframeApiReady = API => {
       if (ctrl || !$('#mu-embed')) return;
-      API.createController($('#mu-embed'), { uri: current, width: '100%', height: 80 }, c => { ctrl = c; const f = pending; pending = null; f && f(); });
+      API.createController($('#mu-embed'), { uri: current, width: '100%', height: 80 }, c => {
+        ctrl = c;
+        // démarre au bon moment du titre (uniquement si le titre complet est disponible, pas l’extrait de 30 s)
+        c.addListener('playback_update', e => {
+          const d = e && e.data; if (!d || seekTo === null || d.isPaused || !d.duration) return;
+          if (d.duration <= 31000) { seekTo = null; return; }
+          if (d.position < seekTo * 1000 - 2500) { const t = seekTo; seekTo = null; try { c.seek(t); } catch (er) {} } else seekTo = null;
+        });
+        const f = pending; pending = null; f && f();
+      });
     };
     const sc = document.createElement('script'); sc.src = 'https://open.spotify.com/embed/iframe-api/v1'; sc.async = true; document.head.appendChild(sc);
     // secours : lecteur simple si l’outil de Spotify ne répond pas
@@ -671,7 +681,8 @@ footer a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
   }
   function startTrack(uri) {
     current = uri; ask.hidden = true; live.hidden = false; play.classList.add('show');
-    loadApi(() => { ctrl.loadUri(uri); setTimeout(() => { try { ctrl.play(); } catch (e) {} }, 350); });
+    const st = startOf(uri); seekTo = st || null;
+    loadApi(() => { try { ctrl.loadUri(uri, false, st); } catch (e) { ctrl.loadUri(uri); } setTimeout(() => { try { ctrl.play(); } catch (e) {} }, 350); });
   }
   function stopAll() { discs.forEach(x => { x.classList.remove('on'); $('.sl', x).setAttribute('aria-pressed', 'false'); }); if (ctrl) try { ctrl.pause(); } catch (e) {} }
   discs.forEach(d => { const b = $('.sl', d); b.addEventListener('click', () => {
