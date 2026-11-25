@@ -9,19 +9,67 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/extra.css">
 </head>
 <body class="dark">
 <header class="top">
   <a class="brand" href="/" aria-label="Siroxtag, accueil">Siroxtag<span class="dot"></span></a>
 </header>
-<main class="nf">
-  <p class="lab">Erreur 404</p>
-  <p class="n" aria-hidden="true">404</p>
-  <h1 class="h2" style="margin-top:28px">Cette page s’est <span class="it">éteinte</span>.</h1>
-  <p class="lead m" style="margin-top:22px">Elle n’existe pas, ou plus. Le reste du site, lui, est toujours allumé.</p>
-  <p style="margin-top:34px;display:flex;flex-wrap:wrap;gap:12px"><a class="btn" href="/">Retour à l’accueil <span class="ar">→</span></a><a class="btn ghost" href="/Linear/">Le dossier Linear. <span class="ar">→</span></a></p>
-  <p class="lab" style="margin-top:56px"><a href="/mentions-legales/">Mentions légales</a></p>
+<main>
+  <section class="nf" style="min-height:auto;padding-bottom:40px">
+    <p class="lab">Erreur 404</p>
+    <p class="n" aria-hidden="true">404</p>
+    <h1 class="h2" style="margin-top:28px">Cette page s’est <span class="it">éteinte</span>.</h1>
+    <p class="lead m" style="margin-top:22px">Elle n’existe pas, ou plus. Le reste du site, lui, est toujours allumé.</p>
+    <p style="margin-top:34px;display:flex;flex-wrap:wrap;gap:12px"><a class="btn" href="/">Retour à l’accueil <span class="ar">→</span></a><a class="btn ghost" href="/wiki/">Siroxtagpédia <span class="ar">→</span></a></p>
+  </section>
+  <section class="game" aria-labelledby="g-title">
+    <p class="lab">En attendant, un petit jeu</p>
+    <h2 class="h3" id="g-title">Écrase les <span class="it">bugs</span>.</h2>
+    <p class="m" style="margin-top:10px">20 secondes. Clique ou tape sur un maximum de bugs. On dit qu’à partir de 10, il se passe quelque chose.</p>
+    <div class="arena" data-arena>
+      <div class="gmsg" data-msg><p class="big">Prêt ?</p><button type="button" class="btn" data-start>Lancer la partie <span class="ar">→</span></button></div>
+    </div>
+    <p class="score" aria-live="polite">Score : <b data-score>0</b> · Temps : <b data-time>20</b> s · Record : <b data-best>0</b></p>
+    <p class="lab" style="margin-top:56px"><a href="/mentions-legales/">Mentions légales</a></p>
+  </section>
 </main>
 <script src="/assets/js/term.js" data-site="siroxtag" defer></script>
+<script>
+addEventListener('DOMContentLoaded', () => {
+  const arena = document.querySelector('[data-arena]'), msg = document.querySelector('[data-msg]');
+  const $s = document.querySelector('[data-score]'), $t = document.querySelector('[data-time]'), $b = document.querySelector('[data-best]');
+  const BUGS = ['🐞', '🪲', '🐛', '🦗', '🐜'];
+  let score = 0, left = 0, timers = [], playing = false;
+  let best = 0; try { best = +localStorage.getItem('sx-404best') || 0; } catch (e) {}
+  $b.textContent = best;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const pos = el => { el.style.left = rnd(8, 92) + '%'; el.style.top = rnd(12, 88) + '%'; };
+  function spawn() {
+    if (!playing) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'bug'; b.textContent = BUGS[Math.floor(Math.random() * BUGS.length)];
+    b.setAttribute('aria-label', 'Un bug, écrase-le'); pos(b); arena.appendChild(b);
+    const mv = setInterval(() => pos(b), 1200);
+    const die = setTimeout(() => { clearInterval(mv); b.remove(); }, rnd(1400, 2400));
+    b.addEventListener('pointerdown', e => { e.preventDefault(); if (!playing || b.classList.contains('dead')) return; score++; $s.textContent = score; b.classList.add('dead'); clearInterval(mv); clearTimeout(die); setTimeout(() => b.remove(), 220); });
+    timers.push(mv, die);
+  }
+  function end() {
+    playing = false; timers.forEach(t => { clearInterval(t); clearTimeout(t); }); timers = [];
+    arena.querySelectorAll('.bug').forEach(b => b.remove());
+    if (score > best) { best = score; $b.textContent = best; try { localStorage.setItem('sx-404best', best); } catch (e) {} }
+    const win = score >= 10;
+    msg.innerHTML = `<p class="big">${score} bug${score > 1 ? 's' : ''}.</p><p class="m">${win ? 'Bien joué ! Tu as débloqué un fragment de la chasse au trésor.' : 'Presque. Les bugs gagnent cette fois. Comme en production.'}</p>${win ? '<p class="frag">Fragment 1 : « NE LAISSE »</p>' : ''}<button type="button" class="btn" data-start>Rejouer <span class="ar">→</span></button>${win ? '<p class="m" style="font-size:14px">Ouvre le terminal en bas à droite et tape /chasse.</p>' : ''}`;
+    msg.hidden = false;
+    if (win && window.SX) window.SX.hunt.found(1);
+  }
+  function start() {
+    score = 0; left = 20; $s.textContent = 0; $t.textContent = left; msg.hidden = true; playing = true;
+    const tick = setInterval(() => { left--; $t.textContent = left; if (left <= 0) { clearInterval(tick); end(); } }, 1000);
+    const sp = setInterval(spawn, 420); timers.push(tick, sp); spawn(); spawn();
+  }
+  arena.addEventListener('click', e => { if (e.target.closest('[data-start]')) start(); });
+});
+</script>
 </body>
 </html>

@@ -106,6 +106,24 @@
       document.body.appendChild(d); setTimeout(() => d.remove(), 4500);
     }
   }
+  /* ---------- chasse au trésor : 4 fragments à trouver sur le site ---------- */
+  const FRAG = { 1: 'NE LAISSE', 2: 'PAS LA', 3: 'LUMIÈRE', 4: 'S’ÉTEINDRE' };
+  const HINT = {
+    1: 'Perds-toi. Vraiment. Une page qui n’existe pas cache un jeu.',
+    2: 'Les vieux objets gardent des secrets. Le musée t’attend : /archives',
+    3: 'Éteins tout. Une page entièrement noire t’attend : /noir',
+    4: 'Un vieux code de triche des années 1980 marche ici. Avec les flèches.'
+  };
+  const hunt = {
+    get: () => { try { const v = JSON.parse(localStorage.getItem('sx-hunt') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } },
+    found(n) {
+      const f = hunt.get(); if (f.includes(n)) return false;
+      f.push(n); f.sort(); try { localStorage.setItem('sx-hunt', JSON.stringify(f)); } catch (e) {}
+      confettis(); toast(`Fragment ${n}/4 trouvé : « ${FRAG[n]} »`);
+      if (f.length === 4) setTimeout(() => toast('Tous les fragments ! Remets-les dans l’ordre sur /tresor 🏆'), 2800);
+      return true;
+    }
+  };
   const lights = () => { const on = document.documentElement.classList.toggle('lights-off'); say(on ? 'Lumières éteintes. Ta souris est ta lampe torche.' : 'Lumières rallumées. La créature recule.'); };
 
   /* ---------- contenus ---------- */
@@ -222,6 +240,17 @@
     konami: { d: 'un indice', f: () => say('↑ ↑ ↓ ↓ ← → ← → B A\nAvec le clavier, en dehors du terminal.') },
     gta: { d: 'le jeu préféré', f: () => say(PERSO ? 'GTA VI : le préféré. GTA V : me manque quand même.' : 'GTA VI, GTA RP et la ville de Linear. Tout est fictif, rien n’est sérieux.') }
   });
+  chap('chasse', 'Chasse au trésor', '4 fragments cachés sur le site', {
+    chasse: { d: 'où j’en suis, et des indices', f: () => {
+      const f = hunt.get();
+      print(`<span class="tm-y">Chasse au trésor : ${f.length}/4 fragments</span>`);
+      [1, 2, 3, 4].forEach(n => print(f.includes(n) ? `<span class="tm-p">✓ Fragment ${n} : « ${FRAG[n]} »</span>` : `<span class="tm-m">☐ Fragment ${n} : ${esc(HINT[n])}</span>`));
+      if (f.length === 4) say('Remets-les dans l’ordre sur /tresor.', 'y');
+    } },
+    tresor: { d: 'la salle du trésor', f: () => nav('/tresor/', 'Direction la salle du trésor…') },
+    archives: { d: 'le musée Siroxtag', f: () => nav('/archives/', 'Ouverture du musée…') },
+    perdu: { d: 'se perdre (exprès)', f: () => nav('/404.html', 'Tu veux te perdre ? D’accord.') }
+  });
   chap('rire', 'Pour rire', 'des blagues, des citations et du n’importe quoi', {
     blague: { d: 'une blague de développeur', f: () => say(pick(BLAGUES)) },
     citation: { d: 'une citation célèbre (traduite)', f: () => { const c = pick(CITATIONS); say(`« ${c[0]} »\n— ${c[1]}`); } },
@@ -253,6 +282,7 @@
     hello: () => say('Salut ! Tape /help si t’es perdu.'),
     siroxtag: () => say('Oui ? C’est moi. Enfin, lui. Bref.'),
     inoxtag: () => { shake(); say('Siroxtag. Avec un S. Et un R.', 'e'); },
+    noir: () => nav('/noir/', 'Extinction des lumières…'),
     wyatt: () => {
       if (PERSO) { say('C’est moi. Et tu es déjà chez moi. Bienvenue 👋'); return; }
       shake(); say('🕵️ Wyatt ? Ce nom ne te dit rien… officiellement.', 'y');
@@ -333,7 +363,7 @@
   addEventListener('keydown', e => {
     const k = (e.key || '').toLowerCase();
     kpos = k === KONAMI[kpos] ? kpos + 1 : (k === KONAMI[0] ? (kpos >= 2 && KONAMI[kpos - 1] === 'arrowup' ? kpos : 1) : 0);
-    if (kpos === KONAMI.length) { kpos = 0; setFun(true); shake(); confettis(); toast('Code Konami activé : +30 vies. Mode fun débloqué.'); }
+    if (kpos === KONAMI.length) { kpos = 0; setFun(true); shake(); confettis(); if (!hunt.found(4)) toast('Code Konami activé : +30 vies. Mode fun débloqué.'); }
   });
 
   /* ---------- easter eggs : des mots tapés n’importe où ---------- */
@@ -345,8 +375,9 @@
     help: () => open(),
     matrix: () => matrix(),
     wyatt: () => { if (PERSO) { toast('Oui, c’est moi 👋'); return; } toast('Quelqu’un a dit Wyatt ? 👀 Ouvre le terminal et tape /wyatt'); },
-    ...(PERSO ? { code: () => { shake(); toast('while (true) code();'); }, phonk: () => { shake(); toast('🔊 BOOM BOOM BOOM'); }, maman: () => toast('Je t’aime maman ❤️') } : { blackout: () => { document.documentElement.classList.toggle('lights-off'); toast('Ne laisse pas la lumière s’éteindre…'); } })
+    ...(PERSO ? { code: () => { shake(); toast('while (true) code();'); }, phonk: () => { shake(); toast('🔊 BOOM BOOM BOOM'); }, maman: () => toast('Je t’aime maman ❤️') } : { blackout: () => { document.documentElement.classList.toggle('lights-off'); toast('Ne laisse pas la lumière s’éteindre… (essaie /noir dans le terminal)'); } })
   };
+  window.SX = { hunt, toast, confettis, shake };
   addEventListener('pointermove', e => { const r = document.documentElement.style; r.setProperty('--lx', e.clientX + 'px'); r.setProperty('--ly', e.clientY + 'px'); }, { passive: true });
   let buf = '';
   addEventListener('keydown', e => {

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>…</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/extra.css">
+</head>
+<body class="noir">
+<div class="dark-veil" aria-hidden="true"></div>
+<span class="torch" aria-hidden="true"></span>
+<main aria-label="Une page plongée dans le noir">
+  <p class="nw" style="left:8vw;top:18vh;font-size:clamp(34px,6vw,84px)">Tu n’aurais pas dû venir ici.</p>
+  <p class="nw" style="left:52vw;top:52vh;font-size:clamp(18px,2vw,26px);font-weight:600">Bouge ta lumière. Doucement.</p>
+  <p class="nw" style="left:12vw;top:84vh;font-size:clamp(22px,2.6vw,36px)">Elle déteste la lumière. Toi, tu en as un peu.</p>
+  <p class="nw" style="left:60vw;top:118vh;font-size:clamp(16px,1.6vw,20px);font-weight:500;max-width:30vw">Neuf chapitres. Douze joueurs au maximum. Une seule règle : ne jamais rester seul dans le noir.</p>
+  <p class="nw" style="left:6vw;top:150vh;font-size:clamp(40px,7vw,110px)">Elle est derrière toi.</p>
+  <p class="nw" style="left:30vw;top:166vh;font-size:clamp(14px,1.4vw,18px);font-weight:500">… non, je rigole. Enfin, je crois.</p>
+  <p class="nw" style="left:58vw;top:196vh;font-size:clamp(20px,2.4vw,32px)">Quelque part ici, un mot brille plus que les autres.</p>
+  <p class="nw" style="left:10vw;top:236vh;font-size:clamp(16px,1.6vw,22px);font-weight:500;max-width:38vw">Le jeu s’appelle BLACKOUT. Il est sur Roblox. Et il n’aime pas qu’on éteigne.</p>
+  <button type="button" class="lum" data-lum style="left:72vw;top:262vh" aria-label="Un mot qui brille dans le noir">LUMIÈRE</button>
+  <p class="nw" style="left:20vw;top:292vh;font-size:clamp(26px,3vw,44px)">Tu as tout vu ? Alors rallume.</p>
+</main>
+<a class="out" href="/">Rallumer la lumière ›</a>
+<script src="/assets/js/term.js" data-site="siroxtag" defer></script>
+<script>
+addEventListener('DOMContentLoaded', () => {
+  const r = document.documentElement.style, body = document.body;
+  const set = (x, y) => { r.setProperty('--lx', x + 'px'); r.setProperty('--ly', y + 'px'); };
+  set(innerWidth / 2, innerHeight * .4);
+  addEventListener('touchmove', e => { const t = e.touches[0]; if (t) set(t.clientX, t.clientY - 60); }, { passive: true });
+  addEventListener('touchstart', e => { const t = e.touches[0]; if (t) set(t.clientX, t.clientY - 60); }, { passive: true });
+  // des yeux qui observent depuis le noir
+  const eyes = [];
+  for (let i = 0; i < 3; i++) { const e = document.createElement('div'); e.className = 'eyes'; e.innerHTML = '<i></i><i></i>'; e.style.zIndex = 35; body.appendChild(e); eyes.push(e); }
+  let lx = innerWidth / 2, ly = innerHeight * .4;
+  addEventListener('pointermove', e => { lx = e.clientX; ly = e.clientY; }, { passive: true });
+  addEventListener('touchmove', e => { const t = e.touches[0]; if (t) { lx = t.clientX; ly = t.clientY - 60; } }, { passive: true });
+  function place(e) {
+    let x, y, tries = 0;
+    do { x = Math.random() * (innerWidth - 80) + 20; y = Math.random() * (innerHeight - 60) + 20; tries++; } while (Math.hypot(x - lx, y - ly) < 280 && tries < 30);
+    e.style.left = x + 'px'; e.style.top = (y + scrollY) + 'px';
+  }
+  eyes.forEach((e, i) => setTimeout(function loop() {
+    place(e); e.classList.add('on');
+    const bl = setInterval(() => { e.classList.add('blink'); setTimeout(() => e.classList.remove('blink'), 140); }, 1700);
+    setTimeout(() => { e.classList.remove('on'); clearInterval(bl); setTimeout(loop, 1500 + Math.random() * 3000); }, 3500 + Math.random() * 2500);
+  }, 1200 + i * 1900));
+  // les yeux fuient la lumière
+  setInterval(() => eyes.forEach(e => { const b = e.getBoundingClientRect(); if (Math.hypot(b.left - lx, b.top - ly) < 170) e.classList.remove('on'); }), 120);
+  document.querySelector('[data-lum]').addEventListener('click', () => {
+    body.classList.add('lit');
+    if (window.SX && !window.SX.hunt.found(3)) window.SX.toast('Tu as déjà trouvé ce fragment. La lumière revient quand même.');
+    setTimeout(() => body.classList.remove('lit'), 4000);
+  });
+});
+</script>
+</body>
+</html>

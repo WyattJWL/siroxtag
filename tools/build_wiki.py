@@ -383,6 +383,7 @@ assert not leaks, ('fuites dans Siroxtagpédia', leaks[:30])
 sm = os.path.join(ROOT, 'sitemap.xml'); s = open(sm, encoding='utf-8').read()
 s = re.sub(r'\s*<url><loc>https://www\.siroxtag\.fr/wiki/[^<]*</loc>.*?</url>', '', s, flags=re.S)
 urls = ''.join(f'\n  <url><loc>https://www.siroxtag.fr/wiki/{x}</loc><changefreq>monthly</changefreq><priority>{p}</priority></url>' for x, p in [('', '0.7')] + [(a['slug'] + '/', '0.5') for a in sx])
+if '/archives/' not in s: urls = '\n  <url><loc>https://www.siroxtag.fr/archives/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>' + urls
 s = s.replace('</urlset>', urls + '\n</urlset>')
 open(sm, 'w', encoding='utf-8').write(s)
 print('Wyattpédia :', len(perso_arts), 'articles ·', ', '.join(f'{CATS[c]} {sum(1 for a in perso_arts if a["cat"] == c)}' for c in CATS if any(a['cat'] == c for a in perso_arts)))
