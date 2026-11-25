@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le coin jeux · Wyatt LE</title>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<script>try{if(localStorage.getItem("sx-serious")!=="1")document.documentElement.classList.add("fun")}catch(e){document.documentElement.classList.add("fun")}</script>
+<meta name="theme-color" content="#FBFBFD">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/wiki/head.css">
+<link rel="stylesheet" href="/assets/wiki/wiki.css">
+<link rel="stylesheet" href="/assets/css/extra.css">
+<style>
+.gk{max-width:1100px;margin:0 auto;padding:110px var(--pad) 90px}
+.gk h1{margin:10px 0 0;font-weight:800;font-size:clamp(48px,8vw,110px);line-height:.98;letter-spacing:-.05em}
+.gk .sub{color:var(--mut);font-size:clamp(18px,1.8vw,23px);max-width:30em;margin:18px 0 0}
+.who{margin-top:22px;font-size:15px;color:var(--mut)}
+.who b{color:var(--ink)}
+.who button{background:none;border:0;padding:0;font:inherit;color:var(--link);cursor:pointer;text-decoration:underline}
+.picker{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:40px}
+.picker button{text-align:left;border:0;border-radius:22px;padding:20px;cursor:pointer;font:inherit;color:inherit;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+.picker button:hover{transform:translateY(-4px)}
+.picker button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink)}
+.picker .e{font-size:34px}
+.picker b{font-size:20px;letter-spacing:-.02em}
+.picker small{opacity:.75}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;margin-top:26px;align-items:start}
+.play{position:relative;border-radius:26px;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.08);min-height:420px;overflow:hidden}
+.play canvas{display:block;width:100%;height:auto;touch-action:none}
+.over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;background:rgba(251,251,253,.86);backdrop-filter:blur(6px)}
+.over h2{margin:0;font-size:clamp(30px,4vw,48px);letter-spacing:-.04em}
+.over p{margin:0;color:var(--mut);max-width:26em}
+.go{height:50px;padding:0 22px;border:0;border-radius:14px;background:var(--ink);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.hud{display:flex;justify-content:space-between;padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--mut);border-bottom:1px solid rgba(0,0,0,.06)}
+.hud b{color:var(--ink)}
+.side{border-radius:22px;background:var(--bg2);padding:18px 18px 12px}
+.side h3{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.side ol{margin:0;padding-left:1.4em}
+.side li{padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;gap:10px}
+.side li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side .mine{margin-top:12px;font-size:14px;color:var(--mut)}
+.arena-b{position:relative;height:420px}
+.bug2{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border:0;background:none;font-size:36px;cursor:crosshair;transition:left 1.2s ease-in-out,top 1.2s ease-in-out,transform .2s,opacity .2s}
+.bug2.dead{transform:scale(1.6) rotate(20deg);opacity:0}
+.type{padding:26px}
+.type pre{margin:0;font-family:var(--mono);font-size:clamp(16px,2vw,22px);line-height:1.6;white-space:pre-wrap;word-break:break-all}
+.type pre .ok{color:#2F5236;background:rgba(47,82,54,.12)}
+.type pre .ko{color:#fff;background:#C8643B}
+.type pre .cur{border-left:2px solid var(--ink)}
+.type input{position:absolute;opacity:0;pointer-events:none}
+.quiz{padding:26px}
+.quiz .q{font-size:clamp(20px,2.2vw,28px);line-height:1.35;letter-spacing:-.02em;margin:0 0 20px;min-height:3em}
+.quiz .ch{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quiz .ch button{min-height:56px;border:1px solid rgba(0,0,0,.12);border-radius:14px;background:#fff;font:inherit;font-weight:600;cursor:pointer;padding:8px 12px}
+.quiz .ch button.good{background:#D3EAC8;border-color:#2F5236}
+.quiz .ch button.bad{background:#F6CBD0;border-color:#7A2E35}
+.pad{display:none;grid-template-columns:repeat(3,56px);gap:6px;justify-content:center;padding:12px}
+.pad button{height:56px;border:0;border-radius:12px;background:var(--bg2);font-size:22px;cursor:pointer}
+@media (hover:none){.pad{display:grid}}
+@media (max-width:900px){.stage{grid-template-columns:1fr}.picker{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="nav" data-nav>
+  <a class="brand" href="/perso/" aria-label="Wyatt LE, accueil perso"><span class="bl">Wyatt LE</span><span class="dot" aria-hidden="true">.</span></a>
+  <nav class="nlinks" aria-label="Navigation"><a href="/perso/#projets">Projets</a><a href="/perso/jeux/" data-active>Coin jeux</a><a href="/perso/wiki/">Wyattpédia</a><a href="/perso/#contact">Contact</a><a href="/">Siroxtag ›</a><span class="ind" aria-hidden="true"></span></nav>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><i></i><i></i></button>
+  <span class="prog" aria-hidden="true"></span>
+</header>
+<div class="menu" id="menu" hidden><nav aria-label="Menu"><a href="/perso/" style="--i:0"><span>Accueil</span></a><a href="/perso/jeux/" style="--i:1"><span><em>Coin jeux</em></span></a><a href="/perso/wiki/" style="--i:2"><span>Wyattpédia</span></a><a href="/" style="--i:3"><span>Siroxtag ›</span></a></nav></div>
+<main class="gk">
+  <p class="kick">Pause méritée</p>
+  <h1>Le coin <span class="it">jeux</span><span class="dt">.</span></h1>
+  <p class="sub">Quatre petits jeux faits maison. Connecte-toi pour entrer dans les classements. Attention : ça rend accro.</p>
+  <p class="who" data-who>…</p>
+  <div class="picker" role="group" aria-label="Choisir un jeu">
+    <button type="button" class="t-rose" data-g="bugs"><span class="e">🐞</span><span><b>Écrase les bugs</b><br><small>20 secondes, un max de bugs.</small></span></button>
+    <button type="button" class="t-sage" data-g="snake"><span class="e">;</span><span><b>Snake du point-virgule</b><br><small>Mange les « ; ». Évite les murs.</small></span></button>
+    <button type="button" class="t-sky" data-g="frappe"><span class="e">⌨️</span><span><b>Tape le code</b><br><small>30 secondes de frappe pure.</small></span></button>
+    <button type="button" class="t-lilac" data-g="quiz"><span class="e">❓</span><span><b>Quiz Wyattpédia</b><br><small>10 questions sur mon encyclopédie.</small></span></button>
+  </div>
+  <div class="stage">
+    <div class="play" data-play></div>
+    <aside class="side" aria-live="polite"><h3 data-lbt>Classement</h3><ol data-top><li><span>…</span></li></ol><p class="mine" data-mine></p></aside>
+  </div>
+  <div data-login style="margin-top:40px"></div>
+</main>
+<script src="/assets/js/compte.js"></script>
+<script src="/assets/wiki/head.js" defer></script>
+<script src="/perso/term-perso.js" defer></script>
+<script src="/assets/js/term.js" data-site="perso" defer></script>
+<script>
+addEventListener('DOMContentLoaded', () => {
+  const $ = s => document.querySelector(s), e = SXA.esc, play = $('[data-play]');
+  const NAMES = { bugs: 'Écrase les bugs', snake: 'Snake du point-virgule', frappe: 'Tape le code', quiz: 'Quiz Wyattpédia' };
+  let user = null, game = 'bugs', stop = () => {};
+  async function who() {
+    user = await SXA.me(true);
+    const w = $('[data-who]'), lg = $('[data-login]');
+    if (user) { w.innerHTML = `Connecté en tant que <b>${e(user.pseudo)}</b> · <button type="button" data-out>se déconnecter</button>`; lg.innerHTML = ''; w.querySelector('[data-out]').onclick = async () => { await SXA.logout(); who(); board(); }; }
+    else { w.innerHTML = 'Tu joues en invité : tes scores ne sont pas enregistrés. <button type="button" data-lg>Se connecter</button>'; w.querySelector('[data-lg]').onclick = () => { SXA.form(lg, { next: '/perso/jeux/', onDone: () => { who(); board(); } }); lg.scrollIntoView({ behavior: 'smooth' }); }; }
+  }
+  async function board() {
+    $('[data-lbt]').textContent = 'Classement · ' + NAMES[game];
+    try {
+      const d = await SXA.api('scores?game=' + game);
+      $('[data-top]').innerHTML = d.top.length ? d.top.map(r => `<li><span>${e(r.pseudo)}</span><b>${r.best}</b></li>`).join('') : '<li><span>Personne pour l’instant. À toi !</span></li>';
+      $('[data-mine]').textContent = d.me ? `Ton record : ${d.me.best} · rang ${d.me.rang}` : (user ? 'Pas encore de score sur ce jeu.' : '');
+    } catch (er) { $('[data-top]').innerHTML = `<li><span>${e(er.message)}</span></li>`; }
+  }
+  async function done(score, text) {
+    stop = () => {};
+    let extra = '';
+    if (user) { try { const r = await SXA.api('scores', { method: 'POST', body: { game, score } }); extra = r.record ? 'Nouveau record personnel !' : `Ton record : ${r.best}`; board(); } catch (er) { extra = er.message; } }
+    else extra = 'Connecte-toi pour enregistrer ton score.';
+    if (window.SX && score > 0) window.SX.confettis();
+    over(`${score}`, `${text} ${extra}`, 'Rejouer');
+  }
+  function over(title, text, label) {
+    const o = document.createElement('div'); o.className = 'over';
+    o.innerHTML = `<h2>${e(title)}</h2><p>${e(text)}</p><button class="go" type="button">${e(label)} →</button>`;
+    o.querySelector('button').onclick = () => { o.remove(); GAMES[game](); };
+    play.appendChild(o);
+  }
+  const intro = (title, text) => { play.innerHTML = ''; over(title, text, 'Jouer'); };
+
+  /* ---- Écrase les bugs ---- */
+  function bugs() {
+    play.innerHTML = '<div class="hud"><span>Score : <b data-s>0</b></span><span>Temps : <b data-t>20</b> s</span></div><div class="arena-b" data-a></div>';
+    const a = play.querySelector('[data-a]'); let s = 0, t = 20, on = true; const ts = [];
+    const pos = el => { el.style.left = (8 + Math.random() * 84) + '%'; el.style.top = (10 + Math.random() * 80) + '%'; };
+    const spawn = () => { if (!on) return; const b = document.createElement('button'); b.className = 'bug2'; b.type = 'button'; b.textContent = ['🐞', '🪲', '🐛', '🦗'][Math.floor(Math.random() * 4)]; b.setAttribute('aria-label', 'bug'); pos(b); a.appendChild(b);
+      const mv = setInterval(() => pos(b), 1100), die = setTimeout(() => { clearInterval(mv); b.remove(); }, 1300 + Math.random() * 1100);
+      b.onpointerdown = ev => { ev.preventDefault(); if (!on || b.classList.contains('dead')) return; s++; play.querySelector('[data-s]').textContent = s; b.classList.add('dead'); clearInterval(mv); clearTimeout(die); setTimeout(() => b.remove(), 200); };
+      ts.push(mv, die); };
+    const clock = setInterval(() => { t--; play.querySelector('[data-t]').textContent = t; if (t <= 0) end(); }, 1000), sp = setInterval(spawn, 400); spawn();
+    function end() { on = false; [clock, sp, ...ts].forEach(x => { clearInterval(x); clearTimeout(x); }); a.innerHTML = ''; done(s, `bug${s > 1 ? 's' : ''} écrasé${s > 1 ? 's' : ''}.`); }
+    stop = () => { on = false; [clock, sp, ...ts].forEach(x => { clearInterval(x); clearTimeout(x); }); };
+  }
+  /* ---- Snake du point-virgule ---- */
+  function snake() {
+    play.innerHTML = '<div class="hud"><span>Points-virgules : <b data-s>0</b></span><span>Flèches ou glisser</span></div><canvas width="600" height="420"></canvas><div class="pad"><span></span><button data-d="0,-1" aria-label="Haut">↑</button><span></span><button data-d="-1,0" aria-label="Gauche">←</button><button data-d="0,1" aria-label="Bas">↓</button><button data-d="1,0" aria-label="Droite">→</button></div>';
+    const c = play.querySelector('canvas'), x = c.getContext('2d'), C = 20, W = 30, H = 21;
+    let sn = [[8, 10], [7, 10], [6, 10]], dir = [1, 0], nd = [1, 0], food = place(), s = 0, alive = true, speed = 130;
+    function place() { let p; do { p = [Math.floor(Math.random() * W), Math.floor(Math.random() * H)]; } while (sn && sn.some(q => q[0] === p[0] && q[1] === p[1])); return p; }
+    const turn = d => { if (d[0] !== -dir[0] || d[1] !== -dir[1]) nd = d; };
+    const key = ev => { const m = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key]; if (m) { ev.preventDefault(); turn(m); } };
+    addEventListener('keydown', key);
+    play.querySelectorAll('[data-d]').forEach(b => b.onclick = () => turn(b.dataset.d.split(',').map(Number)));
+    let sx = 0, sy = 0; c.addEventListener('touchstart', ev => { sx = ev.touches[0].clientX; sy = ev.touches[0].clientY; }, { passive: true });
+    c.addEventListener('touchend', ev => { const dx = ev.changedTouches[0].clientX - sx, dy = ev.changedTouches[0].clientY - sy; if (Math.max(Math.abs(dx), Math.abs(dy)) > 20) turn(Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)]); });
+    function draw() {
+      x.clearRect(0, 0, c.width, c.height);
+      x.font = 'bold 22px ui-monospace,monospace'; x.fillStyle = '#C8643B'; x.fillText(';', food[0] * C + 6, food[1] * C + 17);
+      sn.forEach((p, i) => { x.fillStyle = i ? '#2F5236' : '#1D1D1F'; x.beginPath(); x.roundRect(p[0] * C + 1, p[1] * C + 1, C - 2, C - 2, 5); x.fill(); });
+    }
+    function step() {
+      if (!alive) return;
+      dir = nd; const h = [sn[0][0] + dir[0], sn[0][1] + dir[1]];
+      if (h[0] < 0 || h[1] < 0 || h[0] >= W || h[1] >= H || sn.some(p => p[0] === h[0] && p[1] === h[1])) { alive = false; removeEventListener('keydown', key); return done(s, 'points-virgules mangés. Un vrai maniaque.'); }
+      sn.unshift(h);
+      if (h[0] === food[0] && h[1] === food[1]) { s++; play.querySelector('[data-s]').textContent = s; food = place(); speed = Math.max(60, speed - 3); } else sn.pop();
+      draw(); setTimeout(step, speed);
+    }
+    draw(); setTimeout(step, 400);
+    stop = () => { alive = false; removeEventListener('keydown', key); };
+  }
+  /* ---- Tape le code ---- */
+  const SNIPS = ['console.log("Hello, World!");', 'const sommeil = null;', 'while (true) code();', 'if (bug) { debug(); }', 'let cafe = cafe + 1;', 'git commit -m "fix";', 'print("Je code donc je suis")', 'npm install bonne-humeur', 'return "ça marche sur ma machine";', 'for (let i = 0; i < 10; i++) {}', 'document.body.classList.add("fun");', 'def tortue(): return "cœur"'];
+  function frappe() {
+    play.innerHTML = '<div class="hud"><span>Caractères justes : <b data-s>0</b></span><span>Temps : <b data-t>30</b> s</span></div><div class="type"><pre data-p></pre><input data-i autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Tape le code"><p style="color:var(--mut);margin:18px 0 0;font-size:14px">Tape le code exactement comme affiché. Clique ici si le clavier ne répond pas.</p></div>';
+    const pre = play.querySelector('[data-p]'), inp = play.querySelector('[data-i]'); let s = 0, t = 30, on = true, snip = '', pos = 0, errs = [];
+    const next = () => { snip = SNIPS[Math.floor(Math.random() * SNIPS.length)]; pos = 0; errs = []; render(); };
+    const render = () => { pre.innerHTML = [...snip].map((ch, i) => `<span class="${i < pos ? (errs[i] ? 'ko' : 'ok') : i === pos ? 'cur' : ''}">${e(ch)}</span>`).join(''); };
+    play.querySelector('.type').onclick = () => inp.focus(); inp.focus();
+    inp.addEventListener('input', () => { if (!on) return; for (const ch of inp.value) { if (ch === snip[pos]) { s++; } else errs[pos] = true; pos++; if (pos >= snip.length) { next(); } } inp.value = ''; play.querySelector('[data-s]').textContent = s; render(); });
+    const clock = setInterval(() => { t--; play.querySelector('[data-t]').textContent = t; if (t <= 0) { on = false; clearInterval(clock); done(Math.min(s, 300), 'caractères justes en 30 secondes.'); } }, 1000);
+    next(); stop = () => { on = false; clearInterval(clock); };
+  }
+  /* ---- Quiz Wyattpédia ---- */
+  let QDATA = null;
+  async function quiz() {
+    play.innerHTML = '<div class="hud"><span>Score : <b data-s>0</b></span><span>Question <b data-n>1</b> / 10</span></div><div class="quiz"><p class="q" data-q>Chargement des questions…</p><div class="ch" data-c></div></div>';
+    if (!QDATA) { try { const h = await (await fetch('/perso/wiki/')).text(); QDATA = JSON.parse(h.match(/window\.DYK = (\[.*?\]);<\/script>/s)[1]); } catch (er) { play.querySelector('[data-q]').textContent = 'Impossible de charger les questions.'; return; } }
+    let n = 0, s = 0, streak = 0, on = true;
+    const ask = () => {
+      if (!on) return;
+      if (n >= 10) return done(s, `point${s > 1 ? 's' : ''} sur 10 questions (bonus de série compris).`);
+      const good = QDATA[Math.floor(Math.random() * QDATA.length)];
+      const opts = [good]; while (opts.length < 4) { const o = QDATA[Math.floor(Math.random() * QDATA.length)]; if (!opts.some(p => p.n === o.n)) opts.push(o); }
+      opts.sort(() => Math.random() - .5);
+      play.querySelector('[data-n]').textContent = n + 1;
+      play.querySelector('[data-q]').textContent = '« ' + good.t + ' » De quel article s’agit-il ?';
+      const c = play.querySelector('[data-c]'); c.innerHTML = opts.map(o => `<button type="button">${e(o.n)}</button>`).join('');
+      c.querySelectorAll('button').forEach((b, i) => b.onclick = () => {
+        c.querySelectorAll('button').forEach((x, j) => { x.disabled = true; if (opts[j] === good) x.classList.add('good'); });
+        if (opts[i] === good) { streak++; s += 1 + (streak >= 3 ? 1 : 0); } else { streak = 0; b.classList.add('bad'); }
+        play.querySelector('[data-s]').textContent = s; n++; setTimeout(ask, 900);
+      });
+    };
+    ask(); stop = () => { on = false; };
+  }
+  const GAMES = { bugs, snake, frappe, quiz };
+  const TXT = { bugs: ['Écrase les bugs', 'Clique ou tape sur un maximum de bugs en 20 secondes.'], snake: ['Snake du point-virgule', 'Mange un maximum de « ; ». Flèches du clavier, glissé sur mobile, ou les boutons.'], frappe: ['Tape le code', '30 secondes pour taper un maximum de caractères justes. Les fautes ne comptent pas.'], quiz: ['Quiz Wyattpédia', '10 questions. Retrouve l’article à partir de sa description. 3 bonnes réponses d’affilée = points bonus.'] };
+  document.querySelectorAll('[data-g]').forEach(b => b.addEventListener('click', () => {
+    stop(); game = b.dataset.g; document.querySelectorAll('[data-g]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    intro(...TXT[game]); board();
+  }));
+  document.querySelector('[data-g="bugs"]').click();
+  who();
+});
+</script>
+</body>
+</html>

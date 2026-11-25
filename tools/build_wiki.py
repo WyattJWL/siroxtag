@@ -4,6 +4,7 @@
 Usage : python3 tools/build_wiki.py   (depuis la racine du dépôt)"""
 import os, re, html, json, sys, copy
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE = os.path.join(ROOT, 'public')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from wiki_content import ARTICLES as BASE
 from wiki_more import MORE
@@ -174,13 +175,13 @@ PERSO = dict(
     key='perso', base='/perso/wiki/', name='Wyattpédia', brand='Wyatt LE', home='/perso/', site='perso',
     robots='noindex, nofollow, noarchive, nosnippet, noimageindex', extra_head=FUN_DEFAULT + '<meta name="googlebot" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n',
     nav=[('Projets', '/perso/#projets', ''), ('Fun facts', '/perso/#fun', ''), ('Jeux', '/perso/#jeux', ''), ('Musique', '/perso/#musique', ''),
-         ('Wyattpédia', '/perso/wiki/', 'wiki'), ('Contact', '/perso/#contact', ''), ('Siroxtag ›', '/', '')],
+         ('Wyattpédia', '/perso/wiki/', 'wiki'), ('Coin jeux', '/perso/jeux/', ''), ('Contact', '/perso/#contact', ''), ('Siroxtag ›', '/', '')],
     tagline='l’encyclopédie qui ne parle que de Wyatt', sub='Tout ce que j’aime, ce qui me décrit, ce que je construis, ce que je veux faire, et tous les mots bizarres du code. Expliqué comme dans une encyclopédie, mais en plus drôle.',
     cats=CATS, out='perso/wiki', sitemap=False)
 SX = dict(
     key='sx', base='/wiki/', name='Siroxtagpédia', brand='Siroxtag', home='/', site='siroxtag',
     robots='index, follow, max-image-preview:large', extra_head='',
-    nav=[('Vidéos', '/#videos', ''), ('Projets', '/#projets', ''), ('Linear', '/Linear/', ''), ('Siroxtagpédia', '/wiki/', 'wiki'), ('Contact', '/#contact', '')],
+    nav=[('Vidéos', '/#videos', ''), ('Projets', '/#projets', ''), ('Studio', '/studio/', ''), ('Siroxtagpédia', '/wiki/', 'wiki'), ('Contact', '/#contact', '')],
     tagline='l’encyclopédie de l’univers Siroxtag', sub='Les jeux, la musique, les créateurs du code, tous les mots du développement et de la sécurité en ligne. Expliqués simplement, avec de l’humour.',
     cats=SX_CATS, out='wiki', sitemap=True)
 
@@ -355,7 +356,7 @@ def build(cfg, arts):
 <script>window.DYK = {facts};</script>
 '''
         return head(f'{name}.', f'{name} : {cfg["tagline"]}. {len(arts)} articles sur les jeux, le code, la musique et la sécurité en ligne.', base) + body + foot
-    out = os.path.join(ROOT, cfg['out'])
+    out = os.path.join(SITE, cfg['out'])
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, 'index.html'), 'w', encoding='utf-8').write(index())
     n = len(arts)
@@ -371,20 +372,21 @@ build(SX, sx)
 # garde-fou : rien de personnel ne doit apparaître dans Siroxtagpédia
 leaks = []
 for a in sx:
-    t = open(os.path.join(ROOT, 'wiki', a['slug'], 'index.html'), encoding='utf-8').read()
+    t = open(os.path.join(SITE, 'wiki', a['slug'], 'index.html'), encoding='utf-8').read()
     low = strip(t.split('<main', 1)[1].split('</main>', 1)[0]).lower()
     for w in ['wyatt', 'perso', 'maman', 'ezechielw13', 'policier', 'yeswehack', 'lycée', 'collège', '6e']:
         if re.search(r'(?<!\w)' + re.escape(w) + r'(?!\w)', low): leaks.append((a['slug'], w))
-idx = open(os.path.join(ROOT, 'wiki', 'index.html'), encoding='utf-8').read().lower()
+idx = open(os.path.join(SITE, 'wiki', 'index.html'), encoding='utf-8').read().lower()
 for w in ['wyatt', '/perso', 'ezechielw13']:
     if w in idx: leaks.append(('index', w))
 assert not leaks, ('fuites dans Siroxtagpédia', leaks[:30])
 
 # plan du site : ajoute Siroxtagpédia
-sm = os.path.join(ROOT, 'sitemap.xml'); s = open(sm, encoding='utf-8').read()
+sm = os.path.join(SITE, 'sitemap.xml'); s = open(sm, encoding='utf-8').read()
 s = re.sub(r'\s*<url><loc>https://www\.siroxtag\.fr/wiki/[^<]*</loc>.*?</url>', '', s, flags=re.S)
 urls = ''.join(f'\n  <url><loc>https://www.siroxtag.fr/wiki/{x}</loc><changefreq>monthly</changefreq><priority>{p}</priority></url>' for x, p in [('', '0.7')] + [(a['slug'] + '/', '0.5') for a in sx])
-if '/archives/' not in s: urls = '\n  <url><loc>https://www.siroxtag.fr/archives/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>' + urls
+for extra in ['archives/', 'studio/', 'confidentialite/']:
+    if '/' + extra + '<' not in s: urls = f'\n  <url><loc>https://www.siroxtag.fr/{extra}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>' + urls
 s = s.replace('</urlset>', urls + '\n</urlset>')
 open(sm, 'w', encoding='utf-8').write(s)
 print('Wyattpédia :', len(perso_arts), 'articles ·', ', '.join(f'{CATS[c]} {sum(1 for a in perso_arts if a["cat"] == c)}' for c in CATS if any(a['cat'] == c for a in perso_arts)))

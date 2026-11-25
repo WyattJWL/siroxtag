@@ -218,6 +218,8 @@
     projets: { d: 'aller aux projets', f: () => { go('#projets'); say('On y va…', 'm'); } },
     blackout: { d: 'le jeu d’horreur', f: () => print('BLACKOUT · 9 chapitres · 1 à 12 joueurs · <a href="https://blackouthorror.fr/" target="_blank" rel="noopener">blackouthorror.fr</a>\nNe laisse pas la lumière s’éteindre.') },
     linear: { d: 'le dossier RP', f: () => print('<a href="/Linear/">Ouvrir le dossier Linear.</a> (Espace pour avancer)') },
+    studio: { d: 'le Studio d’idées de vidéos', f: () => nav('/studio/', 'Ouverture du Studio…') },
+    compte: { d: 'mon compte', f: () => nav('/compte/', 'Direction ton compte…') },
     faq: { d: 'les questions', f: () => { go('#faq'); say('Les réponses sont en bas.', 'm'); } },
     inoxtag: { d: 'la question qui revient', f: () => { ach('inoxtag'); shake(); say('Erreur 404 : Inoxtag introuvable. Tu cherches Siroxtag. Avec un S. Et un R.', 'e'); } }
   });

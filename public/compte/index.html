@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon compte — Siroxtag</title>
+<meta name="description" content="Ton espace Siroxtag : connexion, inscription et accès au Studio d’idées de vidéos.">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/extra.css">
+</head>
+<body class="dark">
+<header class="top">
+  <a class="brand" href="/" aria-label="Siroxtag, accueil">Siroxtag<span class="dot"></span></a>
+  <nav class="nav" aria-label="Navigation principale"><a href="/studio/">Studio</a><a href="/wiki/">Wiki</a><a href="/#contact">Contact</a></nav>
+</header>
+<main class="xp">
+  <p class="lab">Espace membre</p>
+  <h1 class="h2" style="margin-top:14px" data-title>Ton <span class="it">compte</span>.</h1>
+  <p class="lead m" style="margin-top:18px" data-lead>Connecte-toi pour garder tes idées de vidéos dans le Studio, et plus encore. Gratuit, sans pub, et sans revente de données.</p>
+  <div style="margin-top:34px" data-zone><p class="m">Chargement…</p></div>
+  <a class="x-back" href="/">← Retour à l’accueil</a>
+</main>
+<script src="/assets/js/compte.js"></script>
+<script src="/assets/js/term.js" data-site="siroxtag" defer></script>
+<script>
+addEventListener('DOMContentLoaded', async () => {
+  const zone = document.querySelector('[data-zone]'), title = document.querySelector('[data-title]'), lead = document.querySelector('[data-lead]');
+  const params = new URLSearchParams(location.search);
+  const next = /^\/(?!\/)/.test(params.get('next') || '') ? params.get('next') : null;
+  const e = SXA.esc;
+  async function show() {
+    const u = await SXA.me(true);
+    if (!u) { title.innerHTML = 'Ton <span class="it">compte</span>.'; SXA.form(zone, { next: next || '/compte/', onDone: () => next ? (location.href = next) : show() }); return; }
+    if (next) { location.href = next; return; }
+    title.innerHTML = `Salut, <span class="it">${e(u.pseudo)}</span>.`;
+    lead.textContent = 'Bienvenue dans ton espace. Tout ce que tu enregistres ici n’est visible que par toi.';
+    const via = u.methods.includes('discord') ? 'Discord' : 'e-mail';
+    zone.innerHTML = `
+      <div class="acc-row"><a class="btn" href="/studio/">Ouvrir le Studio d’idées <span class="ar">→</span></a><button class="btn ghost" type="button" data-out>Se déconnecter</button></div>
+      <div class="acc-card"><h2>Mon pseudo</h2><p>Connecté avec ${via}, membre depuis le ${new Date(u.since).toLocaleDateString('fr-FR', { dateStyle: 'long' })}.</p>
+        <form data-ps style="display:flex;gap:10px;flex-wrap:wrap"><input name="pseudo" value="${e(u.pseudo)}" minlength="3" maxlength="20" aria-label="Nouveau pseudo"><button class="btn ghost" type="submit">Changer</button></form><p class="m" data-psm style="margin-top:8px"></p></div>
+      <div class="acc-card"><h2>Mes données</h2><p>Télécharge tout ce que le site connaît de toi, dans un fichier.</p><a class="btn ghost" href="/api/account" download>Télécharger mes données</a></div>
+      <div class="acc-card"><h2>Supprimer mon compte</h2><p>Ton compte, tes idées et tes scores sont effacés tout de suite, et pour toujours.</p>
+        <form data-del style="display:flex;flex-direction:column;gap:10px;max-width:360px">
+          <input name="confirm" placeholder="Écris SUPPRIMER" aria-label="Écris SUPPRIMER pour confirmer">
+          ${u.methods.includes('email') ? '<input name="password" type="password" placeholder="Ton mot de passe" aria-label="Ton mot de passe" autocomplete="current-password">' : ''}
+          <button class="btn danger" type="submit">Supprimer définitivement</button></form><p class="m" data-delm style="margin-top:8px"></p></div>`;
+    zone.querySelector('[data-out]').addEventListener('click', async () => { await SXA.logout(); show(); });
+    zone.querySelector('[data-ps]').addEventListener('submit', async ev => {
+      ev.preventDefault(); const m = zone.querySelector('[data-psm]');
+      try { await SXA.api('account', { method: 'PATCH', body: { pseudo: ev.target.pseudo.value } }); m.textContent = 'Pseudo changé ✓'; show(); } catch (er) { m.textContent = er.message; }
+    });
+    zone.querySelector('[data-del]').addEventListener('submit', async ev => {
+      ev.preventDefault(); const m = zone.querySelector('[data-delm]'), f = ev.target;
+      try { await SXA.api('account', { method: 'DELETE', body: { confirm: f.confirm.value.trim(), password: f.password ? f.password.value : '' } }); location.href = '/'; } catch (er) { m.textContent = er.message; }
+    });
+  }
+  show();
+});
+</script>
+</body>
+</html>

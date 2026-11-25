@@ -1,0 +1,15 @@
+{
+  "name": "siroxtag",
+  "private": true,
+  "type": "module",
+  "description": "siroxtag.fr : site statique (dossier public/) + fonctions serverless (dossier api/) pour les espaces membres.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build:wiki": "python3 tools/build_wiki.py",
+    "build:term": "python3 tools/build_term.py",
+    "dev": "node tools/dev-server.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

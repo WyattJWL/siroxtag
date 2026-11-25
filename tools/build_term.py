@@ -4,6 +4,7 @@
 Usage : python3 tools/build_term.py"""
 import base64, hashlib, json, os, unicodedata
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE = os.path.join(ROOT, 'public')
 K = [115, 120, 116, 97, 103, 33, 55]
 
 def enc(s):
@@ -69,7 +70,7 @@ SEC = {
 src = open(os.path.join(ROOT, 'tools', 'term_src.js'), encoding='utf-8').read()
 assert "'__SEC__'" in src
 out = src.replace("'__SEC__'", "'" + enc(json.dumps(SEC, ensure_ascii=False)) + "'")
-open(os.path.join(ROOT, 'assets', 'js', 'term.js'), 'w', encoding='utf-8').write(out)
+open(os.path.join(SITE, 'assets', 'js', 'term.js'), 'w', encoding='utf-8').write(out)
 
 # la phrase du coffre, uniquement sous forme d’empreinte
 PHRASE = 'ne laisse pas la lumiere s eteindre'
@@ -99,6 +100,7 @@ window.SX_X = {
     ywh: { d: 'la sécurité', f: () => h.say('2 failles trouvées en 2 jours sur YesWeHack.\nAvec la permission des sites. Toujours.') },
     claude: { d: 'Claude Maxxing', f: () => h.say('Claude Maxxing : activé. Productivité : ×10. Sommeil : toujours null.') },
     github: { d: 'mon GitHub', f: () => h.print('<a href="https://github.com/ezechielw13" target="_blank" rel="noopener">github.com/ezechielw13</a>') },
+    arcade: { d: 'le coin jeux', f: () => h.nav('/perso/jeux/', 'Insère une pièce…') },
     siroxtag: { d: 'aller sur siroxtag.fr', f: () => h.nav('/', 'Direction siroxtag.fr…') }
   }),
   hidden: h => ({
@@ -112,5 +114,5 @@ window.SX_X = {
   })
 };
 """
-open(os.path.join(ROOT, 'perso', 'term-perso.js'), 'w', encoding='utf-8').write(PERSO)
+open(os.path.join(SITE, 'perso', 'term-perso.js'), 'w', encoding='utf-8').write(PERSO)
 print('term.js et term-perso.js générés')
