@@ -44,7 +44,11 @@ export const readBody = async req => {
 };
 
 /* ---------- protection contre les requêtes forgées depuis un autre site ---------- */
-const origins = () => (process.env.ALLOWED_ORIGINS || process.env.SITE_URL || 'https://www.siroxtag.fr').split(',').map(s => s.trim()).filter(Boolean);
+const origins = () => [
+  ...(process.env.ALLOWED_ORIGINS || process.env.SITE_URL || 'https://www.siroxtag.fr').split(','),
+  // adresses générées par Vercel pour ce déploiement (aperçus)
+  ...[process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL].filter(Boolean).map(h => 'https://' + h)
+].map(s => s.trim()).filter(Boolean);
 function checkOrigin(req) {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return;
   const o = req.headers.origin;
