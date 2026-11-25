@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>La salle du trésor — Siroxtag</title>
+<title>Salle — Siroxtag</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0B0B0B">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -32,22 +32,22 @@
 <script src="/assets/js/term.js" data-site="siroxtag" defer></script>
 <script>
 addEventListener('DOMContentLoaded', () => {
-  const FRAG = { 1: 'NE LAISSE', 2: 'PAS LA', 3: 'LUMIÈRE', 4: 'S’ÉTEINDRE' };
   const slots = document.querySelector('[data-slots]'), msg = document.querySelector('[data-msg]'), rew = document.querySelector('[data-reward]');
   const got = () => (window.SX ? window.SX.hunt.get() : []);
-  const draw = () => { const f = got(); slots.innerHTML = [1, 2, 3, 4].map(n => `<div class="slot${f.includes(n) ? ' ok' : ''}"><small>Fragment ${n}</small><b>${f.includes(n) ? FRAG[n] : '????'}</b></div>`).join(''); };
+  const draw = () => { const f = got(); slots.innerHTML = [1, 2, 3, 4].map(n => `<div class="slot${f.includes(n) ? ' ok' : ''}"><small>Fragment ${n}</small><b>${f.includes(n) && window.SX ? window.SX.hunt.frag(n) : '????'}</b></div>`).join(''); };
   draw(); addEventListener('focus', draw);
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]/g, '');
   function win(first) {
     let d = null; try { d = localStorage.getItem('sx-hunt-done'); if (!d) { d = new Date().toLocaleDateString('fr-FR', { dateStyle: 'long' }); localStorage.setItem('sx-hunt-done', d); } } catch (e) {}
-    rew.innerHTML = `<div class="reward"><div class="cup" aria-hidden="true">🏆</div><h2>Chasseur de lumière.</h2><p>Coffre ouvert${d ? ' le ' + d : ''}. Tu fais partie des rares visiteurs à avoir tout trouvé : le jeu, le musée, le noir et le vieux code de triche.</p><p style="margin-top:14px">« Ne laisse pas la lumière s’éteindre. » C’est aussi la devise de BLACKOUT.</p><p style="margin-top:20px"><a class="btn" href="https://blackouthorror.fr/" target="_blank" rel="noopener">Découvrir BLACKOUT <span class="ar">↗</span></a></p></div>`;
+    rew.innerHTML = `<div class="reward"><div class="cup" aria-hidden="true">🏆</div><h2>Chasseur de lumière.</h2><p>Coffre ouvert${d ? ' le ' + d : ''}. Tu fais partie des rares visiteurs à avoir tout trouvé : le jeu, le musée, le noir et le vieux code de triche.</p><p style="margin-top:14px">La phrase était aussi la devise de BLACKOUT.</p><p style="margin-top:20px"><a class="btn" href="https://blackouthorror.fr/" target="_blank" rel="noopener">Découvrir BLACKOUT <span class="ar">↗</span></a></p></div>`;
     msg.textContent = '';
-    if (first && window.SX) { window.SX.confettis(); setTimeout(window.SX.confettis, 900); }
+    if (first && window.SX) { window.SX.confettis(); setTimeout(window.SX.confettis, 900); window.SX.ach('tresor'); }
   }
   try { if (localStorage.getItem('sx-hunt-done')) win(false); } catch (e) {}
-  document.querySelector('[data-form]').addEventListener('submit', e => {
+  const sha = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join('');
+  document.querySelector('[data-form]').addEventListener('submit', async e => {
     e.preventDefault(); const v = norm(document.getElementById('phrase').value);
-    if (v === norm('ne laisse pas la lumière s’éteindre')) { win(true); return; }
+    if (v && await sha(v) === '675f4604403fba0aff4f1c1ba5c6db68a87eada04fe31e41379bbdeb63ee7d81') { win(true); return; }
     const n = got().length;
     msg.textContent = v ? (n < 4 ? `Ce n’est pas ça. Il te manque encore ${4 - n} fragment${4 - n > 1 ? 's' : ''}.` : 'Ce n’est pas ça. Essaie de remettre les fragments dans l’ordre.') : 'Écris d’abord quelque chose.';
     if (window.SX) window.SX.shake();

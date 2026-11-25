@@ -54,7 +54,7 @@ addEventListener('DOMContentLoaded', () => {
   setInterval(() => eyes.forEach(e => { const b = e.getBoundingClientRect(); if (Math.hypot(b.left - lx, b.top - ly) < 170) e.classList.remove('on'); }), 120);
   document.querySelector('[data-lum]').addEventListener('click', () => {
     body.classList.add('lit');
-    if (window.SX && !window.SX.hunt.found(3)) window.SX.toast('Tu as déjà trouvé ce fragment. La lumière revient quand même.');
+    if (window.SX) { window.SX.ach('lumiere'); if (!window.SX.hunt.found(3)) window.SX.toast('Tu as déjà trouvé ce fragment. La lumière revient quand même.'); }
     setTimeout(() => body.classList.remove('lit'), 4000);
   });
 });

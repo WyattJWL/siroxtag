@@ -4,7 +4,7 @@
   const nav = document.querySelector('[data-nav]'); if (!nav) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const brand = nav.querySelector('.brand'), label = brand.querySelector('.bl');
-  // découpe « Wyatt LE » en lettres
+  // découpe le nom en lettres
   const mask = document.createElement('span'); mask.className = 'brand-mask'; mask.setAttribute('aria-hidden', 'true');
   [...label.textContent].forEach((c, i) => {
     const s = document.createElement('span');

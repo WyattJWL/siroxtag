@@ -327,7 +327,7 @@ body.menu-open .top{color:#fff}
 
 /* ---------- easter egg : mode fun ---------- */
 .dark,.light{transition:background-color .6s ease,color .6s ease}
-/* même mode fun que la page perso : fond multicolore pastel, qui bouge doucement */
+/* mode fun : fond multicolore pastel, qui bouge doucement */
 html.fun{background:#FBF6F2}
 html.fun body{background:transparent;color:#1D1D1F}
 html.fun .dark,html.fun .light{--bg:#FBF6F2;--fg:#1D1D1F;--mut:rgba(29,29,31,.64);--line:rgba(29,29,31,.15);background:transparent}

@@ -1,15 +1,19 @@
-/* Terminal caché (en bas à droite) + easter eggs. Utilisé sur siroxtag.fr et /perso/.
-   Le site se choisit avec <script src="term.js" data-site="siroxtag|perso">.
+/* Terminal caché (en bas à droite) + succès + easter eggs.
    /help affiche les chapitres ; /help 3 ou /help code affiche les commandes d’un chapitre. */
 (() => {
   'use strict';
-  const me = document.currentScript;
-  const SITE = (me && me.dataset.site) || 'siroxtag';
-  const PERSO = SITE === 'perso';
+  const PD = window.SX_X || null;
+  const XT = !!PD;
   const MAIL = 'contact@siroxtag.fr';
-  const PROMPT = PERSO ? 'wyatt@perso:~$' : 'siroxtag@web:~$';
-  const WIKI = PERSO ? '/perso/wiki/' : '/wiki/';
-  const HOME = PERSO ? '/perso/' : '/';
+  const PROMPT = PD ? PD.prompt : 'siroxtag@web:~$';
+  const WIKI = PD ? PD.wiki : '/wiki/';
+  const HOME = PD ? PD.home : '/';
+  // petits secrets brouillés, pour ne pas tout dévoiler dans le code source
+  const K = [115, 120, 116, 97, 103, 33, 55];
+  const D = s => { try { return new TextDecoder().decode(Uint8Array.from(atob(s), (c, i) => c.charCodeAt(0) ^ K[i % K.length])); } catch (e) { return ''; } };
+  const J = s => JSON.parse(D(s));
+  const H = s => { let h = 0x811c9dc5; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16); };
+  const SEC = J('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');
 
   /* ---------- styles ---------- */
   const css = `
@@ -24,8 +28,9 @@
   .tm-top b{margin-left:auto;font-weight:500;font-size:12px;color:#8E8E93}
   .tm-top button{background:none;border:0;color:#8E8E93;font:inherit;cursor:pointer;padding:0 0 0 10px}
   .tm-out{flex:1;overflow-y:auto;padding:12px 14px 4px;white-space:pre-wrap;word-break:break-word;scrollbar-width:thin}
+  .tm-out div{font:inherit;margin:0;padding:0}.tm-out span{font:inherit}
   .tm-out a{color:#9CC4F2}
-  .tm-out div{font:inherit;margin:0;padding:0}.tm-out span{font:inherit}.tm-out .tm-p{color:#A8D8B9}.tm-out .tm-e{color:#FF9F8A}.tm-out .tm-m{color:#8E8E93}.tm-out .tm-y{color:#F2D49B}
+  .tm-out .tm-p{color:#A8D8B9}.tm-out .tm-e{color:#FF9F8A}.tm-out .tm-m{color:#8E8E93}.tm-out .tm-y{color:#F2D49B}
   .tm-out .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
   .tm-in{display:flex;gap:8px;padding:8px 14px 13px}
   .tm-in label{color:#A8D8B9;white-space:nowrap}
@@ -37,9 +42,16 @@
   .tm-matrix{position:fixed;inset:0;z-index:88;pointer-events:none;background:rgba(0,0,0,.82);transition:opacity .8s ease}
   .tm-conf{position:fixed;top:-12px;z-index:89;width:9px;height:14px;border-radius:2px;pointer-events:none;animation:tmfall linear forwards}
   @keyframes tmfall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--r))}}
+  .tm-ach-box{position:fixed;top:14px;right:14px;z-index:95;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  .tm-ach{display:flex;align-items:center;gap:12px;width:min(320px,calc(100vw - 28px));padding:10px 14px 10px 10px;background:#212121;border:2px solid #555;outline:2px solid #000;box-shadow:inset 2px 2px 0 #3a3a3a,inset -2px -2px 0 #161616,0 12px 30px -10px rgba(0,0,0,.6);color:#fff;font:700 14px/1.25 ui-monospace,'SF Mono','Plex',Menlo,monospace;transform:translateX(calc(100% + 40px));transition:transform .55s cubic-bezier(.2,.9,.3,1.1)}
+  .tm-ach.in{transform:none}
+  .tm-ach.out{transform:translateX(calc(100% + 40px));transition:transform .45s ease-in}
+  .tm-ach .ic{flex:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:24px;background:#8b8b8b;border:2px solid #373737;box-shadow:inset 2px 2px 0 #c6c6c6,inset -2px -2px 0 #555}
+  .tm-ach small{display:block;color:#FFFF55;font-size:12.5px;margin-bottom:3px;letter-spacing:.01em}
+  .tm-ach.gold small{color:#FFAA00}
   html.fun,html.fun body{transition:background-color .6s ease}
-  @media (max-width:600px){.tm{right:12px;left:12px;width:auto;bottom:74px}.tm-btn{right:12px;bottom:12px}}
-  @media (prefers-reduced-motion:reduce){.tm-shake{animation:none}.tm-conf{display:none}}`;
+  @media (max-width:600px){.tm{right:12px;left:12px;width:auto;bottom:74px}.tm-btn{right:12px;bottom:12px}.tm-ach-box{top:10px;right:10px}}
+  @media (prefers-reduced-motion:reduce){.tm-shake{animation:none}.tm-conf{display:none}.tm-ach{transition:none}}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   /* ---------- interface ---------- */
@@ -48,18 +60,19 @@
   btn.innerHTML = '›<span>_</span>';
   const box = document.createElement('div');
   box.className = 'tm'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Terminal');
-  box.innerHTML = `<div class="tm-top"><i></i><i></i><i></i><b>terminal — ${PERSO ? 'wyatt' : 'siroxtag'}</b><button type="button" aria-label="Fermer">✕</button></div>
+  box.innerHTML = `<div class="tm-top"><i></i><i></i><i></i><b>terminal — ${PD ? PD.name : 'siroxtag'}</b><button type="button" aria-label="Fermer">✕</button></div>
     <div class="tm-out" aria-live="polite"></div>
     <form class="tm-in"><label for="tm-input">${PROMPT}</label><input id="tm-input" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Commande"></form>`;
   document.body.append(btn, box);
   const out = box.querySelector('.tm-out'), input = box.querySelector('input'), form = box.querySelector('form');
+  const hist = []; let hi = 0;
 
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
   const SK = 'sx-term';
   let saveT = 0;
-  const save = () => { clearTimeout(saveT); saveT = setTimeout(saveNow, 120); };
   const saveNow = () => { try { while (out.innerHTML.length > 30000 && out.firstChild) out.firstChild.remove(); sessionStorage.setItem(SK, JSON.stringify({ open: box.classList.contains('open'), html: out.innerHTML, hist: hist.slice(-50), url: location.pathname })); } catch (e) {} };
+  const save = () => { clearTimeout(saveT); saveT = setTimeout(saveNow, 120); };
   const print = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = 'tm-' + cls; d.innerHTML = html; out.appendChild(d); out.scrollTop = out.scrollHeight; save(); };
   const say = (txt, cls) => print(esc(txt), cls);
   const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -69,25 +82,47 @@
   const nav = (url, msg) => { if (msg) say(msg, 'm'); setTimeout(() => { location.href = url; }, 350); };
   const shake = () => { document.body.classList.remove('tm-shake'); void document.body.offsetWidth; document.body.classList.add('tm-shake'); };
 
+  /* ---------- succès, façon jeu vidéo ---------- */
+  const ACH = SEC.ach; // [id, icône, titre, description]
+  const achBox = document.createElement('div'); achBox.className = 'tm-ach-box'; achBox.setAttribute('aria-live', 'polite'); document.body.appendChild(achBox);
+  const achGet = () => { try { const v = JSON.parse(localStorage.getItem('sx-ach') || '{}'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } };
+  const achToast = (a, gold) => {
+    const t = document.createElement('div'); t.className = 'tm-ach' + (gold ? ' gold' : '');
+    t.innerHTML = `<span class="ic" aria-hidden="true">${a[1]}</span><span><small>${gold ? 'Défi relevé !' : 'Succès débloqué !'}</small>${esc(a[2])}</span>`;
+    achBox.appendChild(t); requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('in')));
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 500); }, 4200);
+  };
+  const ach = id => {
+    const a = ACH.find(x => x[0] === id); if (!a) return false;
+    const got = achGet(); if (got[id]) return false;
+    got[id] = Date.now(); try { localStorage.setItem('sx-ach', JSON.stringify(got)); } catch (e) {}
+    achToast(a, id === 'platine');
+    if (id !== 'platine' && ACH.filter(x => x[0] !== 'platine').every(x => got[x[0]])) setTimeout(() => ach('platine'), 1200);
+    return true;
+  };
+
   /* ---------- mode fun ----------
-     Page perso : le mode fun est activé par défaut, /serieux l’éteint (clé sx-serious).
-     siroxtag.fr : le mode fun s’active à la demande (clé sx-fun). */
+     Certaines pages : activé par défaut, /serieux l’éteint (clé sx-serious).
+     siroxtag.fr : s’active à la demande (clé sx-fun). */
   const isFun = () => document.documentElement.classList.contains('fun');
   const setFun = on => {
     document.documentElement.classList.toggle('fun', on);
     try {
-      if (PERSO) on ? localStorage.removeItem('sx-serious') : localStorage.setItem('sx-serious', '1');
+      if (XT) on ? localStorage.removeItem('sx-serious') : localStorage.setItem('sx-serious', '1');
       else on ? localStorage.setItem('sx-fun', '1') : localStorage.removeItem('sx-fun');
     } catch (e) {}
   };
-  try { setFun(PERSO ? localStorage.getItem('sx-serious') !== '1' : localStorage.getItem('sx-fun') === '1'); } catch (e) { if (PERSO) document.documentElement.classList.add('fun'); }
+  try { setFun(XT ? localStorage.getItem('sx-serious') !== '1' : localStorage.getItem('sx-fun') === '1'); } catch (e) { if (XT) document.documentElement.classList.add('fun'); }
+  const funOn = () => { setFun(true); ach('fun'); };
+  const funOff = () => { setFun(false); ach('serieux'); };
 
   /* ---------- effets ---------- */
   function matrix() {
+    ach('matrix');
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) { toast('Wake up, Neo…'); return; }
     const c = document.createElement('canvas'); c.className = 'tm-matrix'; document.body.appendChild(c);
     const x = c.getContext('2d'), w = c.width = innerWidth, h = c.height = innerHeight, fs = 16, cols = Math.ceil(w / fs), y = Array(cols).fill(0).map(() => Math.random() * -40);
-    const ch = '01アイウエオカキクケコ{}<>;=/*+WYATTSIROXTAG';
+    const ch = '01アイウエオカキクケコ{}<>;=/*+SIROXTAG';
     const t0 = performance.now();
     const step = t => {
       x.fillStyle = 'rgba(0,0,0,.08)'; x.fillRect(0, 0, w, h); x.fillStyle = '#7CFFA0'; x.font = fs + 'px monospace';
@@ -97,6 +132,7 @@
     requestAnimationFrame(step);
   }
   function confettis() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const cols = ['#CADDF4', '#F6CBD0', '#D3EAC8', '#E2D7F6', '#FBEEDC', '#C8643B', '#1F4470'];
     for (let i = 0; i < 90; i++) {
       const d = document.createElement('i'); d.className = 'tm-conf';
@@ -106,31 +142,27 @@
       document.body.appendChild(d); setTimeout(() => d.remove(), 4500);
     }
   }
-  /* ---------- chasse au trésor : 4 fragments à trouver sur le site ---------- */
-  const FRAG = { 1: 'NE LAISSE', 2: 'PAS LA', 3: 'LUMIÈRE', 4: 'S’ÉTEINDRE' };
-  const HINT = {
-    1: 'Perds-toi. Vraiment. Une page qui n’existe pas cache un jeu.',
-    2: 'Les vieux objets gardent des secrets. Le musée t’attend : /archives',
-    3: 'Éteins tout. Une page entièrement noire t’attend : /noir',
-    4: 'Un vieux code de triche des années 1980 marche ici. Avec les flèches.'
-  };
+  const lights = () => { const on = document.documentElement.classList.toggle('lights-off'); if (on) ach('lampe'); return on; };
+
+  /* ---------- chasse au trésor : 4 fragments ---------- */
+  const FRAG = SEC.frag, HINT = SEC.hint, R = SEC.r;
   const hunt = {
     get: () => { try { const v = JSON.parse(localStorage.getItem('sx-hunt') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } },
+    frag: n => FRAG[n - 1],
     found(n) {
       const f = hunt.get(); if (f.includes(n)) return false;
       f.push(n); f.sort(); try { localStorage.setItem('sx-hunt', JSON.stringify(f)); } catch (e) {}
-      confettis(); toast(`Fragment ${n}/4 trouvé : « ${FRAG[n]} »`);
-      if (f.length === 4) setTimeout(() => toast('Tous les fragments ! Remets-les dans l’ordre sur /tresor 🏆'), 2800);
+      confettis(); toast(`Fragment ${n}/4 trouvé : « ${FRAG[n - 1]} »`);
+      if (f.length === 4) setTimeout(() => toast(SEC.allFound), 2800);
       return true;
     }
   };
-  const lights = () => { const on = document.documentElement.classList.toggle('lights-off'); say(on ? 'Lumières éteintes. Ta souris est ta lampe torche.' : 'Lumières rallumées. La créature recule.'); };
 
   /* ---------- contenus ---------- */
   const BLAGUES = [
     'Pourquoi les développeurs confondent Halloween et Noël ? Parce que OCT 31 = DEC 25.',
     'Il y a 10 types de personnes : celles qui comprennent le binaire, et les autres.',
-    'Un développeur va au supermarché. Sa femme lui dit : « Prends un pain, et s’il y a des œufs, prends-en six. » Il revient avec six pains.',
+    'Un développeur va au supermarché. On lui dit : « Prends un pain, et s’il y a des œufs, prends-en six. » Il revient avec six pains.',
     '« Ça marche sur ma machine. » « Très bien, on livrera ta machine au client. »',
     'Le code, c’est comme l’humour : si tu dois l’expliquer, c’est qu’il est mauvais.',
     'Combien de développeurs faut-il pour changer une ampoule ? Aucun, c’est un problème matériel.',
@@ -152,45 +184,34 @@
   const MOTIV = ['Chaque bug corrigé fait de toi un meilleur développeur.', 'Le code parfait n’existe pas. Le code fini, si.', 'Un pas à la fois. Une ligne à la fois.', 'Tu ne rates pas : tu fais des tests.', 'Aujourd’hui, ton code va compiler du premier coup. Peut-être.'];
   const COMPL = ['Ton code est propre. Presque autant que ton humour.', 'Tu as un excellent goût en matière de terminal.', 'Les bugs ont peur de toi.', 'Tu viens de taper une commande parfaite. Bravo.'];
   const BOULE = ['Oui.', 'Non.', 'Sans aucun doute.', 'Demande plus tard.', 'Les astres disent oui.', 'Mieux vaut ne pas te le dire maintenant.', 'Probablement.', 'C’est le cache qui décidera.'];
-  let secret = null, essais = 0;
+  let secret = null, essais = 0, blagues = 0;
 
   /* ---------- chapitres de commandes ---------- */
   const CH = [];
   const chap = (k, n, d, c) => CH.push({ k, n, d, c });
+  const helpers = { say, print, go, nav, shake, toast, esc, ach, confettis, setFun };
 
   chap('bases', 'Les bases', 'les commandes indispensables', {
-    help: { d: 'les chapitres (/help 2, /help code…)', f: a => help(a) },
+    help: { d: 'les chapitres (/help 2, /help code…)', f: a => { ach('help'); help(a); } },
     clear: { d: 'nettoyer l’écran', f: () => { out.innerHTML = ''; save(); } },
     exit: { d: 'fermer le terminal', f: () => close() },
-    ls: { d: 'les pages du site', f: () => print(PERSO ? '<a href="/perso/">perso/</a>   <a href="/perso/wiki/">wiki/</a>   <a href="/">siroxtag.fr/</a>   <a href="/Linear/">Linear/</a>' : '<a href="/">index.html</a>   <a href="/wiki/">wiki/</a>   <a href="/Linear/">Linear/</a>   <a href="/mentions-legales/">mentions-legales/</a>') },
-    whoami: { d: 'qui est là ?', f: () => say(PERSO ? 'Wyatt LE. Dieu du code autoproclamé. Classement mondial : premier (selon moi).' : 'Siroxtag. Créateur indépendant. Pas Inoxtag, hein.') },
+    ls: { d: 'les pages du site', f: () => print(PD ? PD.ls : '<a href="/">index.html</a>   <a href="/wiki/">wiki/</a>   <a href="/Linear/">Linear/</a>   <a href="/archives/">archives/</a>   <a href="/mentions-legales/">mentions-legales/</a>') },
+    whoami: { d: 'qui est là ?', f: () => say(PD ? PD.whoami : 'Siroxtag. Créateur indépendant. Pas Inoxtag, hein.') },
     contact: { d: 'me contacter', f: () => print(`<a href="mailto:${MAIL}">${MAIL}</a>`) },
     date: { d: 'la date et l’heure', f: () => say(new Date().toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' })) },
     historique: { d: 'les commandes déjà tapées', f: () => say(hist.length ? hist.map((h, i) => `${String(i + 1).padStart(3)}  ${h}`).join('\n') : 'Rien pour l’instant.') },
     echo: { d: 'répète ce que tu écris', f: a => say(a || '') }
   });
   chap('modes', 'Les modes', 'changer l’ambiance du site', {
-    fun: { d: 'des couleurs partout', f: () => { if (isFun()) { say('Déjà en mode fun. Tape /serieux pour calmer le jeu.', 'm'); return; } setFun(true); say('Mode fun activé. Les couleurs sont lâchées.'); toast('Mode fun activé 🎨'); } },
-    serieux: { d: 'le mode sobre, sans couleurs', f: () => { if (!isFun()) { say('Déjà sérieux. Très sérieux. Trop, peut-être.', 'm'); return; } setFun(false); say('Mode sérieux activé. Cravate mise.'); toast('Mode sérieux activé'); } },
-    ...(PERSO ? {} : { lumiere: { d: 'éteindre ou rallumer la lumière', f: lights } }),
+    fun: { d: 'des couleurs partout', f: () => { if (isFun()) { say('Déjà en mode fun. Tape /serieux pour calmer le jeu.', 'm'); return; } funOn(); say('Mode fun activé. Les couleurs sont lâchées.'); toast('Mode fun activé 🎨'); } },
+    serieux: { d: 'le mode sobre, sans couleurs', f: () => { if (!isFun()) { say('Déjà sérieux. Très sérieux. Trop, peut-être.', 'm'); return; } funOff(); say('Mode sérieux activé. Cravate mise.'); toast('Mode sérieux activé'); } },
+    ...(XT ? {} : { lumiere: { d: 'éteindre ou rallumer la lumière', f: () => say(lights() ? 'Lumières éteintes. Ta souris est ta lampe torche.' : 'Lumières rallumées. La créature recule.') } }),
     matrix: { d: 'entrer dans la Matrice', f: () => { say('Wake up…', 'y'); matrix(); } },
     confettis: { d: 'faire la fête', f: () => { confettis(); say('🎉'); } },
     secouer: { d: 'secouer la page', f: () => { shake(); say('Ça va, ça va…'); } }
   });
-  chap('site', PERSO ? 'Ma page' : 'Le site', PERSO ? 'mes projets et mes passions' : 'les vidéos, les projets, l’univers Siroxtag', PERSO ? {
-    projets: { d: 'mon portfolio', f: () => { go('#projets'); say('Tout est fait maison, même les bugs.', 'm'); } },
-    outils: { d: 'mes outils', f: () => say('VS Code · GitHub · Discord\nNiveau : dieu du code.') },
-    funfacts: { d: 'mes fun facts', f: () => go('#fun') },
-    jeux: { d: 'mes jeux', f: () => { go('#jeux'); say('GTA VI en tête. GTA V dans le cœur.', 'm'); } },
-    musique: { d: 'ce que j’écoute', f: () => { go('#musique'); say('Phonk, et en ce moment deux sons en boucle.', 'm'); } },
-    plans: { d: 'plus tard', f: () => say('Plan A : policier. Plan B : cyberpolicier. Plan C : codeur.\nSpoiler : les trois.') },
-    bugs: { d: 'mon pire bug', f: () => say('Le cache fantôme en production, combiné à une erreur d’hydratation silencieuse.\nJ’en fais encore des cauchemars.', 'e') },
-    sommeil: { d: 'mes nuits', f: () => say('sommeil: null\nRecord de nuit blanche : 4 jours.') },
-    ywh: { d: 'la sécurité', f: () => say('2 failles trouvées en 2 jours sur YesWeHack.\nAvec la permission des sites. Toujours.') },
-    claude: { d: 'Claude Maxxing', f: () => say('Claude Maxxing : activé. Productivité : ×10. Sommeil : toujours null.') },
-    github: { d: 'mon GitHub', f: () => print('<a href="https://github.com/ezechielw13" target="_blank" rel="noopener">github.com/ezechielw13</a>') },
-    siroxtag: { d: 'aller sur siroxtag.fr', f: () => nav('/', 'Direction siroxtag.fr…') }
-  } : {
+  if (PD) chap('site', PD.chapName, PD.chapDesc, PD.chapter(helpers));
+  else chap('site', 'Le site', 'les vidéos, les projets, l’univers Siroxtag', {
     tiktok: { d: 'le compte TikTok', f: () => print('<a href="https://www.tiktok.com/@siroxletag" target="_blank" rel="noopener">@siroxletag</a> · parodies, edits, humour') },
     videos: { d: 'aller aux vidéos', f: () => { go('#videos'); say('Direction les vidéos…', 'm'); } },
     apropos: { d: 'qui est Siroxtag', f: () => go('#a-propos') },
@@ -198,16 +219,16 @@
     blackout: { d: 'le jeu d’horreur', f: () => print('BLACKOUT · 9 chapitres · 1 à 12 joueurs · <a href="https://blackouthorror.fr/" target="_blank" rel="noopener">blackouthorror.fr</a>\nNe laisse pas la lumière s’éteindre.') },
     linear: { d: 'le dossier RP', f: () => print('<a href="/Linear/">Ouvrir le dossier Linear.</a> (Espace pour avancer)') },
     faq: { d: 'les questions', f: () => { go('#faq'); say('Les réponses sont en bas.', 'm'); } },
-    inoxtag: { d: 'la question qui revient', f: () => { shake(); say('Erreur 404 : Inoxtag introuvable. Tu cherches Siroxtag. Avec un S. Et un R.', 'e'); } }
+    inoxtag: { d: 'la question qui revient', f: () => { ach('inoxtag'); shake(); say('Erreur 404 : Inoxtag introuvable. Tu cherches Siroxtag. Avec un S. Et un R.', 'e'); } }
   });
-  chap('wiki', PERSO ? 'Wyattpédia' : 'Siroxtagpédia', 'l’encyclopédie du site', {
+  chap('wiki', PD ? PD.wikiName : 'Siroxtagpédia', 'l’encyclopédie du site', {
     wiki: { d: 'ouvrir l’encyclopédie', f: () => nav(WIKI, 'Ouverture de l’encyclopédie…') },
-    hasard: { d: 'un article au hasard', f: () => { const l = window.WIKI || []; if (!l.length) { nav(WIKI + '?hasard'); return; } const a = pick(l); nav(WIKI + a.s + '/', 'Article au hasard : ' + a.t + '.'); } },
+    hasard: { d: 'un article au hasard', f: () => { ach('hasard'); const l = window.WIKI || []; if (!l.length) { nav(WIKI + '?hasard'); return; } const a = pick(l); nav(WIKI + a.s + '/', 'Article au hasard : ' + a.t + '.'); } },
     cherche: { d: 'chercher un article (/cherche python)', f: a => { if (!a) { say('Exemple : /cherche heisenbug', 'm'); return; } nav(WIKI + '?q=' + encodeURIComponent(a), 'Recherche de « ' + a + ' »…'); } }
   });
   chap('code', 'Le code', 'des petits outils de développeur', {
     hello: { d: 'Hello, World! en trois langages', f: () => say('print("Hello, World!")        # Python\nconsole.log("Hello, World!");  // JavaScript\necho "Hello, World!";          // PHP') },
-    python: { d: 'un peu de Python', f: () => say(PERSO ? 'import turtle\n# … un cœur …\nt.write("Je t’aime maman")\n\nMon tout premier code, en 6e.' : 'for i in range(3):\n    print("Siroxtag")\n\nPython : lisible, simple, puissant.') },
+    python: { d: 'un peu de Python', f: () => say(PD ? PD.python : 'for i in range(3):\n    print("Siroxtag")\n\nPython : lisible, simple, puissant.') },
     js: { d: 'une bizarrerie JavaScript', f: () => say(pick(['typeof NaN      // "number"', 'NaN === NaN     // false', '"2" + 2         // "22"', '"2" - 2         // 0', '[] + []         // ""', 'typeof null     // "object"'])) },
     git: { d: 'un faux historique Git', f: () => say('a1b2c3d  vraiment fix cette fois\n9f8e7d6  fix 2\n5c4b3a2  fix\n1a2b3c4  ajoute une fonctionnalité incroyable\n0000001  premier commit') },
     npm: { d: 'une fausse installation', f: () => { say('npm install bonne-humeur…', 'm'); setTimeout(() => say('added 1 337 packages in 3s\n42 vulnerabilities (0 graves, 42 drôles)'), 700); } },
@@ -224,7 +245,7 @@
     uuid: { d: 'un identifiant unique', f: () => say(crypto.randomUUID ? crypto.randomUUID() : 'Ton navigateur ne sait pas faire ça.') }
   });
   chap('securite', 'Sécurité', 'se protéger en ligne', {
-    mdp: { d: 'générer un mot de passe solide (/mdp 20)', f: a => { const n = Math.min(64, Math.max(12, parseInt(a, 10) || 20)), al = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!#$%&*+-=?@'; let s = ''; for (let i = 0; i < n; i++) s += al[rnd(al.length)]; say(s, 'y'); say('Généré dans ton navigateur. Rien n’est envoyé nulle part.', 'm'); } },
+    mdp: { d: 'générer un mot de passe solide (/mdp 20)', f: a => { ach('mdp'); const n = Math.min(64, Math.max(12, parseInt(a, 10) || 20)), al = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!#$%&*+-=?@'; let s = ''; for (let i = 0; i < n; i++) s += al[rnd(al.length)]; say(s, 'y'); say('Généré dans ton navigateur. Rien n’est envoyé nulle part.', 'm'); } },
     '2fa': { d: 'pourquoi activer la double authentification', f: () => say('Même si on vole ton mot de passe, il manque la deuxième clé.\nÀ activer d’abord sur ta boîte e-mail, puis sur Discord, GitHub et tes jeux.') },
     phishing: { d: 'repérer un faux message', f: () => say('1. Le message est urgent.\n2. L’expéditeur est bizarre.\n3. Le lien ne mène pas au vrai site.\n4. On te demande un code reçu par SMS.\n→ Ne clique pas. Va toi-même sur le site officiel.') },
     urgence: { d: 'les numéros d’urgence', f: () => say('17  Police secours\n15  SAMU\n18  Pompiers\n112 Urgence européen\n114 Urgence par SMS\n3018 Cyberharcèlement') },
@@ -235,31 +256,36 @@
     de: { d: 'lancer un dé (/de 20)', f: a => { const f = Math.min(1000, Math.max(2, parseInt(a, 10) || 6)); say(`🎲 ${1 + rnd(f)} (dé à ${f} faces)`); } },
     pile: { d: 'pile ou face', f: () => say(rnd(2) ? '🪙 Pile.' : '🪙 Face.') },
     pfc: { d: 'pierre, feuille, ciseaux (/pfc pierre)', f: a => { const o = ['pierre', 'feuille', 'ciseaux'], j = norm(a || ''); if (!o.includes(j)) { say('Exemple : /pfc pierre', 'm'); return; } const m = o[rnd(3)], r = j === m ? 'Égalité.' : ((j === 'pierre' && m === 'ciseaux') || (j === 'feuille' && m === 'pierre') || (j === 'ciseaux' && m === 'feuille')) ? 'Tu gagnes !' : 'J’ai gagné.'; say(`Toi : ${j}. Moi : ${m}. ${r}`); } },
-    devine: { d: 'deviner un nombre (/devine, puis /devine 50)', f: a => { if (secret === null || !a) { secret = 1 + rnd(100); essais = 0; say('J’ai choisi un nombre entre 1 et 100. Tape /devine suivi de ta proposition.'); if (!a) return; } const n = parseInt(a, 10); if (Number.isNaN(n)) { say('Un nombre, s’il te plaît.', 'e'); return; } essais++; if (n === secret) { say(`Bravo ! C’était ${secret}, trouvé en ${essais} essai${essais > 1 ? 's' : ''}.`); confettis(); secret = null; } else say(n < secret ? 'Plus grand.' : 'Plus petit.'); } },
+    devine: { d: 'deviner un nombre (/devine, puis /devine 50)', f: a => { if (secret === null || !a) { secret = 1 + rnd(100); essais = 0; say('J’ai choisi un nombre entre 1 et 100. Tape /devine suivi de ta proposition.'); if (!a) return; } const n = parseInt(a, 10); if (Number.isNaN(n)) { say('Un nombre, s’il te plaît.', 'e'); return; } essais++; if (n === secret) { say(`Bravo ! C’était ${secret}, trouvé en ${essais} essai${essais > 1 ? 's' : ''}.`); confettis(); ach('devine'); secret = null; } else say(n < secret ? 'Plus grand.' : 'Plus petit.'); } },
     boule: { d: 'la boule magique (/boule question ?)', f: a => say(a ? '🔮 ' + pick(BOULE) : 'Pose une question : /boule vais-je dormir ce soir ?') },
     konami: { d: 'un indice', f: () => say('↑ ↑ ↓ ↓ ← → ← → B A\nAvec le clavier, en dehors du terminal.') },
-    gta: { d: 'le jeu préféré', f: () => say(PERSO ? 'GTA VI : le préféré. GTA V : me manque quand même.' : 'GTA VI, GTA RP et la ville de Linear. Tout est fictif, rien n’est sérieux.') }
+    gta: { d: 'le jeu préféré', f: () => say(PD ? PD.gta : 'GTA VI, GTA RP et la ville de Linear. Tout est fictif, rien n’est sérieux.') }
   });
-  chap('chasse', 'Chasse au trésor', '4 fragments cachés sur le site', {
-    chasse: { d: 'où j’en suis, et des indices', f: () => {
+  chap('chasse', 'Chasse et succès', 'la chasse au trésor et tes succès', {
+    chasse: { d: 'la chasse au trésor : progression et indices', f: () => {
       const f = hunt.get();
       print(`<span class="tm-y">Chasse au trésor : ${f.length}/4 fragments</span>`);
-      [1, 2, 3, 4].forEach(n => print(f.includes(n) ? `<span class="tm-p">✓ Fragment ${n} : « ${FRAG[n]} »</span>` : `<span class="tm-m">☐ Fragment ${n} : ${esc(HINT[n])}</span>`));
-      if (f.length === 4) say('Remets-les dans l’ordre sur /tresor.', 'y');
+      [1, 2, 3, 4].forEach(n => print(f.includes(n) ? `<span class="tm-p">✓ Fragment ${n} : « ${esc(FRAG[n - 1])} »</span>` : `<span class="tm-m">☐ Fragment ${n} : ${esc(HINT[n - 1])}</span>`));
+      if (f.length === 4) say(SEC.allFound, 'y');
     } },
-    tresor: { d: 'la salle du trésor', f: () => nav('/tresor/', 'Direction la salle du trésor…') },
+    succes: { d: 'tes succès débloqués', f: () => {
+      const got = achGet(), n = ACH.filter(a => got[a[0]]).length;
+      print(`<span class="tm-y">Succès : ${n}/${ACH.length}</span>`);
+      ACH.forEach(a => print(got[a[0]] ? `<span class="tm-p">${a[1]} ${esc(a[2])}</span> <span class="tm-m">— ${esc(a[3])}</span>` : `<span class="tm-m">🔒 ??? — ${a[4] ? esc(a[4]) : 'encore secret'}</span>`));
+    } },
+    tresor: { d: 'la salle du trésor', f: () => nav(R.a, 'Direction la salle du trésor…') },
     archives: { d: 'le musée Siroxtag', f: () => nav('/archives/', 'Ouverture du musée…') },
     perdu: { d: 'se perdre (exprès)', f: () => nav('/404.html', 'Tu veux te perdre ? D’accord.') }
   });
   chap('rire', 'Pour rire', 'des blagues, des citations et du n’importe quoi', {
-    blague: { d: 'une blague de développeur', f: () => say(pick(BLAGUES)) },
+    blague: { d: 'une blague de développeur', f: () => { say(pick(BLAGUES)); if (++blagues >= 5) ach('blagues'); } },
     citation: { d: 'une citation célèbre (traduite)', f: () => { const c = pick(CITATIONS); say(`« ${c[0]} »\n— ${c[1]}`); } },
     excuse: { d: 'une excuse quand ça plante', f: () => say(pick(EXCUSES)) },
     motivation: { d: 'un petit boost', f: () => say(pick(MOTIV)) },
     compliment: { d: 'parce que tu le vaux bien', f: () => say(pick(COMPL)) },
     meteo: { d: 'la météo du jour', f: () => say(`Ciel : 100 % code. Température : ${18 + rnd(10)} °C dans le processeur. Risque de bugs : modéré.`) },
-    cafe: { d: 'un café', f: () => say('☕ Café ajouté. Énergie +10. Sommeil : toujours null.') },
-    dormir: { d: 'aller dormir', f: () => say(PERSO ? 'Erreur : sommeil introuvable. Record actuel : 4 jours.' : 'Bonne nuit. Enfin, encore une vidéo et j’y vais.') },
+    cafe: { d: 'un café', f: () => say('☕ Café ajouté. Énergie +10.') },
+    dormir: { d: 'aller dormir', f: () => say(PD ? PD.dormir : 'Bonne nuit. Enfin, encore une vidéo et j’y vais.') },
     mdr: { d: 'mort de rire', f: () => say('😂 Mdr. Officiellement validé.') }
   });
   chap('nav', 'Navigation', 'se déplacer sur le site', {
@@ -281,30 +307,27 @@
     coucou: () => say('Coucou ! Tape /help.'),
     hello: () => say('Salut ! Tape /help si t’es perdu.'),
     siroxtag: () => say('Oui ? C’est moi. Enfin, lui. Bref.'),
-    inoxtag: () => { shake(); say('Siroxtag. Avec un S. Et un R.', 'e'); },
-    noir: () => nav('/noir/', 'Extinction des lumières…'),
-    wyatt: () => {
-      if (PERSO) { say('C’est moi. Et tu es déjà chez moi. Bienvenue 👋'); return; }
-      shake(); say('🕵️ Wyatt ? Ce nom ne te dit rien… officiellement.', 'y');
-      setTimeout(() => say('Indice n° 1 : il existe une page que Google n’a jamais vue.'), 700);
-      setTimeout(() => say('Indice n° 2 : son nom tient en 5 lettres. Il commence par « p » et finit par « o ».'), 1600);
-      setTimeout(() => say('Indice n° 3 : ici, les pages s’ouvrent comme des commandes. À toi de jouer.', 'm'), 2600);
+    inoxtag: () => { ach('inoxtag'); shake(); say('Siroxtag. Avec un S. Et un R.', 'e'); },
+    ...(PD ? PD.hidden(helpers) : {})
+  };
+  // commandes secrètes : leurs noms ne figurent pas en clair dans le code
+  const secretCmds = {
+    [SEC.h.n1]: () => nav(R.b, 'Extinction des lumières…'),
+    [SEC.h.n2]: () => {
+      if (PD) { say(PD.self); return; }
+      ach('a21'); shake(); say(SEC.w[0], 'y');
+      setTimeout(() => say(SEC.w[1]), 700); setTimeout(() => say(SEC.w[2]), 1600); setTimeout(() => say(SEC.w[3], 'm'), 2600);
     },
-    ...(PERSO ? {
-      maman: () => say('Je t’aime maman. (C’était mon tout premier code, en 6e.)'),
-      phonk: () => { shake(); say('🔊 BOOM BOOM BOOM'); }
-    } : {
-      perso: () => nav('/perso/', 'Accès à une zone non référencée…')
-    })
+    ...(PD ? {} : { [SEC.h.n3]: () => nav(R.c, SEC.cm) })
   };
 
   const all = {}; CH.forEach(c => Object.entries(c.c).forEach(([k, v]) => { all[k] = v; }));
-  const ALIAS = { 'who': 'wyatt', 'wyattle': 'wyatt', 'sérieux': 'serieux', 'serious': 'serieux', 'aide': 'help', 'h': 'help', '?': 'help', 'cls': 'clear', 'quit': 'exit', 'quitter': 'exit', 'dé': 'de', 'météo': 'meteo', 'café': 'cafe', 'césar': 'cesar', 'lumière': 'lumiere', 'javascript': 'js', 'motdepasse': 'mdp', 'hacker': 'hack', 'cherche': 'cherche', 'recherche': 'cherche', 'random': 'hasard', 'wikipedia': 'wiki', 'wyattpedia': 'wiki', 'siroxtagpedia': 'wiki' };
+  const ALIAS = { 'sérieux': 'serieux', 'serious': 'serieux', 'aide': 'help', 'h': 'help', '?': 'help', 'cls': 'clear', 'quit': 'exit', 'quitter': 'exit', 'dé': 'de', 'météo': 'meteo', 'café': 'cafe', 'césar': 'cesar', 'lumière': 'lumiere', 'javascript': 'js', 'motdepasse': 'mdp', 'hacker': 'hack', 'recherche': 'cherche', 'random': 'hasard', 'wikipedia': 'wiki', 'succès': 'succes', 'achievements': 'succes', 'trésor': 'tresor' };
 
   function help(arg) {
     const a = norm(arg || '');
     if (!a) {
-      const rows = CH.map((c, i) => `<span class="tm-p">${String(i + 1).padStart(2)}  ${esc(c.n.padEnd(16))}</span>${esc(c.d)} <span class="tm-m">(${Object.keys(c.c).length})</span>`);
+      const rows = CH.map((c, i) => `<span class="tm-p">${String(i + 1).padStart(2)}  ${esc(c.n.padEnd(17))}</span>${esc(c.d)} <span class="tm-m">(${Object.keys(c.c).length})</span>`);
       print(rows.join('\n') + '\n<span class="tm-m">Tape /help suivi d’un numéro ou d’un nom. Exemple : /help 5 ou /help code.\n/help tout affiche toutes les commandes.\nAstuce : certains mots tapés n’importe où sur la page font des trucs.</span>');
       return;
     }
@@ -316,7 +339,6 @@
     });
   }
 
-  const hist = []; let hi = 0;
   function run(raw) {
     const line = raw.trim(); if (!line) return;
     hist.push(line); hi = hist.length; save();
@@ -326,6 +348,7 @@
     const arg = rest.join(' ');
     if (all[name]) all[name].f(arg);
     else if (hidden[name]) hidden[name](arg);
+    else if (secretCmds[H(norm(name))]) secretCmds[H(norm(name))](arg);
     else say(`Commande inconnue : ${first}. Tape /help.`, 'e');
   }
   form.addEventListener('submit', e => { e.preventDefault(); run(input.value); input.value = ''; });
@@ -338,8 +361,8 @@
   });
   let greeted = false;
   function open(noFocus) {
-    box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); save();
-    if (!greeted) { greeted = true; say((PERSO ? 'Bienvenue dans le terminal de Wyatt.' : 'Bienvenue dans le terminal de Siroxtag.') + `\n${Object.keys(all).length} commandes, rangées en ${CH.length} chapitres. Tape /help.`, 'm'); }
+    box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); save(); ach('terminal');
+    if (!greeted) { greeted = true; say((PD ? PD.hello : 'Bienvenue dans le terminal de Siroxtag.') + `\n${Object.keys(all).length} commandes, rangées en ${CH.length} chapitres. Tape /help.`, 'm'); }
     if (noFocus !== true) setTimeout(() => input.focus({ preventScroll: true }), 60);
   }
   function close() { box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); btn.focus(); save(); }
@@ -363,21 +386,20 @@
   addEventListener('keydown', e => {
     const k = (e.key || '').toLowerCase();
     kpos = k === KONAMI[kpos] ? kpos + 1 : (k === KONAMI[0] ? (kpos >= 2 && KONAMI[kpos - 1] === 'arrowup' ? kpos : 1) : 0);
-    if (kpos === KONAMI.length) { kpos = 0; setFun(true); shake(); confettis(); if (!hunt.found(4)) toast('Code Konami activé : +30 vies. Mode fun débloqué.'); }
+    if (kpos === KONAMI.length) { kpos = 0; setFun(true); shake(); confettis(); ach('konami'); if (!hunt.found(4)) toast('Code Konami activé : +30 vies. Mode fun débloqué.'); }
   });
 
   /* ---------- easter eggs : des mots tapés n’importe où ---------- */
   const eggs = {
-    fun: () => { if (isFun()) { toast('Déjà en mode fun 🎨 (tape « serieux » pour le calme)'); return; } setFun(true); toast('Mode fun activé 🎨'); },
-    serieux: () => { setFun(false); toast('Mode sérieux activé'); },
-    inoxtag: () => { shake(); toast('Siroxtag. Avec un S. Merci.'); },
+    fun: () => { if (isFun()) { toast('Déjà en mode fun 🎨 (tape « serieux » pour le calme)'); return; } funOn(); toast('Mode fun activé 🎨'); },
+    serieux: () => { funOff(); toast('Mode sérieux activé'); },
+    inoxtag: () => { ach('inoxtag'); shake(); toast('Siroxtag. Avec un S. Merci.'); },
     sudo: () => toast('Bien essayé.'),
     help: () => open(),
     matrix: () => matrix(),
-    wyatt: () => { if (PERSO) { toast('Oui, c’est moi 👋'); return; } toast('Quelqu’un a dit Wyatt ? 👀 Ouvre le terminal et tape /wyatt'); },
-    ...(PERSO ? { code: () => { shake(); toast('while (true) code();'); }, phonk: () => { shake(); toast('🔊 BOOM BOOM BOOM'); }, maman: () => toast('Je t’aime maman ❤️') } : { blackout: () => { document.documentElement.classList.toggle('lights-off'); toast('Ne laisse pas la lumière s’éteindre… (essaie /noir dans le terminal)'); } })
+    ...(PD ? PD.eggs(helpers) : { blackout: () => { lights(); toast(SEC.bh); } })
   };
-  window.SX = { hunt, toast, confettis, shake };
+  const secretEggs = { [SEC.h.n2]: () => { if (PD) { toast('Oui, c’est moi 👋'); return; } toast(SEC.we); } };
   addEventListener('pointermove', e => { const r = document.documentElement.style; r.setProperty('--lx', e.clientX + 'px'); r.setProperty('--ly', e.clientY + 'px'); }, { passive: true });
   let buf = '';
   addEventListener('keydown', e => {
@@ -385,6 +407,20 @@
     if (e.ctrlKey || e.metaKey || e.altKey || (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable))) return;
     if (e.key.length !== 1) return;
     buf = (buf + norm(e.key)).slice(-12);
-    for (const k of Object.keys(eggs)) if (buf.endsWith(k)) { buf = ''; eggs[k](); break; }
+    for (const k of Object.keys(eggs)) if (buf.endsWith(k)) { buf = ''; eggs[k](); return; }
+    for (let n = 3; n <= 8; n++) { const f = secretEggs[H(buf.slice(-n))]; if (f) { buf = ''; f(); return; } }
   });
+
+  /* ---------- succès liés aux pages ---------- */
+  const path = location.pathname;
+  const hr = new Date().getHours(); if (hr >= 0 && hr < 5) ach('nuit');
+  if (path.startsWith(WIKI) && /^[^/]+\/$/.test(path.slice(WIKI.length))) {
+    try { const r = new Set(JSON.parse(localStorage.getItem('sx-lu') || '[]')); r.add(path); localStorage.setItem('sx-lu', JSON.stringify([...r].slice(-800))); if (r.size >= 10) ach('lecteur'); if (r.size >= 50) ach('biblio'); } catch (e) {}
+  }
+  if (path.startsWith('/archives')) ach('musee');
+  if (H(path) === SEC.h.np) ach('a18');
+  if (PD) ach('a22');
+  if (document.querySelector('[data-arena]')) ach('perdu');
+
+  window.SX = { hunt, toast, confettis, shake, ach, H };
 })();

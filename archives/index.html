@@ -51,7 +51,7 @@
     <li class="exhibit"><span class="inv">N° 006 · 24 novembre 2026</span><h2>Le terminal caché.</h2>
       <div class="card"><p>Une fenêtre de commandes en bas à droite de chaque page, avec ses chapitres, ses jeux et ses mots secrets. Puis le mode fun, aux couleurs pastel. Et un vieux code de triche des années 1980 qui fonctionne encore.</p>
       <div class="cartel"><span>Matériau : JavaScript</span><span>État : actif</span></div>
-      <button type="button" class="secret" data-secret aria-label="Un petit détail sur l’étiquette">✦</button></div></li>
+      <button type="button" class="secret" data-secret aria-label="✦">✦</button></div></li>
     <li class="exhibit"><span class="inv">N° 007 · 24 novembre 2026</span><h2>Siroxtagpédia.</h2>
       <div class="card"><p>Une encyclopédie complète, avec des centaines d’articles reliés entre eux : les jeux, la musique, les créateurs du code, tous les mots du développement et de la sécurité en ligne. Générée par un script, écrite avec humour.</p>
       <div class="cartel"><span>Matériau : Python, HTML</span><span>État : en expansion</span><span><a href="/wiki/">Ouvrir →</a></span></div></div></li>
@@ -68,7 +68,7 @@ addEventListener('DOMContentLoaded', () => {
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
   document.querySelectorAll('.exhibit').forEach(x => io.observe(x));
   const s = document.querySelector('[data-secret]');
-  s.addEventListener('click', () => { if (window.SX && !window.SX.hunt.found(2)) window.SX.toast('Ce détail t’a déjà livré son secret.'); });
+  s.addEventListener('click', () => { if (!window.SX) return; window.SX.ach('detail'); if (!window.SX.hunt.found(2)) window.SX.toast('Ce détail t’a déjà livré son secret.'); });
 });
 </script>
 </body>

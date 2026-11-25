@@ -253,6 +253,7 @@ def build(cfg, arts):
 <script>window.WIKI = {index_json}; window.WIKI_BASE = "{base}";</script>
 <script src="/assets/wiki/head.js" defer></script>
 <script src="/assets/wiki/wiki.js" defer></script>
+{'<script src="/perso/term-perso.js" defer></script>' if cfg["key"] == "perso" else ""}
 <script src="/assets/js/term.js" data-site="{cfg["site"]}" defer></script>
 </body>
 </html>

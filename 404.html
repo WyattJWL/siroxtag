@@ -59,9 +59,10 @@ addEventListener('DOMContentLoaded', () => {
     arena.querySelectorAll('.bug').forEach(b => b.remove());
     if (score > best) { best = score; $b.textContent = best; try { localStorage.setItem('sx-404best', best); } catch (e) {} }
     const win = score >= 10;
-    msg.innerHTML = `<p class="big">${score} bug${score > 1 ? 's' : ''}.</p><p class="m">${win ? 'Bien joué ! Tu as débloqué un fragment de la chasse au trésor.' : 'Presque. Les bugs gagnent cette fois. Comme en production.'}</p>${win ? '<p class="frag">Fragment 1 : « NE LAISSE »</p>' : ''}<button type="button" class="btn" data-start>Rejouer <span class="ar">→</span></button>${win ? '<p class="m" style="font-size:14px">Ouvre le terminal en bas à droite et tape /chasse.</p>' : ''}`;
+    msg.innerHTML = `<p class="big">${score} bug${score > 1 ? 's' : ''}.</p><p class="m">${win ? 'Bien joué ! Tu as débloqué un fragment de la chasse au trésor.' : 'Presque. Les bugs gagnent cette fois. Comme en production.'}</p>${win ? '<p class="frag">Fragment 1 : « ' + (window.SX ? window.SX.hunt.frag(1) : '…') + ' »</p>' : ''}<button type="button" class="btn" data-start>Rejouer <span class="ar">→</span></button>${win ? '<p class="m" style="font-size:14px">Ouvre le terminal en bas à droite et tape /chasse.</p>' : ''}`;
     msg.hidden = false;
-    if (win && window.SX) window.SX.hunt.found(1);
+    if (win && window.SX) { window.SX.hunt.found(1); window.SX.ach('bugs10'); }
+    if (score >= 30 && window.SX) window.SX.ach('bugs30');
   }
   function start() {
     score = 0; left = 20; $s.textContent = 0; $t.textContent = left; msg.hidden = true; playing = true;

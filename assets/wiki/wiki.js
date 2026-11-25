@@ -1,4 +1,4 @@
-/* Wyattpédia : apparitions, sommaire actif, recherche, article au hasard, « Le saviez-vous ? ». */
+/* Encyclopédie : apparitions, sommaire actif, recherche, article au hasard, « Le saviez-vous ? ». */
 (() => {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
