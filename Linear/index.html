@@ -1335,7 +1335,7 @@ let px = 0, py = 0, pt = 'mouse';
 addEventListener('pointerdown', e => { px = e.clientX; py = e.clientY; pt = e.pointerType; });
 addEventListener('pointerup', e => {
   if (e.button > 0) return;
-  if (e.target.closest('a[href]')) return;
+  if (e.target.closest('a[href], .tm, .tm-btn, .tm-toast')) return;
   const dx = e.clientX - px, dy = e.clientY - py;
   const g = e.target.closest('[data-go]');
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { dx < 0 ? next() : prev(); return; }
@@ -1384,5 +1384,6 @@ const ready = Promise.race([
 ready.then(() => { requestAnimationFrame(loop); go(startAt, 1); });
 })();
 </script>
+<script src="/assets/js/term.js" data-site="siroxtag" defer></script>
 </body>
 </html>

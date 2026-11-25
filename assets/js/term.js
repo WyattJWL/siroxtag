@@ -25,7 +25,7 @@
   .tm-top button{background:none;border:0;color:#8E8E93;font:inherit;cursor:pointer;padding:0 0 0 10px}
   .tm-out{flex:1;overflow-y:auto;padding:12px 14px 4px;white-space:pre-wrap;word-break:break-word;scrollbar-width:thin}
   .tm-out a{color:#9CC4F2}
-  .tm-out .p{color:#A8D8B9}.tm-out .e{color:#FF9F8A}.tm-out .m{color:#8E8E93}.tm-out .y{color:#F2D49B}
+  .tm-out div{font:inherit;margin:0;padding:0}.tm-out span{font:inherit}.tm-out .tm-p{color:#A8D8B9}.tm-out .tm-e{color:#FF9F8A}.tm-out .tm-m{color:#8E8E93}.tm-out .tm-y{color:#F2D49B}
   .tm-out .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
   .tm-in{display:flex;gap:8px;padding:8px 14px 13px}
   .tm-in label{color:#A8D8B9;white-space:nowrap}
@@ -56,7 +56,11 @@
 
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
-  const print = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.innerHTML = html; out.appendChild(d); out.scrollTop = out.scrollHeight; };
+  const SK = 'sx-term';
+  let saveT = 0;
+  const save = () => { clearTimeout(saveT); saveT = setTimeout(saveNow, 120); };
+  const saveNow = () => { try { while (out.innerHTML.length > 30000 && out.firstChild) out.firstChild.remove(); sessionStorage.setItem(SK, JSON.stringify({ open: box.classList.contains('open'), html: out.innerHTML, hist: hist.slice(-50), url: location.pathname })); } catch (e) {} };
+  const print = (html, cls) => { const d = document.createElement('div'); if (cls) d.className = 'tm-' + cls; d.innerHTML = html; out.appendChild(d); out.scrollTop = out.scrollHeight; save(); };
   const say = (txt, cls) => print(esc(txt), cls);
   const pick = a => a[Math.floor(Math.random() * a.length)];
   const rnd = n => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
@@ -138,7 +142,7 @@
 
   chap('bases', 'Les bases', 'les commandes indispensables', {
     help: { d: 'les chapitres (/help 2, /help code…)', f: a => help(a) },
-    clear: { d: 'nettoyer l’écran', f: () => { out.innerHTML = ''; } },
+    clear: { d: 'nettoyer l’écran', f: () => { out.innerHTML = ''; save(); } },
     exit: { d: 'fermer le terminal', f: () => close() },
     ls: { d: 'les pages du site', f: () => print(PERSO ? '<a href="/perso/">perso/</a>   <a href="/perso/wiki/">wiki/</a>   <a href="/">siroxtag.fr/</a>   <a href="/Linear/">Linear/</a>' : '<a href="/">index.html</a>   <a href="/wiki/">wiki/</a>   <a href="/Linear/">Linear/</a>   <a href="/mentions-legales/">mentions-legales/</a>') },
     whoami: { d: 'qui est là ?', f: () => say(PERSO ? 'Wyatt LE. Dieu du code autoproclamé. Classement mondial : premier (selon moi).' : 'Siroxtag. Créateur indépendant. Pas Inoxtag, hein.') },
@@ -249,6 +253,13 @@
     hello: () => say('Salut ! Tape /help si t’es perdu.'),
     siroxtag: () => say('Oui ? C’est moi. Enfin, lui. Bref.'),
     inoxtag: () => { shake(); say('Siroxtag. Avec un S. Et un R.', 'e'); },
+    wyatt: () => {
+      if (PERSO) { say('C’est moi. Et tu es déjà chez moi. Bienvenue 👋'); return; }
+      shake(); say('🕵️ Wyatt ? Ce nom ne te dit rien… officiellement.', 'y');
+      setTimeout(() => say('Indice n° 1 : il existe une page que Google n’a jamais vue.'), 700);
+      setTimeout(() => say('Indice n° 2 : son nom tient en 5 lettres. Il commence par « p » et finit par « o ».'), 1600);
+      setTimeout(() => say('Indice n° 3 : ici, les pages s’ouvrent comme des commandes. À toi de jouer.', 'm'), 2600);
+    },
     ...(PERSO ? {
       maman: () => say('Je t’aime maman. (C’était mon tout premier code, en 6e.)'),
       phonk: () => { shake(); say('🔊 BOOM BOOM BOOM'); }
@@ -258,28 +269,28 @@
   };
 
   const all = {}; CH.forEach(c => Object.entries(c.c).forEach(([k, v]) => { all[k] = v; }));
-  const ALIAS = { 'sérieux': 'serieux', 'serious': 'serieux', 'aide': 'help', 'h': 'help', '?': 'help', 'cls': 'clear', 'quit': 'exit', 'quitter': 'exit', 'dé': 'de', 'météo': 'meteo', 'café': 'cafe', 'césar': 'cesar', 'lumière': 'lumiere', 'javascript': 'js', 'motdepasse': 'mdp', 'hacker': 'hack', 'cherche': 'cherche', 'recherche': 'cherche', 'random': 'hasard', 'wikipedia': 'wiki', 'wyattpedia': 'wiki', 'siroxtagpedia': 'wiki' };
+  const ALIAS = { 'who': 'wyatt', 'wyattle': 'wyatt', 'sérieux': 'serieux', 'serious': 'serieux', 'aide': 'help', 'h': 'help', '?': 'help', 'cls': 'clear', 'quit': 'exit', 'quitter': 'exit', 'dé': 'de', 'météo': 'meteo', 'café': 'cafe', 'césar': 'cesar', 'lumière': 'lumiere', 'javascript': 'js', 'motdepasse': 'mdp', 'hacker': 'hack', 'cherche': 'cherche', 'recherche': 'cherche', 'random': 'hasard', 'wikipedia': 'wiki', 'wyattpedia': 'wiki', 'siroxtagpedia': 'wiki' };
 
   function help(arg) {
     const a = norm(arg || '');
     if (!a) {
-      const rows = CH.map((c, i) => `<span class="p">${String(i + 1).padStart(2)}  ${esc(c.n.padEnd(16))}</span>${esc(c.d)} <span class="m">(${Object.keys(c.c).length})</span>`);
-      print(rows.join('\n') + '\n<span class="m">Tape /help suivi d’un numéro ou d’un nom. Exemple : /help 5 ou /help code.\n/help tout affiche toutes les commandes.\nAstuce : certains mots tapés n’importe où sur la page font des trucs.</span>');
+      const rows = CH.map((c, i) => `<span class="tm-p">${String(i + 1).padStart(2)}  ${esc(c.n.padEnd(16))}</span>${esc(c.d)} <span class="tm-m">(${Object.keys(c.c).length})</span>`);
+      print(rows.join('\n') + '\n<span class="tm-m">Tape /help suivi d’un numéro ou d’un nom. Exemple : /help 5 ou /help code.\n/help tout affiche toutes les commandes.\nAstuce : certains mots tapés n’importe où sur la page font des trucs.</span>');
       return;
     }
     const list = a === 'tout' || a === 'all' ? CH : CH.filter((c, i) => String(i + 1) === a || norm(c.k) === a || norm(c.n) === a || norm(c.n).includes(a));
     if (!list.length) { say(`Chapitre inconnu : ${arg}. Tape /help pour la liste.`, 'e'); return; }
     list.forEach(c => {
-      print(`<span class="y">${esc(c.n)}</span>`);
-      print(Object.entries(c.c).map(([k, v]) => `<span class="p">/${esc(k.padEnd(13))}</span>${esc(v.d)}`).join('\n'));
+      print(`<span class="tm-y">${esc(c.n)}</span>`);
+      print(Object.entries(c.c).map(([k, v]) => `<span class="tm-p">/${esc(k.padEnd(13))}</span>${esc(v.d)}`).join('\n'));
     });
   }
 
   const hist = []; let hi = 0;
   function run(raw) {
     const line = raw.trim(); if (!line) return;
-    hist.push(line); hi = hist.length;
-    print(`<span class="p">${esc(PROMPT)}</span> ${esc(line)}`);
+    hist.push(line); hi = hist.length; save();
+    print(`<span class="tm-p">${esc(PROMPT)}</span> ${esc(line)}`);
     const [first, ...rest] = line.replace(/^\//, '').split(/\s+/);
     let name = first.toLowerCase(); name = ALIAS[name] || ALIAS[norm(name)] || name;
     const arg = rest.join(' ');
@@ -296,12 +307,24 @@
     e.stopPropagation();
   });
   let greeted = false;
-  function open() {
-    box.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+  function open(noFocus) {
+    box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); save();
     if (!greeted) { greeted = true; say((PERSO ? 'Bienvenue dans le terminal de Wyatt.' : 'Bienvenue dans le terminal de Siroxtag.') + `\n${Object.keys(all).length} commandes, rangées en ${CH.length} chapitres. Tape /help.`, 'm'); }
-    setTimeout(() => input.focus(), 60);
+    if (noFocus !== true) setTimeout(() => input.focus({ preventScroll: true }), 60);
   }
-  function close() { box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
+  function close() { box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); btn.focus(); save(); }
+  // le terminal suit la navigation : on retrouve l’écran, l’historique, et il reste ouvert s’il l’était
+  try {
+    const st = JSON.parse(sessionStorage.getItem(SK) || 'null');
+    if (st) {
+      if (st.html) { out.innerHTML = st.html; greeted = true; }
+      if (Array.isArray(st.hist)) { hist.push(...st.hist); hi = hist.length; }
+      if (st.url && st.url !== location.pathname && st.html) print(`<span class="tm-m">→ cd ${esc(location.pathname)}</span>`);
+      if (st.open) open(true);
+      out.scrollTop = out.scrollHeight;
+    }
+  } catch (e) {}
+  addEventListener('pagehide', saveNow);
   btn.addEventListener('click', () => box.classList.contains('open') ? close() : open());
   box.querySelector('.tm-top button').addEventListener('click', close);
 
@@ -321,6 +344,7 @@
     sudo: () => toast('Bien essayé.'),
     help: () => open(),
     matrix: () => matrix(),
+    wyatt: () => { if (PERSO) { toast('Oui, c’est moi 👋'); return; } toast('Quelqu’un a dit Wyatt ? 👀 Ouvre le terminal et tape /wyatt'); },
     ...(PERSO ? { code: () => { shake(); toast('while (true) code();'); }, phonk: () => { shake(); toast('🔊 BOOM BOOM BOOM'); }, maman: () => toast('Je t’aime maman ❤️') } : { blackout: () => { document.documentElement.classList.toggle('lights-off'); toast('Ne laisse pas la lumière s’éteindre…'); } })
   };
   addEventListener('pointermove', e => { const r = document.documentElement.style; r.setProperty('--lx', e.clientX + 'px'); r.setProperty('--ly', e.clientY + 'px'); }, { passive: true });
