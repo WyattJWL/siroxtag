@@ -5,16 +5,23 @@ import { promisify } from 'node:util';
 const scrypt = promisify(_scrypt);
 
 /* ---------- base de données ---------- */
-let pool;
-export const q = (text, params) => {
+import { readFileSync } from 'node:fs';
+let pool, ready;
+// crée les tables au premier appel si elles n’existent pas (le script est idempotent)
+const ensureSchema = () => ready ||= pool.query(readFileSync(new URL('../../db/schema.sql', import.meta.url), 'utf8')).catch(e => { ready = null; throw e; });
+export const q = async (text, params) => {
+  if (!pool) init();
+  await ensureSchema();
+  return pool.query(text, params);
+};
+function init() {
   if (!pool) {
     const url = process.env.DATABASE_URL || '';
     pool = new pg.Pool({ connectionString: url, max: 3, ssl: /localhost|127\.0\.0\.1|sslmode=disable/.test(url) ? false : { rejectUnauthorized: true } });
     // une connexion coupée par la base ne doit jamais faire planter la fonction
     pool.on('error', err => console.error('base de données :', err.message));
   }
-  return pool.query(text, params);
-};
+}
 
 /* ---------- réponses ---------- */
 export class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
