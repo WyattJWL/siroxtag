@@ -431,13 +431,75 @@
     const rows = cells[35].getMonth() !== m ? cells.slice(0, 35) : cells;
     main.innerHTML = `<div class="st-view"><p class="lab">Planning</p><h1 class="st-h">Mon <span class="it">calendrier</span>.</h1>
       <p class="st-lead">Clique sur un jour pour y prévoir une vidéo. ${vids.length ? 'Les vidéos déjà publiées sur TikTok apparaissent en orange.' : ''}</p>
+      <section class="box st-sec" data-planner>
+        <h2 style="margin:0;font-size:20px;display:flex;gap:8px;align-items:center">${I('spark')}Mon planning avec l’IA</h2>
+        <p class="m" style="font-size:14px;margin:6px 0 0">L’IA choisit tes jours et tes horaires (d’après tes stats TikTok si elles existent), puis répartit tes idées et en invente si besoin. Tu valides avant que ça s’ajoute.</p>
+        <form class="grid g4" data-pf style="margin-top:10px;align-items:end">
+          <label class="fld">Durée<select name="d"><option value="7">1 semaine</option><option value="14" selected>2 semaines</option><option value="28">4 semaines</option></select></label>
+          <label class="fld">Vidéos par semaine<input class="in" type="number" name="n" min="1" max="7" value="${e(Math.min(7, S.goals.per_week || 3))}"></label>
+          <label class="fld">Ta niche<input class="in" name="t" maxlength="120" placeholder="GTA RP, horreur, humour…"></label>
+          <button class="sbtn pri" type="submit" style="margin-top:14px">${I('spark')}Créer mon planning</button>
+        </form>
+        <div data-pp></div>
+      </section>
       <div class="row st-sec"><button class="sbtn" type="button" data-m="-1" aria-label="Mois précédent">${I('left')}</button><h2 style="margin:0;font-size:22px;min-width:180px;text-align:center;text-transform:capitalize">${e(calRef.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))}</h2><button class="sbtn" type="button" data-m="1" aria-label="Mois suivant">${I('right')}</button><button class="sbtn" type="button" data-m="0">Aujourd’hui</button></div>
       <div class="cal">${['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'].map(d => `<div class="dn">${d}</div>`).join('')}
       ${rows.map(d => { const k = iso(d), ev = S.ideas.filter(i => i.planned_on === k), pv = vids.filter(v => v.day === k); return `<button type="button" class="d${d.getMonth() !== m ? ' out' : ''}${k === today ? ' today' : ''}" data-day="${k}" aria-label="${e(dLong(k))}, ${ev.length + pv.length} élément(s)"><span>${d.getDate()}</span>${ev.map(i => `<div class="ev" data-edit="${e(i.id)}">${i.status === 'publie' ? I('check') : ''}${e(i.title)}</div>`).join('')}${pv.map(v => `<div class="ev pub">${I('film')}${e(v.title)}</div>`).join('')}</button>`; }).join('')}</div>
       ${(() => { const un = S.ideas.filter(i => !i.planned_on && i.status !== 'publie'); return un.length ? `<div class="st-sec"><h2>Pas encore planifiées (${un.length})</h2><div class="row">${un.slice(0, 12).map(i => `<button class="sbtn" type="button" data-edit="${e(i.id)}">${e(i.title.slice(0, 40))}</button>`).join('')}</div></div>` : ''; })()}</div>`;
     $$('[data-m]').forEach(b => b.addEventListener('click', () => { const k = +b.dataset.m; calRef = k ? new Date(y, m + k, 1) : new Date(); V.calendrier(); }));
+    planner();
     main.onclick = ev => { const ed = ev.target.closest('[data-edit]'); if (ed) { ev.stopPropagation(); return editIdea(ed.dataset.edit); } const d = ev.target.closest('[data-day]'); if (d) editIdea(null, { planned_on: d.dataset.day }); };
   };
+
+  /* planning automatique : le Studio choisit les créneaux, l’IA y place les vidéos */
+  const DAYIDX = { dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6 };
+  const SLOTH = { 'le matin': '09:00', 'l’après-midi': '14:00', 'le soir': '18:30', 'la nuit': '21:30' };
+  function slots(days, perWeek) {
+    const t = S.tt && S.tt.account && S.tt.videos && S.tt.videos.length ? analyze(S.tt.videos) : null;
+    const pref = t && t.day ? t.day.map(x => DAYIDX[x[0]]) : [5, 2, 0, 3, 6, 1, 4]; // jours classés du meilleur au moins bon
+    const hour = t && t.slot ? SLOTH[t.slot[0][0]] : '18:30', fromStats = !!(t && (t.day || t.slot));
+    const n = Math.min(7, Math.max(1, perWeek)), out = [], start = new Date(); start.setDate(start.getDate() + 1);
+    const chosen = new Set([...pref, 0, 1, 2, 3, 4, 5, 6].filter((d, i, a) => a.indexOf(d) === i).slice(0, n));
+    for (let k = 0; k < days; k++) { const d = new Date(start); d.setDate(d.getDate() + k); if (chosen.has(d.getDay())) out.push({ day: iso(d), hour }); }
+    return { list: out, fromStats };
+  }
+  function planner() {
+    const box = $('[data-pp]'), f = $('[data-pf]');
+    const draw = () => {
+      const P = S.plan; if (!P) { box.innerHTML = ''; return; }
+      box.innerHTML = `<p class="m" style="margin:16px 0 8px;font-size:14px">${P.fromStats ? 'Jours et horaire choisis d’après tes vidéos TikTok.' : 'Pas encore de stats TikTok : jours et horaire par défaut, à tester.'} ${P.conseil ? e(P.conseil) : ''}</p>
+        <div class="hooks">${P.items.map((x, k) => `<label class="hk" style="cursor:pointer;justify-content:flex-start;gap:12px"><input type="checkbox" data-pk="${k}" checked style="width:18px;height:18px;accent-color:var(--o);flex:none"><span><b>${e(dLong(x.day))} · ${e(x.hour.replace(':', ' h '))}</b>${x.format ? ` <span class="pill">${e(x.format)}</span>` : ''}${x.idea ? ` <span class="pill v-ok">${I('board')}de ton tableau</span>` : ` <span class="pill v-new">${I('spark')}nouvelle</span>`}<br>${e(x.titre)}${x.accroche ? `<br><span class="m" style="font-size:13px">${I('hook')} ${e(x.accroche)}</span>` : ''}</span></label>`).join('')}</div>
+        <div class="row" style="margin-top:14px"><button class="sbtn pri" type="button" data-padd>${I('plus')}Ajouter au calendrier</button><button class="sbtn" type="button" data-pno>Annuler</button></div>${aiNote}<p class="msg" data-pm2></p>`;
+      $('[data-pno]').onclick = () => { S.plan = null; draw(); };
+      $('[data-padd]').onclick = async ev => {
+        const btn = ev.currentTarget, keep = P.items.filter((x, k) => $(`[data-pk="${k}"]`).checked); if (!keep.length) return;
+        btn.disabled = true; $('[data-pm2]').textContent = 'Ajout en cours…';
+        try {
+          for (const x of keep) {
+            if (x.idea) { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +x.idea, planned_on: x.day } }); swap(r.idea); }
+            else { const r = await SXA.api('ideas', { method: 'POST', body: { title: x.titre, hook: x.accroche, tag: P.niche.slice(0, 40), planned_on: x.day, body: `Heure prévue : ${x.hour}${x.format ? '\nFormat : ' + x.format : ''}\nIdée proposée par l’IA.` } }); S.ideas.unshift(r.idea); }
+          }
+          S.plan = null; calRef = parseDay(keep[0].day); V.calendrier();
+          $('[data-pp]').innerHTML = `<p class="msg">${I('check')} ${keep.length} vidéo${keep.length > 1 ? 's ajoutées' : ' ajoutée'} au calendrier.</p>`;
+        } catch (er) { $('[data-pm2]').textContent = er.message; btn.disabled = false; }
+      };
+    };
+    f.onsubmit = async ev => {
+      ev.preventDefault(); const btn = f.querySelector('button[type=submit]'), d = +f.d.value, n = +f.n.value || 3, niche = f.t.value.trim();
+      const sl = slots(d, n), un = S.ideas.filter(i => !i.planned_on && i.status !== 'publie').slice(0, 30);
+      if (!sl.list.length) { box.innerHTML = '<p class="msg">Aucun créneau trouvé.</p>'; return; }
+      busy(btn, true); box.innerHTML = '';
+      try {
+        const r = await ai('planning', `Niche : ${niche || 'contenu varié (humour, gaming)'}\nCréneaux :\n${sl.list.map((x, k) => `${k + 1}) ${dLong(x.day)} à ${x.hour}`).join('\n')}\nIdées non planifiées :\n${un.length ? un.map(i => `[id ${i.id}] ${i.title}${i.hook ? ' · accroche : ' + i.hook : ''}`).join('\n') : 'aucune'}`);
+        const used = new Set(), ids = new Set(un.map(i => String(i.id)));
+        const items = sl.list.map((x, k) => { const p = (r.plan || []).find(q => q.creneau === k + 1); if (!p) return null; const idea = p.idee_id !== null && ids.has(String(p.idee_id)) && !used.has(String(p.idee_id)) ? String(p.idee_id) : null; if (idea) used.add(idea); const src = idea ? un.find(i => String(i.id) === idea) : null; return { ...x, idea, titre: src ? src.title : p.titre, accroche: src ? src.hook || p.accroche : p.accroche, format: p.format }; }).filter(Boolean);
+        if (!items.length) throw new Error('L’IA n’a rien proposé. Réessaie.');
+        S.plan = { items, conseil: r.conseil, fromStats: sl.fromStats, niche }; draw();
+      } catch (er) { box.innerHTML = `<p class="msg">${e(er.message)}</p>`; }
+      busy(btn, false);
+    };
+    draw();
+  }
 
   /* performances TikTok */
   V.performances = async () => {

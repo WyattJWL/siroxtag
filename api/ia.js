@@ -31,6 +31,10 @@ Propose UNE idée de vidéo courte originale à partir de la demande. Réponds u
 On te donne une accroche de vidéo. Propose 3 versions meilleures (12 mots maximum, directes, qui donnent envie de rester) et explique en une phrase ce que tu as changé. Réponds uniquement en JSON : {"versions": ["...", "...", "..."], "pourquoi": "..."}` },
   description: { json: true, max: 450, user: true, sys: `${BASE}
 Écris 3 descriptions TikTok pour la vidéo décrite. Chacune : une première ligne qui accroche, puis une question pour faire réagir en commentaire. Pas de hashtags dans le texte. Propose aussi 5 hashtags précis en minuscules, sans accents. Réponds uniquement en JSON : {"descriptions": ["...", "...", "..."], "hashtags": ["#...", "#...", "#...", "#...", "#..."]}` },
+  planning: { json: true, max: 1100, user: true, sys: `${BASE}
+On te donne la niche d’un créateur, une liste numérotée de créneaux de publication (date et heure déjà choisies) et ses idées pas encore planifiées (avec leur numéro « id »).
+Pour CHAQUE créneau, propose une vidéo : reprends une idée existante quand elle colle (mets son id), sinon invente une nouvelle idée (id null). Varie les formats d’un jour à l’autre et garde un fil conducteur. N’utilise jamais deux fois la même idée existante.
+Réponds uniquement en JSON : {"plan": [{"creneau": 1, "idee_id": null, "titre": "...", "accroche": "...", "format": "..."}], "conseil": "une phrase sur la logique du planning"}` },
   analyse: { json: true, max: 600, user: true, sys: `${BASE}
 On te donne les chiffres réels des dernières vidéos TikTok d’un créateur (titre, durée, vues, j’aime, commentaires, partages, rapport aux vues habituelles). Analyse-les sans inventer d’autres chiffres. Réponds uniquement en JSON :
 {"resume": "2 phrases sur la tendance", "forces": ["...", "..."], "a_ameliorer": ["...", "..."], "a_tester": ["3 idées concrètes pour les prochaines vidéos", "...", "..."]}` },
@@ -76,7 +80,7 @@ async function mistral(task, text) {
 }
 
 // nettoie la réponse JSON : uniquement des textes courts, aux clés attendues
-const SHAPE = { idee: ['titre', 'format', 'accroche', 'milieu', 'chute', 'son', 'hashtags'], accroches: ['accroches'], ameliorer: ['versions', 'pourquoi'], description: ['descriptions', 'hashtags'], analyse: ['resume', 'forces', 'a_ameliorer', 'a_tester'] };
+const SHAPE = { idee: ['titre', 'format', 'accroche', 'milieu', 'chute', 'son', 'hashtags'], accroches: ['accroches'], ameliorer: ['versions', 'pourquoi'], description: ['descriptions', 'hashtags'], analyse: ['resume', 'forces', 'a_ameliorer', 'a_tester'], planning: ['conseil'] };
 function tidy(name, raw) {
   let o; try { const a = raw.indexOf('{'), b = raw.lastIndexOf('}'); o = JSON.parse(a >= 0 && b > a ? raw.slice(a, b + 1) : raw); } catch { throw new HttpError(502, 'L’IA a répondu de travers. Réessaie.'); }
   const out = {};
@@ -84,6 +88,9 @@ function tidy(name, raw) {
     const v = o[k];
     out[k] = Array.isArray(v) ? v.slice(0, 6).map(x => clip(x, 400)).filter(Boolean) : clip(v, 600);
   }
+  if (name === 'planning') out.plan = (Array.isArray(o.plan) ? o.plan : []).slice(0, 40).map(x => ({
+    creneau: Number.isInteger(+x?.creneau) ? +x.creneau : null, idee_id: x?.idee_id !== null && x?.idee_id !== undefined && Number.isSafeInteger(+x.idee_id) ? +x.idee_id : null,
+    titre: clip(x?.titre, 160), accroche: clip(x?.accroche, 300), format: clip(x?.format, 60) })).filter(x => x.creneau && x.titre);
   if (out.hashtags) out.hashtags = out.hashtags.map(h => '#' + h.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9_]/g, '')).filter(h => h.length > 1);
   return out;
 }
@@ -92,7 +99,7 @@ export default handle(['POST'], async (req, res) => {
   const b = await readBody(req);
   const name = String(b.task || ''), task = TASKS[name];
   if (!task) throw new HttpError(400, 'Tâche inconnue.');
-  const text = clip(b.text, name === 'analyse' ? 4000 : 600);
+  const text = clip(b.text, name === 'analyse' || name === 'planning' ? 4000 : 600);
   if (!text) throw new HttpError(400, 'Écris d’abord quelque chose.');
   const u = await currentUser(req);
   if (task.user && !u) throw new HttpError(401, 'Connecte-toi pour utiliser l’IA du Studio. C’est gratuit.');
