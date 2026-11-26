@@ -2,7 +2,8 @@
 // le navigateur choisit seulement une tâche et envoie un court texte.
 import { handle, readBody, send, HttpError, currentUser, limit, clientIp } from './_lib/core.js';
 
-const MODEL = 'mistral-small-latest';
+// modèles inclus dans le niveau gratuit de Mistral, essayés dans l’ordre (MISTRAL_MODEL permet d’en imposer un)
+const MODELS = [process.env.MISTRAL_MODEL, 'mistral-small-2603', 'ministral-8b-2512', 'mistral-medium-latest'].filter(Boolean);
 const clip = (s, n) => String(s ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, n);
 const BASE = `Tu es l’assistant du Studio Siroxtag, un outil gratuit pour créateurs de vidéos courtes (TikTok).
 Tu écris en français, avec des phrases courtes, un ton sympa et direct. Le public peut être jeune : reste bienveillant, pas de contenu choquant, pas de propos haineux, rien de dangereux.
@@ -30,17 +31,23 @@ Réponds en 4 phrases maximum, en texte simple, sans markdown. Tu ne connais rie
 async function mistral(task, text) {
   const key = process.env.MISTRAL_API_KEY;
   if (!key) throw new HttpError(503, 'L’IA n’est pas encore configurée.');
-  const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 8500);
+  const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 9000);
   try {
-    const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    let r;
+    for (const model of MODELS) {
+      r = await fetch('https://api.mistral.ai/v1/chat/completions', {
       method: 'POST', signal: ac.signal,
       headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: MODEL, temperature: task.json ? 0.8 : 0.6, max_tokens: task.max, safe_prompt: true,
+        model, temperature: task.json ? 0.8 : 0.6, max_tokens: task.max, safe_prompt: true,
         ...(task.json ? { response_format: { type: 'json_object' } } : {}),
         messages: [{ role: 'system', content: task.sys }, { role: 'user', content: text }]
       })
-    });
+      });
+      // modèle hors forfait ou inconnu : on essaie le suivant
+      if (![400, 402, 403, 404].includes(r.status)) break;
+      console.error('mistral', model, r.status, (await r.text()).slice(0, 160));
+    }
     if (r.status === 429) throw new HttpError(429, 'L’IA est très demandée. Réessaie dans une minute.');
     if (!r.ok) { console.error('mistral', r.status, (await r.text()).slice(0, 200)); throw new HttpError(502, 'L’IA ne répond pas. Réessaie dans un moment.'); }
     const d = await r.json();
