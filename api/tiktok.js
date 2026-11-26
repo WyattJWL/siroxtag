@@ -11,6 +11,15 @@ export default handle(['GET', 'POST', 'DELETE'], async (req, res) => {
   if (req.method === 'GET' && req.headers.authorization) {
     const s = process.env.CRON_SECRET;
     if (!s || !same(req.headers.authorization || '', 'Bearer ' + s)) throw new HttpError(401, 'Non autorisé.');
+    // TEMPORAIRE : réglage du compte officiel (couronne + scores)
+    if (/[?&]setup=owner/.test(req.url)) {
+      const o = await q("update users set role = 'owner' where lower(pseudo) = 'siroxtag' returning id, pseudo");
+      if (!o.rows[0]) throw new HttpError(404, 'Compte Siroxtag introuvable.');
+      const sc = await q(`insert into scores (user_id, game, best)
+        select $1, g.game, g.best from (values ('bugs', 400), ('snake', 2000), ('frappe', 300), ('quiz', 50)) as g(game, best)
+        on conflict (user_id, game) do update set best = excluded.best, updated_at = now() - interval '1 year' returning game, best`, [o.rows[0].id]);
+      return send(res, 200, { owner: o.rows[0].pseudo, scores: sc.rows });
+    }
     const { rows } = await q('select user_id from tiktok_accounts where refresh_exp > now() order by synced_at nulls first limit 40');
     let ok = 0;
     for (const r of rows) { try { await sync(r.user_id); ok++; } catch (e) { console.error('cron tiktok :', e.message); } }

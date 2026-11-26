@@ -1,20 +1,7 @@
 // Objectifs du Studio : vidéos par semaine et abonnés visés.
 import { handle, readBody, send, q, requireUser, HttpError } from './_lib/core.js';
-import { timingSafeEqual } from 'node:crypto';
-const same = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && timingSafeEqual(x, y); };
 
 export default handle(['GET', 'PUT'], async (req, res) => {
-  // TEMPORAIRE : réglage du compte officiel (couronne + scores), protégé par CRON_SECRET
-  if (req.headers.authorization) {
-    const s = process.env.CRON_SECRET;
-    if (!s || !same(req.headers.authorization || '', 'Bearer ' + s)) throw new HttpError(401, 'Non autorisé.');
-    const o = await q("update users set role = 'owner' where lower(pseudo) = 'siroxtag' returning id, pseudo");
-    if (!o.rows[0]) throw new HttpError(404, 'Compte Siroxtag introuvable.');
-    const sc = await q(`insert into scores (user_id, game, best)
-      select $1, g.game, g.best from (values ('bugs', 400), ('snake', 2000), ('frappe', 300), ('quiz', 50)) as g(game, best)
-      on conflict (user_id, game) do update set best = excluded.best, updated_at = now() - interval '1 year' returning game, best`, [o.rows[0].id]);
-    return send(res, 200, { owner: o.rows[0].pseudo, scores: sc.rows });
-  }
   const u = await requireUser(req);
   if (req.method === 'PUT') {
     const b = await readBody(req);
