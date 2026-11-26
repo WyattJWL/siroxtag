@@ -111,3 +111,24 @@ create table if not exists m13_progress (
   updated_at timestamptz not null default now(),
   primary key (user_id, tome, chap)
 );
+
+-- Admin : bannières du site, réglages, dates de sortie précises de PROJECT-M13
+create table if not exists site_banners (
+  id         bigserial primary key,
+  target     text not null check (target in ('siroxtag', 'm13', 'perso')),
+  text       text not null check (char_length(text) between 1 and 220),
+  link       text not null default '',
+  link_label text not null default '',
+  tone       text not null default 'info' check (tone in ('info', 'alerte', 'fete')),
+  starts_at  timestamptz,
+  ends_at    timestamptz,
+  active     boolean not null default true,
+  created_at timestamptz not null default now()
+);
+create table if not exists site_settings (key text primary key, value text not null);
+create table if not exists m13_schedule (
+  tome       integer not null,
+  chap       integer not null,
+  release_at timestamptz not null,
+  primary key (tome, chap)
+);

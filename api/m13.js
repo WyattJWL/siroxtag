@@ -10,9 +10,14 @@ import { handle, readBody, send, q, HttpError, currentUser, requireUser, limit }
 let BOOK;
 const book = () => (BOOK ||= JSON.parse(readFileSync(new URL('../content/m13/book.json', import.meta.url), 'utf8')));
 // premier chapitre : jeudi 26 novembre 2026, 7 h (heure de Paris), puis un chapitre par semaine
-const START = () => Date.parse(process.env.M13_START || '2026-11-26T06:00:00Z');
 const WEEK = 7 * 86400e3;
-const releaseOf = i => new Date(START() + i * WEEK);
+// dates de sortie : date de départ (réglée dans l’admin, sinon M13_START) + une semaine par chapitre, sauf date précise choisie dans l’admin
+async function schedule() {
+  const [st, ov] = await Promise.all([q("select value from site_settings where key = 'm13_start'"), q('select tome, chap, release_at from m13_schedule')]);
+  const start = Date.parse(st.rows[0]?.value || process.env.M13_START || '2026-11-26T06:00:00Z');
+  const o = Object.fromEntries(ov.rows.map(r => [r.tome + '-' + r.chap, new Date(r.release_at).getTime()]));
+  return i => { const m = book().meta[i]; return new Date(o[m.t + '-' + m.c] ?? start + i * WEEK); };
+}
 const isOwner = u => !!u && u.role === 'owner';
 
 function decrypt(blob) {
@@ -24,7 +29,7 @@ function decrypt(blob) {
 }
 
 export default handle(['GET', 'POST'], async (req, res) => {
-  const B = book(), now = Date.now();
+  const B = book(), now = Date.now(), releaseOf = await schedule();
   if (req.method === 'POST') {
     const u = await requireUser(req);
     await limit('m13:' + u.id, 240, 3600);
@@ -41,7 +46,7 @@ export default handle(['GET', 'POST'], async (req, res) => {
   const list = B.meta.map((m, i) => { const open = isOwner(u) || releaseOf(i) <= now; return { t: m.t, c: m.c, open, date: releaseOf(i).toISOString(), title: open ? m.title : null, words: open ? m.words : null }; });
   if (!t || !c) {
     const prog = u ? (await q('select tome as t, chap as c, pct, done from m13_progress where user_id = $1', [u.id])).rows : [];
-    return send(res, 200, { chapters: list, progress: prog, user: !!u, next: list.find(x => !x.open)?.date || null });
+    return send(res, 200, { chapters: list, progress: prog, user: !!u, next: list.filter(x => !x.open).map(x => x.date).sort()[0] || null });
   }
   const i = B.meta.findIndex(m => m.t === t && m.c === c);
   if (i < 0) throw new HttpError(404, 'Chapitre inconnu.');

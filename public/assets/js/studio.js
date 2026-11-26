@@ -50,6 +50,11 @@
     send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',
     hash: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
     spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/>',
+    shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.6.8 2.6 2.6 3 5.2"/>',
+    megaphone: '<path d="M3 10v4h4l7 5V5L7 10H3zM18 8a5 5 0 0 1 0 8"/>',
+    book: '<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17zM4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>',
+    trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
     clip: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9z"/>'
   };
   const I = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
@@ -190,6 +195,7 @@
     if (S.user) {
       $('[data-acc]').textContent = S.user.pseudo;
       $('[data-user]').innerHTML = `<b>${e(S.user.pseudo)}${SXA.badges(S.user)}</b><a href="/compte/" style="padding:0;display:inline;color:var(--mut);font-size:13px;font-weight:500">Mon compte ${I('right')}</a>`;
+      const adm = $('[data-r=admin]'); if (adm) adm.hidden = !S.user.owner;
       const [i, g, t] = await Promise.all([SXA.api('ideas').catch(() => ({ ideas: [] })), SXA.api('studio').catch(() => ({})), SXA.api('tiktok').catch(() => null)]);
       S.ideas = i.ideas || []; if (g.goals) S.goals = g.goals; S.tt = t;
     }
@@ -659,6 +665,63 @@
     if (qs.get('ia') === '1' && idea && !idea.caption) $('[data-aicap]').click();
   };
 
+  /* espace admin : réservé au compte officiel */
+  let admTab = 'apercu';
+  const dtLocal = iso => { if (!iso) return ''; const d = new Date(iso); const z = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`; };
+  const dtNice = iso => new Date(iso).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const SITES = { siroxtag: 'Siroxtag (accueil)', m13: 'PROJECT-M13', perso: 'Page perso' };
+  V.admin = async () => {
+    if (!S.user) return needLogin('Admin.', 'Connecte-toi avec le compte officiel.');
+    if (!S.user.owner) { main.innerHTML = '<div class="st-view"><h1 class="st-h">Accès réservé.</h1><p class="st-lead">Cette page est réservée au compte officiel Siroxtag.</p></div>'; return; }
+    main.innerHTML = '<div class="st-view"><p class="m">Chargement de l’admin…</p></div>';
+    let D; try { D = await SXA.api('studio?admin=1'); } catch (er) { main.innerHTML = `<div class="st-view"><p class="msg">${e(er.message)}</p></div>`; return; }
+    const tabs = [['apercu', 'chart', 'Aperçu'], ['bannieres', 'megaphone', 'Bannières'], ['m13', 'book', 'Sorties M13'], ['membres', 'users', 'Membres']];
+    const act = async (body, okMsg) => { try { await SXA.api('studio', { method: 'POST', body }); if (okMsg && window.SX) window.SX.toast(okMsg); V.admin(); } catch (er) { alert(er.message); } };
+    const st = D.stats;
+    const panes = {
+      apercu: () => `<div class="grid g4">${[['Membres', st.users, `+${st.users_7j} cette semaine`], ['Actifs 7 jours', st.actifs_7j, 'connectés récemment'], ['Lecteurs M13', st.lecteurs_m13, `${st.chapitres_lus} chapitres terminés`], ['Idées au Studio', st.idees, `${st.tiktok} compte${st.tiktok > 1 ? 's' : ''} TikTok relié${st.tiktok > 1 ? 's' : ''}`]].map(([a, b, c]) => `<div class="tile"><small>${a}</small><b>${fmt(b)}</b><span>${e(c)}</span></div>`).join('')}</div>
+        <div class="st-sec"><h2>Bannières en ligne</h2>${D.banners.filter(b => b.active).length ? D.banners.filter(b => b.active).map(b => `<p class="m">${I('megaphone')} <b style="color:var(--fg)">${e(SITES[b.target])}</b> · ${e(b.text)}</p>`).join('') : '<p class="m">Aucune. Crée-en une dans l’onglet Bannières.</p>'}</div>`,
+      bannieres: () => `<form class="box" data-bf>
+          <h2 style="margin:0;font-size:20px">Nouvelle bannière</h2>
+          <p class="m" style="font-size:14px;margin:6px 0 0">Elle s’affiche tout en haut, au-dessus du hero du site choisi. Les visiteurs peuvent la fermer.</p>
+          <div class="grid g3"><label class="fld">Site<select name="target">${Object.entries(SITES).map(([k, v]) => `<option value="${k}">${e(v)}</option>`).join('')}</select></label>
+          <label class="fld">Style<select name="tone"><option value="info">Info</option><option value="alerte">Important</option><option value="fete">Bonne nouvelle</option></select></label>
+          <label class="fld">Lien (facultatif)<input class="in" name="link" maxlength="300" placeholder="/m13/ ou https://…"></label></div>
+          <label class="fld">Texte (220 caractères max.)<input class="in" name="text" maxlength="220" required placeholder="Nouveau chapitre de PROJECT-M13 ce jeudi à 7 h"></label>
+          <div class="grid g3"><label class="fld">Texte du lien<input class="in" name="link_label" maxlength="40" placeholder="Lire"></label>
+          <label class="fld">Début (vide = tout de suite)<input class="in" type="datetime-local" name="starts_at"></label>
+          <label class="fld">Fin (vide = sans fin)<input class="in" type="datetime-local" name="ends_at"></label></div>
+          <button class="sbtn pri" type="submit" style="margin-top:16px">${I('plus')}Publier la bannière</button></form>
+        <div class="st-sec"><h2>Toutes les bannières</h2><div class="hooks">${D.banners.length ? D.banners.map(b => { const live = b.active && (!b.starts_at || new Date(b.starts_at) <= new Date()) && (!b.ends_at || new Date(b.ends_at) > new Date()); return `<div class="hk"><span><span class="pill ${live ? 'v-ok' : 'v-mid'}">${live ? 'En ligne' : b.active ? 'Programmée ou terminée' : 'Désactivée'}</span> <b>${e(SITES[b.target])}</b><br>${e(b.text)}${b.link ? ` <span class="m">→ ${e(b.link)}</span>` : ''}<br><span class="m" style="font-size:13px">${b.starts_at ? 'du ' + e(dtNice(b.starts_at)) : 'dès maintenant'}${b.ends_at ? ' au ' + e(dtNice(b.ends_at)) : ', sans fin'}</span></span><span class="row"><button class="sbtn" type="button" data-btog="${e(b.id)}">${b.active ? 'Désactiver' : 'Activer'}</button><button class="sbtn" type="button" data-bdel="${e(b.id)}" aria-label="Supprimer">${I('trash')}</button></span></div>`; }).join('') : '<p class="m">Aucune bannière pour l’instant.</p>'}</div></div>`,
+      m13: () => {
+        const ov = Object.fromEntries(D.m13.overrides.map(o => [o.t + '-' + o.c, o.release_at])), start = Date.parse(D.m13.start);
+        const date = (m, i) => ov[m.t + '-' + m.c] || new Date(start + i * 7 * 86400e3).toISOString();
+        return `<div class="box"><h2 style="margin:0;font-size:20px">Le rythme</h2><p class="m" style="font-size:14px;margin:6px 0 0">Le chapitre 1 sort à cette date, puis un chapitre chaque semaine. Une date précise, ci-dessous, passe toujours avant.</p>
+          <form class="row" data-ms style="margin-top:12px"><input class="in" type="datetime-local" name="at" value="${e(dtLocal(D.m13.start))}" required><button class="sbtn pri" type="submit">Enregistrer le départ</button></form></div>
+          <div class="st-sec"><h2>Chapitre par chapitre</h2><div class="hooks">${D.m13.chapters.map((m, i) => { const d = date(m, i), out = new Date(d) <= new Date(), fixed = !!ov[m.t + '-' + m.c]; return `<form class="hk" data-mc="${m.t}-${m.c}" style="flex-wrap:wrap"><span style="min-width:220px;flex:1"><span class="pill ${out ? 'v-ok' : 'v-new'}">${out ? 'Sorti' : 'À venir'}</span> <b>T${m.t} · ${m.c}</b> ${e(m.title)}${fixed ? ' <span class="pill">date précise</span>' : ''}</span><span class="row"><input class="in" type="datetime-local" name="at" value="${e(dtLocal(d))}" style="height:38px"><button class="sbtn" type="submit">OK</button>${out ? '' : `<button class="sbtn" type="button" data-now>Sortir maintenant</button>`}${fixed ? '<button class="sbtn" type="button" data-auto title="Revenir au rythme d’un chapitre par semaine">Rythme auto</button>' : ''}</span></form>`; }).join('')}</div></div>`;
+      },
+      membres: () => `<p class="m">${D.users.length} compte${D.users.length > 1 ? 's' : ''} (les 300 plus récents). Les adresses e-mail sont masquées.</p>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Pseudo</th><th>Connexion</th><th>Inscrit le</th><th>Dernière visite</th><th>Idées</th><th>M13 lus</th><th>TikTok</th><th></th></tr></thead><tbody>${D.users.map(u => `<tr><td><b>${e(u.pseudo)}</b>${SXA.badges({ owner: u.role === 'owner', verified: u.verified })}</td><td>${[u.mail ? 'e-mail ' + e(u.email || '') : '', u.discord ? 'Discord' : ''].filter(Boolean).join(' · ')}</td><td>${e(new Date(u.created_at).toLocaleDateString('fr-FR'))}</td><td>${e(new Date(u.last_seen).toLocaleDateString('fr-FR'))}</td><td>${u.idees}</td><td>${u.m13}</td><td>${u.tiktok ? 'relié' : '—'}</td><td>${u.role === 'owner' ? '' : `<button class="sbtn" type="button" data-udel="${e(u.pseudo)}" aria-label="Supprimer ${e(u.pseudo)}">${I('trash')}</button>`}</td></tr>`).join('')}</tbody></table></div>`
+    };
+    main.innerHTML = `<div class="st-view"><p class="lab">Compte officiel</p><h1 class="st-h">Admin<span class="it">.</span></h1>
+      <div class="row st-sec" role="tablist">${tabs.map(([k, ic, n]) => `<button class="sbtn${k === admTab ? ' pri' : ''}" type="button" role="tab" aria-selected="${k === admTab}" data-tab="${k}">${I(ic)}${n}</button>`).join('')}</div>
+      <div class="st-sec" data-pane>${panes[admTab]()}</div></div>`;
+    $$('[data-tab]').forEach(b => b.onclick = () => { admTab = b.dataset.tab; V.admin(); });
+    const pane = $('[data-pane]');
+    const iso = v => (v ? new Date(v).toISOString() : null);
+    $('[data-bf]', pane)?.addEventListener('submit', ev => { ev.preventDefault(); const f = Object.fromEntries(new FormData(ev.target)); act({ admin: 'banner-save', ...f, starts_at: iso(f.starts_at), ends_at: iso(f.ends_at), active: true }, 'Bannière publiée'); });
+    pane.querySelectorAll('[data-btog]').forEach(b => b.onclick = () => { const x = D.banners.find(y => String(y.id) === b.dataset.btog); act({ admin: 'banner-save', ...x, active: !x.active }, x.active ? 'Bannière désactivée' : 'Bannière activée'); });
+    pane.querySelectorAll('[data-bdel]').forEach(b => b.onclick = () => { if (confirm('Supprimer cette bannière ?')) act({ admin: 'banner-del', id: b.dataset.bdel }, 'Bannière supprimée'); });
+    $('[data-ms]', pane)?.addEventListener('submit', ev => { ev.preventDefault(); act({ admin: 'm13-start', at: iso(ev.target.at.value) }, 'Rythme enregistré'); });
+    pane.querySelectorAll('[data-mc]').forEach(f => {
+      const [t, c] = f.dataset.mc.split('-').map(Number);
+      f.onsubmit = ev => { ev.preventDefault(); act({ admin: 'm13-date', t, c, at: iso(f.at.value) }, `Chapitre ${c} : date enregistrée`); };
+      f.querySelector('[data-now]')?.addEventListener('click', () => { if (confirm('Sortir ce chapitre tout de suite ?')) act({ admin: 'm13-date', t, c, at: 'now' }, `Chapitre ${c} sorti !`); });
+      f.querySelector('[data-auto]')?.addEventListener('click', () => act({ admin: 'm13-date', t, c, at: null }, 'Retour au rythme automatique'));
+    });
+    pane.querySelectorAll('[data-udel]').forEach(b => b.onclick = () => { const p = b.dataset.udel; if (prompt(`Supprimer définitivement le compte « ${p} » et toutes ses données ? Écris son pseudo pour confirmer :`) === p) act({ admin: 'user-del', pseudo: p }, 'Compte supprimé'); });
+  };
+
   /* objectifs */
   V.objectifs = () => {
     if (!S.user) return needLogin('Mes <span class="it">objectifs</span>.', 'Connecte-toi pour te fixer un rythme de publication et suivre ta série.');
@@ -703,7 +766,7 @@
     $$('[data-r]').forEach(a => (a.dataset.r === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
     $(`[data-r="${name}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center' });
     V[name]();
-    document.title = ({ accueil: 'Tableau de bord', idees: 'Idées', accroches: 'Accroches', tableau: 'Tableau', calendrier: 'Calendrier', publier: 'Publier', performances: 'Performances', objectifs: 'Objectifs', checklist: 'Checklist' }[name]) + ' — Studio Siroxtag';
+    document.title = ({ accueil: 'Tableau de bord', idees: 'Idées', accroches: 'Accroches', tableau: 'Tableau', calendrier: 'Calendrier', admin: 'Admin', publier: 'Publier', performances: 'Performances', objectifs: 'Objectifs', checklist: 'Checklist' }[name]) + ' — Studio Siroxtag';
     if (S.navigated) { main.focus({ preventScroll: true }); scrollTo({ top: 0 }); }
     S.navigated = true;
   }
