@@ -96,16 +96,6 @@ function tidy(name, raw) {
 }
 
 export default handle(['POST'], async (req, res) => {
-  // TEMPORAIRE : transcription d’un audio (Whisper chez Groq), réservée à CRON_SECRET
-  if (req.headers.authorization && process.env.CRON_SECRET && req.headers.authorization === 'Bearer ' + process.env.CRON_SECRET) {
-    const b = await readBody(req, 3_000_000);
-    const fd = new FormData();
-    fd.append('file', new Blob([Buffer.from(String(b.audio || ''), 'base64')], { type: 'audio/ogg' }), 'audio.ogg');
-    fd.append('model', 'whisper-large-v3'); fd.append('language', 'fr'); fd.append('response_format', 'verbose_json');
-    const r = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', { method: 'POST', headers: { Authorization: 'Bearer ' + process.env.AI_API_KEY }, body: fd });
-    const d = await r.json().catch(() => ({}));
-    return send(res, r.ok ? 200 : 502, r.ok ? { text: d.text, segments: (d.segments || []).map(x => ({ s: x.start, e: x.end, t: x.text })) } : { error: d.error || r.status });
-  }
   const b = await readBody(req);
   const name = String(b.task || ''), task = TASKS[name];
   if (!task) throw new HttpError(400, 'Tâche inconnue.');
