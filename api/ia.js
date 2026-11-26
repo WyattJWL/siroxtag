@@ -10,7 +10,7 @@ const PROVIDER = () => {
     const base = (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').replace(/\/$/, '');
     const groq = base.includes('groq.com');
     return { key: process.env.AI_API_KEY, url: base + '/chat/completions', mistral: base.includes('mistral.ai'),
-      models: [process.env.AI_MODEL, ...(groq ? ['llama-3.3-70b-versatile', 'openai/gpt-oss-120b', 'llama-3.1-8b-instant'] : [])].filter(Boolean) };
+      models: [process.env.AI_MODEL, ...(groq ? ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'] : [])].filter(Boolean) };
   }
   return { key: process.env.MISTRAL_API_KEY, url: 'https://api.mistral.ai/v1/chat/completions', mistral: true,
     models: [process.env.MISTRAL_MODEL, 'mistral-small-2603', 'ministral-8b-2512', 'mistral-medium-latest'].filter(Boolean) };
@@ -42,16 +42,20 @@ Réponds en 4 phrases maximum, en texte simple, sans markdown. Tu ne connais rie
 async function mistral(task, text) {
   const P = PROVIDER(), key = P.key;
   if (!key || !P.models.length) throw new HttpError(503, 'L’IA n’est pas encore configurée.');
-  const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 9000);
+  const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 22000);
   try {
     let r;
-    for (const model of P.models) {
+    const tries = P.models.flatMap(m => (task.json ? [[m, true], [m, false]] : [[m, false]]));
+    for (const [model, strict] of tries) {
+      // les modèles « gpt-oss » réfléchissent avant de répondre : on leur laisse de la place, en réflexion courte
+      const oss = model.includes('gpt-oss');
       r = await fetch(P.url, {
       method: 'POST', signal: ac.signal,
       headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model, temperature: task.json ? 0.8 : 0.6, max_tokens: task.max, ...(P.mistral ? { safe_prompt: true } : {}),
-        ...(task.json ? { response_format: { type: 'json_object' } } : {}),
+        model, temperature: task.json ? 0.8 : 0.6, max_tokens: oss ? task.max * 3 + 800 : task.max,
+        ...(oss ? { reasoning_effort: 'low' } : {}), ...(P.mistral ? { safe_prompt: true } : {}),
+        ...(strict ? { response_format: { type: 'json_object' } } : {}),
         messages: [{ role: 'system', content: task.sys }, { role: 'user', content: text }]
       })
       });
@@ -74,7 +78,7 @@ async function mistral(task, text) {
 // nettoie la réponse JSON : uniquement des textes courts, aux clés attendues
 const SHAPE = { idee: ['titre', 'format', 'accroche', 'milieu', 'chute', 'son', 'hashtags'], accroches: ['accroches'], ameliorer: ['versions', 'pourquoi'], description: ['descriptions', 'hashtags'], analyse: ['resume', 'forces', 'a_ameliorer', 'a_tester'] };
 function tidy(name, raw) {
-  let o; try { o = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch { throw new HttpError(502, 'L’IA a répondu de travers. Réessaie.'); }
+  let o; try { const a = raw.indexOf('{'), b = raw.lastIndexOf('}'); o = JSON.parse(a >= 0 && b > a ? raw.slice(a, b + 1) : raw); } catch { throw new HttpError(502, 'L’IA a répondu de travers. Réessaie.'); }
   const out = {};
   for (const k of SHAPE[name]) {
     const v = o[k];

@@ -8,6 +8,9 @@
     "api/**/*.js": {
       "maxDuration": 10,
       "includeFiles": "db/schema.sql"
+    },
+    "api/ia.js": {
+      "maxDuration": 25
     }
   },
   "headers": [
