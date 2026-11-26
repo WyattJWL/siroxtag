@@ -7,7 +7,7 @@
   "functions": {
     "api/**/*.js": {
       "maxDuration": 25,
-      "includeFiles": "db/schema.sql"
+      "includeFiles": "{db/schema.sql,content/m13/book.json}"
     }
   },
   "headers": [
@@ -64,6 +64,15 @@
         {
           "key": "Cache-Control",
           "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/m13/lire/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
         }
       ]
     }

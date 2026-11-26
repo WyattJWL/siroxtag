@@ -100,3 +100,14 @@ create table if not exists tiktok_daily (
 alter table users add column if not exists role text not null default '';
 alter table tiktok_accounts add column if not exists verified boolean not null default false;
 alter table tiktok_accounts add column if not exists username text not null default '';
+
+-- PROJECT-M13 : où chaque lecteur en est dans la saga
+create table if not exists m13_progress (
+  user_id    uuid not null references users(id) on delete cascade,
+  tome       integer not null check (tome between 1 and 4),
+  chap       integer not null check (chap between 1 and 13),
+  pct        integer not null default 0 check (pct between 0 and 100),
+  done       boolean not null default false,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, tome, chap)
+);

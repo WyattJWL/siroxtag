@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lire — PROJECT-M13</title>
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#ECE8DF">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/extra.css">
+<link rel="stylesheet" href="/m13/m13.css">
+<style>
+body.paper{--bg:var(--paper);--fg:var(--ink);--mut:rgba(22,24,27,.56);--line:rgba(22,24,27,.14)}
+.bar{position:fixed;inset:0 0 auto;height:2px;z-index:60;background:transparent}
+.bar i{display:block;height:100%;width:0;background:var(--clin2)}
+body.paper .bar i{background:var(--ink)}
+.r-top{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px var(--pad);background:var(--bg);border-bottom:1px solid var(--line);transition:transform .4s var(--ease)}
+.r-top.hide{transform:translateY(-100%)}
+.r-top .tools{display:flex;gap:8px}
+.r-top button,.r-top a.x{height:34px;min-width:34px;padding:0 10px;border:1px solid var(--line);background:none;color:var(--fg);font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.r-top button:hover,.r-top a.x:hover{border-color:var(--fg)}
+article{max-width:var(--col,36em);margin:0 auto;padding:clamp(50px,10vh,110px) 22px 40px}
+.r-head{min-height:56vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:50px;border-bottom:1px solid var(--line);margin-bottom:50px}
+.r-head h1{margin:18px 0 0;font:800 clamp(44px,8vw,96px)/.9 var(--sans);font-stretch:80%;letter-spacing:-.04em}
+.r-head h1 span{display:inline-block;opacity:0;transform:translateY(.4em);transition:all 1s var(--ease)}
+.r-head.on h1 span{opacity:1;transform:none}
+.text p{font:400 var(--fs,20px)/1.72 var(--book);margin:0 0 1.05em;text-wrap:pretty;hyphens:auto;opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s var(--ease)}
+.text p.in{opacity:1;transform:none}
+.text p:first-child::first-letter{float:left;font:800 4.1em/.82 var(--sans);font-stretch:78%;margin:.06em .1em 0 0}
+.text p.dlg{padding-left:0}
+.end{margin:70px 0 30px;padding-top:40px;border-top:1px solid var(--line);text-align:center}
+.end .mono{display:block;margin-bottom:22px}
+.end .cd{font:800 clamp(28px,4vw,44px)/1 var(--sans);font-stretch:80%;font-variant-numeric:tabular-nums;margin:10px 0 20px}
+.gate{min-height:70vh;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.gate .ax input{border-radius:0!important}
+</style>
+</head>
+<body class="paper">
+<div class="bar" aria-hidden="true"><i data-bar></i></div>
+<header class="r-top" data-top>
+  <a class="m-logo" href="/m13/#chapitres" style="text-decoration:none">PROJECT-M13</a>
+  <div class="tools">
+    <button type="button" data-fs="-1" aria-label="Texte plus petit">A−</button>
+    <button type="button" data-fs="1" aria-label="Texte plus grand">A+</button>
+    <button type="button" data-night aria-label="Mode nuit">Nuit</button>
+    <a class="x" href="/m13/#chapitres" aria-label="Retour aux chapitres">✕</a>
+  </div>
+</header>
+<article data-art><p class="mono" style="padding-top:30vh;text-align:center">Ouverture du chapitre…</p></article>
+<script src="/assets/js/compte.js"></script>
+<script src="/assets/js/term.js" data-site="siroxtag" defer></script>
+<script>
+addEventListener('DOMContentLoaded', async () => {
+  const $ = s => document.querySelector(s), e = SXA.esc, art = $('[data-art]');
+  const TOMES = ['La Page 404', 'Les Pages retirées', 'Les Pages ajoutées', 'Les Pages effacées'];
+  const qs = new URLSearchParams(location.search), t = +qs.get('t') || 1, c = +qs.get('c') || 1;
+  // réglages de lecture gardés dans ce navigateur (clé sx-m13)
+  let pref = { fs: 20, night: false }; try { pref = { ...pref, ...JSON.parse(localStorage.getItem('sx-m13') || '{}') }; } catch (er) {}
+  const save = () => { try { localStorage.setItem('sx-m13', JSON.stringify(pref)); } catch (er) {} };
+  const apply = () => { document.documentElement.style.setProperty('--fs', pref.fs + 'px'); document.body.classList.toggle('paper', !pref.night); $('[data-night]').textContent = pref.night ? 'Jour' : 'Nuit'; document.querySelector('meta[name=theme-color]').content = pref.night ? '#0D1013' : '#ECE8DF'; };
+  apply();
+  document.querySelectorAll('[data-fs]').forEach(b => b.onclick = () => { pref.fs = Math.min(28, Math.max(15, pref.fs + +b.dataset.fs * 2)); save(); apply(); });
+  $('[data-night]').onclick = () => { pref.night = !pref.night; save(); apply(); };
+  const fmtDate = d => new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  let d;
+  try { d = await SXA.api(`m13?t=${t}&c=${c}`); }
+  catch (er) {
+    art.innerHTML = `<div class="gate"><p class="mono">Tome ${t} · Chapitre ${c}</p><h1 style="margin:0;font:800 clamp(36px,6vw,64px)/.95 var(--sans);font-stretch:80%">${er.status === 403 ? 'Pas encore <span class="it">sorti</span>.' : er.status === 401 ? 'Ouvre ton <span class="it">compte</span>.' : 'Page <span class="it">introuvable</span>.'}</h1><p style="color:var(--mut)">${e(er.message)}</p><div data-login style="max-width:440px"></div><p><a class="m-btn" href="/m13/#chapitres">Tous les chapitres</a></p></div>`;
+    if (er.status === 401) SXA.form($('[data-login]'), { next: location.pathname + location.search, onDone: () => location.reload() });
+    return;
+  }
+  document.title = `${d.title} — PROJECT-M13`;
+  art.innerHTML = `<header class="r-head" data-head><p class="mono">Tome ${t} · ${e(TOMES[t - 1])} · Chapitre ${c}</p><h1>${d.title.split(' ').map(w => `<span>${e(w)}</span>`).join(' ')}</h1></header>
+    <div class="text" data-text>${d.paras.map(p => `<p${p.startsWith('—') ? ' class="dlg"' : ''}>${e(p)}</p>`).join('')}</div>
+    <footer class="end" data-end><span class="mono">— fin du chapitre ${c} —</span>${d.next ? (d.next.open ? `<a class="m-btn fill" href="/m13/lire/?t=${d.next.t}&c=${d.next.c}">Chapitre suivant</a>` : `<span class="mono">Le chapitre suivant sort le ${e(fmtDate(d.next.date))}, 7 h</span><div class="cd" data-cd></div><a class="m-btn" href="/m13/#chapitres">Tous les chapitres</a>`) : '<span class="mono">Fin de PROJECT-M13.</span><a class="m-btn" href="/m13/">Retour à Luynes</a>'}</footer>`;
+  const head = $('[data-head]'); head.querySelectorAll('h1 span').forEach((s, i) => s.style.transitionDelay = (i * .12) + 's');
+  requestAnimationFrame(() => setTimeout(() => head.classList.add('on'), 60));
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  art.querySelectorAll('.text p').forEach(p => io.observe(p));
+  // revenir à l’endroit où on s’était arrêté
+  if (d.progress && !d.progress.done && d.progress.pct > 3) {
+    const tx = $('[data-text]'); setTimeout(() => { scrollTo({ top: tx.offsetTop + tx.offsetHeight * d.progress.pct / 100 - innerHeight * .3 }); art.querySelectorAll('.text p').forEach(p => { if (p.getBoundingClientRect().top < innerHeight) p.classList.add('in'); }); }, 400);
+    if (window.SX) setTimeout(() => window.SX.toast(`On reprend à ${d.progress.pct} % du chapitre.`), 900);
+  }
+  // progression : barre, enregistrement régulier, chapitre terminé
+  let pct = 0, sent = d.progress ? d.progress.pct : 0, done = !!(d.progress && d.progress.done), lastY = scrollY;
+  const send = (fin) => { if (!fin && pct - sent < 4) return; sent = pct; fetch('/api/m13', { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-SX': '1' }, body: JSON.stringify({ t, c, pct, done: !!fin }) }).catch(() => {}); };
+  const onScroll = () => {
+    const tx = $('[data-text]'), r = tx.getBoundingClientRect();
+    pct = Math.round(Math.min(100, Math.max(0, (innerHeight - r.top) / r.height * 100)));
+    $('[data-bar]').style.width = pct + '%';
+    $('[data-top]').classList.toggle('hide', scrollY > lastY && scrollY > 300); lastY = scrollY;
+    if (!done && $('[data-end]').getBoundingClientRect().top < innerHeight * .9) { done = true; send(true); if (window.SX && t === 1 && c === 1) window.SX.ach('m13miel'); }
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  setInterval(() => send(false), 8000);
+  addEventListener('pagehide', () => send(false));
+  // compte à rebours vers le prochain chapitre
+  if (d.next && !d.next.open) { const at = Date.parse(d.next.date); const tick = () => { const s = Math.max(0, Math.floor((at - Date.now()) / 1000)); const el = $('[data-cd]'); if (el) el.textContent = `${Math.floor(s / 86400)} j ${String(Math.floor(s % 86400 / 3600)).padStart(2, '0')} h ${String(Math.floor(s % 3600 / 60)).padStart(2, '0')} min`; }; tick(); setInterval(tick, 30000); }
+  addEventListener('keydown', ev => { if (ev.target.closest('input,textarea')) return; if (ev.key === 'ArrowRight' && d.next && d.next.open) location.href = `/m13/lire/?t=${d.next.t}&c=${d.next.c}`; if (ev.key === 'ArrowLeft' && d.prev) location.href = `/m13/lire/?t=${d.prev.t}&c=${d.prev.c}`; });
+});
+</script>
+</body>
+</html>
