@@ -120,3 +120,24 @@
   .cal .d{min-height:58px}.cal .ev{font-size:0;height:6px;padding:0}
 }
 @media (max-width:520px){.board,.g4{grid-template-columns:1fr}.vid{grid-template-columns:52px minmax(0,1fr)}.vid img,.vid .ph{width:52px;height:70px}.vid>.pill{grid-column:2;justify-self:start}}
+/* icônes SVG */
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px}
+.st-side i .ic{width:19px;height:19px;vertical-align:-4px}
+.pill .ic{width:15px;height:15px}
+.tile small .ic{width:14px;height:14px;vertical-align:-2px;margin-right:4px}
+.tile b .ic{width:34px;height:34px;vertical-align:-4px}
+.tile b.vrow{font-size:22px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tile b.vrow .ic{width:20px;height:20px;margin-left:4px}
+.vid .nums span{display:inline-flex;align-items:center;gap:4px}
+.vid .nums .ic{width:14px;height:14px}
+.tip-l{display:flex;gap:8px;align-items:flex-start}
+.tip-l .ic{color:var(--o);margin-top:2px}
+.crit .ic{width:17px;height:17px;margin-right:6px}
+.crit li{display:flex;align-items:flex-start;gap:2px}
+.v-top .ic{color:var(--o)}
+.cal .ev .ic{width:12px;height:12px;margin-right:3px;vertical-align:-2px}
+.card-i p .ic{width:14px;height:14px;vertical-align:-2px}
+.card-i .mv .ic{width:16px;height:16px;vertical-align:-3px}
+.demo .ic{color:var(--o)}
+.c-ok .ic{color:#3cb46e}.c-half .ic{color:#e6aa28}.c-no .ic{color:var(--mut)}
+.v-ok .ic{color:#3cb46e}.v-low .ic{color:#e6aa28}

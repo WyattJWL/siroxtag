@@ -14,6 +14,44 @@
   const monday = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
   const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (er) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (er) {} } };
 
+
+  /* ---------- icônes (SVG maison, trait 2 px, couleur du texte) ---------- */
+  const P = {
+    home: '<path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/>',
+    bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-1.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+    hook: '<circle cx="17" cy="4.5" r="1.5"/><path d="M17 6v6a5 5 0 0 1-10 0V9M7 9l-2.5 2.5M7 9l2.5 2.5"/>',
+    board: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/>',
+    calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    chart: '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    checksq: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-6"/>',
+    flame: '<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1.2-3.6 2.4-4.6.2 1.6 1 2.6 2.1 3.1C11 9 11.2 6 12 3z"/>',
+    ok: '<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+    meh: '<circle cx="12" cy="12" r="9"/><path d="M8.5 15h7M9 9.5h.01M15 9.5h.01"/>',
+    alert: '<path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    bars: '<path d="M3 21h18M6 17v-6M11 17V6M16 17v-4"/>',
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+    msg: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+    share: '<path d="M4 13v6a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-6M12 3v12M7 8l5-5 5 5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    refresh: '<path d="M20 11a8 8 0 0 0-14.6-4.4L4 8M4 4v4h4M4 13a8 8 0 0 0 14.6 4.4L20 16M20 20v-4h-4"/>',
+    music: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+    flask: '<path d="M9 3h6M10 3v6L4.5 19A1.5 1.5 0 0 0 5.8 21h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3M7 15h10"/>',
+    film: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+    copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+    check: '<path d="M5 12l5 5 9-10"/>',
+    no: '<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+    half: '<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+    left: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+    right: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    clip: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9z"/>'
+  };
+  const I = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
+  $$('[data-ic]').forEach(el => { el.innerHTML = I(el.dataset.ic); });
+
   const S = { user: null, ideas: [], goals: { per_week: 3, followers: null }, tt: null, demo: false, loaded: false };
 
   /* ---------- données du générateur ---------- */
@@ -67,10 +105,10 @@
     vs.forEach((v, i) => {
       const others = vs.filter(o => o !== v && now - o.t > 48 * 3600e3).slice(0, 20).map(o => o.views);
       const med = median(others); v.ratio = med ? v.views / med : null; v.tips = [];
-      if (now - v.t < 48 * 3600e3) { v.cls = 'v-new'; v.label = '⏳ Trop tôt'; v.tips.push('Les chiffres bougent encore pendant les 48 premières heures. Reviens après.'); return; }
-      if (others.length < 3) { v.cls = 'v-mid'; v.label = '📊 À comparer'; v.tips.push('Il faut au moins 4 vidéos pour comparer. Continue de publier !'); return; }
+      if (now - v.t < 48 * 3600e3) { v.cls = 'v-new'; v.ic = 'clock'; v.label = 'Trop tôt'; v.tips.push('Les chiffres bougent encore pendant les 48 premières heures. Reviens après.'); return; }
+      if (others.length < 3) { v.cls = 'v-mid'; v.ic = 'bars'; v.label = 'À comparer'; v.tips.push('Il faut au moins 4 vidéos pour comparer. Continue de publier !'); return; }
       const r = v.ratio;
-      [v.cls, v.label] = r >= 2 ? ['v-top', '🔥 Carton'] : r >= 1.1 ? ['v-ok', '✅ Bonne'] : r >= 0.7 ? ['v-mid', '😐 Dans ta moyenne'] : ['v-low', '⚠️ En dessous'];
+      [v.cls, v.ic, v.label] = r >= 2 ? ['v-top', 'flame', 'Carton'] : r >= 1.1 ? ['v-ok', 'ok', 'Bonne'] : r >= 0.7 ? ['v-mid', 'meh', 'Dans ta moyenne'] : ['v-low', 'alert', 'En dessous'];
       if (r >= 2) v.tips.push(`${r.toFixed(1).replace('.', ',')} fois tes vues habituelles. Note ce qui a marché (sujet, son, accroche) et refais-le dans la semaine.`);
       if (r < 0.9 && v.er >= medEr * 1.1) v.tips.push('Ceux qui l’ont vue ont aimé. C’est le début qui n’a pas retenu : retravaille les 2 premières secondes et la miniature.');
       if (r >= 1.1 && v.er < medEr * 0.8) v.tips.push('Beaucoup de vues mais peu de réactions : l’accroche marche, la fin moins. Termine par une question ou un rebondissement.');
@@ -148,7 +186,7 @@
     S.user = await SXA.me();
     if (S.user) {
       $('[data-acc]').textContent = S.user.pseudo;
-      $('[data-user]').innerHTML = `<b>${e(S.user.pseudo)}</b><a href="/compte/" style="padding:0;display:inline;color:var(--mut);font-size:13px;font-weight:500">Mon compte →</a>`;
+      $('[data-user]').innerHTML = `<b>${e(S.user.pseudo)}</b><a href="/compte/" style="padding:0;display:inline;color:var(--mut);font-size:13px;font-weight:500">Mon compte ${I('right')}</a>`;
       const [i, g, t] = await Promise.all([SXA.api('ideas').catch(() => ({ ideas: [] })), SXA.api('studio').catch(() => ({})), SXA.api('tiktok').catch(() => null)]);
       S.ideas = i.ideas || []; if (g.goals) S.goals = g.goals; S.tt = t;
     }
@@ -185,9 +223,9 @@
       main.innerHTML = `<div class="st-view"><p class="lab">Outil gratuit pour créateurs</p><h1 class="st-h">Le Studio.</h1>
         <p class="st-lead">Tout pour créer tes vidéos courtes au même endroit : des idées, des accroches qui retiennent, un tableau de tournage, un calendrier, et le suivi de tes vidéos TikTok qui te dit ce qui marche.</p>
         <div class="grid g3 st-sec">
-          <a class="tile" href="#/idees" style="color:inherit;text-decoration:none"><small>💡 Idées</small><b>∞</b><span>Une idée complète en un clic : format, plan, son et hashtags.</span></a>
-          <a class="tile" href="#/accroches" style="color:inherit;text-decoration:none"><small>🪝 Accroches</small><b>/100</b><span>Écris ton accroche, le Studio la note et te dit quoi améliorer.</span></a>
-          <a class="tile" href="#/performances" style="color:inherit;text-decoration:none"><small>📈 Performances</small><b>TikTok</b><span>Chaque vidéo reçoit un verdict et des conseils. Démo disponible.</span></a>
+          <a class="tile" href="#/idees" style="color:inherit;text-decoration:none"><small>${I('bulb')} Idées</small><b>∞</b><span>Une idée complète en un clic : format, plan, son et hashtags.</span></a>
+          <a class="tile" href="#/accroches" style="color:inherit;text-decoration:none"><small>${I('hook')} Accroches</small><b>/100</b><span>Écris ton accroche, le Studio la note et te dit quoi améliorer.</span></a>
+          <a class="tile" href="#/performances" style="color:inherit;text-decoration:none"><small>${I('chart')} Performances</small><b>TikTok</b><span>Chaque vidéo reçoit un verdict et des conseils. Démo disponible.</span></a>
         </div>
         <div class="st-sec"><h2>Crée ton compte gratuit pour tout garder</h2><div class="box" style="max-width:460px" data-login></div></div></div>`;
       SXA.form($('[data-login]'), { next: '/studio/', onDone: async () => { await load(); route(); } });
@@ -196,18 +234,18 @@
     const w = weeks(1)[0], g = S.goals.per_week, st = streak(), stock = S.ideas.filter(i => i.status === 'idee' || i.status === 'a-tourner').length;
     const today = iso(new Date()), next = S.ideas.filter(i => i.planned_on && i.planned_on >= today && i.status !== 'publie').sort((a, b) => a.planned_on.localeCompare(b.planned_on))[0];
     const t = S.tt && S.tt.account ? S.tt : null, last = t && t.videos.length ? analyze(t.videos).vs[0] : null;
-    main.innerHTML = `<div class="st-view"><p class="lab">Tableau de bord</p><h1 class="st-h">${hello}, ${e(S.user.pseudo)} 👋</h1>
-      <p class="st-lead">${g ? (w.n >= g ? 'Objectif de la semaine atteint. Bien joué 🔥' : `Encore ${g - w.n} vidéo${g - w.n > 1 ? 's' : ''} pour tenir ton objectif de la semaine.`) : 'Fixe-toi un objectif dans l’onglet Objectifs.'}</p>
+    main.innerHTML = `<div class="st-view"><p class="lab">Tableau de bord</p><h1 class="st-h">${hello}, ${e(S.user.pseudo)}.</h1>
+      <p class="st-lead">${g ? (w.n >= g ? 'Objectif de la semaine atteint. Bien joué !' : `Encore ${g - w.n} vidéo${g - w.n > 1 ? 's' : ''} pour tenir ton objectif de la semaine.`) : 'Fixe-toi un objectif dans l’onglet Objectifs.'}</p>
       <div class="grid g4 st-sec">
         <div class="tile"><small>Cette semaine</small><b>${w.n}${g ? ` / ${g}` : ''}</b><span>vidéo${w.n > 1 ? 's' : ''} publiée${w.n > 1 ? 's' : ''}</span>${g ? `<div class="bar"><i style="width:${Math.min(100, (w.n / g) * 100)}%"></i></div>` : ''}</div>
-        <div class="tile"><small>Série</small><b>${st} ${st ? '🔥' : ''}</b><span>semaine${st > 1 ? 's' : ''} d’affilée avec l’objectif tenu</span></div>
+        <div class="tile"><small>Série</small><b>${st} ${st ? I('flame') : ''}</b><span>semaine${st > 1 ? 's' : ''} d’affilée avec l’objectif tenu</span></div>
         <div class="tile"><small>En stock</small><b>${stock}</b><span>idée${stock > 1 ? 's' : ''} prête${stock > 1 ? 's' : ''} à tourner</span></div>
         <div class="tile"><small>Prochaine vidéo</small><b style="font-size:20px;line-height:1.2">${next ? e(next.title) : '—'}</b><span>${next ? e(dLong(next.planned_on)) : '<a href="#/calendrier" style="color:inherit">Planifie-la dans le calendrier</a>'}</span></div>
       </div>
       ${t ? `<div class="grid g2 st-sec"><div class="tile"><small>Abonnés TikTok</small><b>${fmt(t.account.followers || 0)}</b><span>${S.goals.followers ? `Objectif : ${fmt(S.goals.followers)}` : 'Fixe un objectif d’abonnés dans Objectifs.'}</span>${S.goals.followers ? `<div class="bar"><i style="width:${Math.min(100, ((t.account.followers || 0) / S.goals.followers) * 100)}%"></i></div>` : ''}</div>
-        ${last ? `<a class="tile" href="#/performances" style="color:inherit;text-decoration:none"><small>Dernière vidéo</small><b style="font-size:20px;line-height:1.2">${e(last.title || 'Sans titre')}</b><span><span class="pill ${last.cls}">${e(last.label)}</span> ${fmt(last.views)} vues</span></a>` : ''}</div>`
-        : `<div class="demo">📈 Relie ton TikTok dans <a href="#/performances" style="color:inherit;font-weight:700">Performances</a> pour savoir si tes vidéos marchent.</div>`}
-      <div class="st-sec"><h2>On fait quoi maintenant ?</h2><div class="row"><a class="sbtn pri" href="#/idees">💡 Trouver une idée</a><a class="sbtn" href="#/accroches">🪝 Tester une accroche</a><a class="sbtn" href="#/tableau">📋 Mon tableau</a><a class="sbtn" href="#/checklist">✅ Checklist avant publication</a></div></div></div>`;
+        ${last ? `<a class="tile" href="#/performances" style="color:inherit;text-decoration:none"><small>Dernière vidéo</small><b style="font-size:20px;line-height:1.2">${e(last.title || 'Sans titre')}</b><span><span class="pill ${last.cls}">${I(last.ic)}${e(last.label)}</span> ${fmt(last.views)} vues</span></a>` : ''}</div>`
+        : `<div class="demo">${I('chart')} Relie ton TikTok dans <a href="#/performances" style="color:inherit;font-weight:700">Performances</a> pour savoir si tes vidéos marchent.</div>`}
+      <div class="st-sec"><h2>On fait quoi maintenant ?</h2><div class="row"><a class="sbtn pri" href="#/idees">${I('bulb')}Trouver une idée</a><a class="sbtn" href="#/accroches">${I('hook')}Tester une accroche</a><a class="sbtn" href="#/tableau">${I('board')}Mon tableau</a><a class="sbtn" href="#/checklist">${I('checksq')}Checklist avant publication</a></div></div></div>`;
   };
 
   V.idees = () => {
@@ -223,7 +261,7 @@
         <div class="tags"><span data-o="theme"></span><span data-o="duree"></span><span data-o="son"></span></div>
         <div class="plan3"><div><b>0 – 2 s · L’accroche</b><p data-o="hook"></p></div><div><b>Le milieu</b><p data-o="milieu"></p></div><div><b>La chute</b><p data-o="chute"></p></div></div>
         <p class="m" style="margin-top:16px;line-height:1.6"><span data-o="bonus"></span><br><span data-o="tags"></span></p>
-        <div class="row" style="margin-top:20px"><button class="sbtn pri" type="button" data-next>Une autre idée ↻</button><button class="sbtn" type="button" data-keep>＋ Garder dans mon tableau</button><button class="sbtn" type="button" data-copy>Copier</button></div>
+        <div class="row" style="margin-top:20px"><button class="sbtn pri" type="button" data-next>${I('refresh')}Une autre idée</button><button class="sbtn" type="button" data-keep>${I('plus')}Garder dans mon tableau</button><button class="sbtn" type="button" data-copy>${I('copy')}Copier</button></div>
         <p class="msg" data-gmsg></p>
       </section></div>`;
     const gen = $('[data-gen]'), gmsg = $('[data-gmsg]'), f = k => $(`[data-f=${k}]`);
@@ -238,10 +276,10 @@
     const asText = c => `${c.titre}\nFormat : ${c.format} · ${c.duree} · son : ${c.son}\nAccroche : ${c.hook}\nMilieu : ${c.milieu}\nChute : ${c.chute}\n${c.bonus}\n${c.tags}`;
     ['theme', 'format', 'duree'].forEach(k => f(k).addEventListener('change', roll));
     $('[data-next]').addEventListener('click', roll);
-    $('[data-copy]').addEventListener('click', async () => { try { await navigator.clipboard.writeText(asText(cur)); gmsg.textContent = 'Copié ✓'; } catch (er) { gmsg.textContent = 'Copie impossible sur ce navigateur.'; } });
+    $('[data-copy]').addEventListener('click', async () => { try { await navigator.clipboard.writeText(asText(cur)); gmsg.innerHTML = I('check') + ' Copié'; } catch (er) { gmsg.textContent = 'Copie impossible sur ce navigateur.'; } });
     $('[data-keep]').addEventListener('click', async () => {
       if (!S.user) { gmsg.innerHTML = 'Crée ton compte gratuit pour garder tes idées : <a href="#/" style="color:inherit">c’est ici</a>.'; return; }
-      try { const r = await SXA.api('ideas', { method: 'POST', body: { title: cur.titre, hook: cur.hook, tag: cur.theme, body: `Format : ${cur.format} · ${cur.duree} · son : ${cur.son}\nMilieu : ${cur.milieu}\nChute : ${cur.chute}\n${cur.bonus}\n${cur.tags}` } }); S.ideas.unshift(r.idea); gmsg.innerHTML = 'Ajoutée à ton tableau ✓ <a href="#/tableau" style="color:inherit">Voir</a>'; } catch (er) { gmsg.textContent = er.message; }
+      try { const r = await SXA.api('ideas', { method: 'POST', body: { title: cur.titre, hook: cur.hook, tag: cur.theme, body: `Format : ${cur.format} · ${cur.duree} · son : ${cur.son}\nMilieu : ${cur.milieu}\nChute : ${cur.chute}\n${cur.bonus}\n${cur.tags}` } }); S.ideas.unshift(r.idea); gmsg.innerHTML = I('check') + ' Ajoutée à ton tableau. <a href="#/tableau" style="color:inherit">Voir</a>'; } catch (er) { gmsg.textContent = er.message; }
     });
     roll();
   };
@@ -253,7 +291,7 @@
         <section class="box"><h2 style="margin:0;font-size:20px">Générer</h2>
           <label class="fld">Ton sujet<input class="in" data-s maxlength="80" value="ce jeu"></label>
           <label class="fld">Style<select data-c><option value="">Tous les styles</option>${Object.keys(HOOKS).map(k => `<option>${e(k)}</option>`).join('')}</select></label>
-          <button class="sbtn pri" type="button" data-gen style="margin-top:14px">Générer des accroches ↻</button>
+          <button class="sbtn pri" type="button" data-gen style="margin-top:14px">${I('refresh')}Générer des accroches</button>
           <div class="hooks" data-hooks></div></section>
         <section class="box"><h2 style="margin:0;font-size:20px">Tester mon accroche</h2>
           <label class="fld">Ce que tu dis (ou écris) dans les 2 premières secondes<textarea data-t maxlength="300" placeholder="Ex. : Personne ne parle de ce bug, et pourtant…"></textarea></label>
@@ -278,9 +316,9 @@
         [/\d/.test(t) ? 10 : 0, 10, /\d/.test(t) ? 'Un chiffre précis, ça accroche.' : 'Un chiffre aide souvent : « 3 choses », « 10 secondes ».'],
         [/[?…:!]|\.\.\./.test(t) ? 10 : 0, 10, /[?…:!]|\.\.\./.test(t) ? 'La ponctuation donne du rythme.' : 'Une question ou des points de suspension donnent envie de connaître la suite.']
       ];
-      const sc = C.reduce((s, c) => s + c[0], 0), mood = sc >= 80 ? ['v-top', '🔥 Excellente'] : sc >= 60 ? ['v-ok', '✅ Bonne'] : sc >= 40 ? ['v-mid', '😐 Peut mieux faire'] : ['v-low', '⚠️ À retravailler'];
+      const sc = C.reduce((s, c) => s + c[0], 0), mood = sc >= 80 ? ['v-top', I('flame') + 'Excellente'] : sc >= 60 ? ['v-ok', I('ok') + 'Bonne'] : sc >= 40 ? ['v-mid', I('meh') + 'Peut mieux faire'] : ['v-low', I('alert') + 'À retravailler'];
       out.innerHTML = `<div class="row"><span class="score">${sc}</span><span class="m">/ 100</span><span class="pill ${mood[0]}">${mood[1]}</span></div>
-        <ul class="crit">${C.map(c => `<li>${c[0] === c[1] ? '✅' : c[0] ? '🟡' : '❌'} ${e(c[2])}</li>`).join('')}</ul>
+        <ul class="crit">${C.map(c => `<li class="${c[0] === c[1] ? 'c-ok' : c[0] ? 'c-half' : 'c-no'}">${c[0] === c[1] ? I('ok') : c[0] ? I('half') : I('no')} ${e(c[2])}</li>`).join('')}</ul>
         <p class="m" style="font-size:13px;margin-top:12px">Note indicative, basée sur des règles simples. Rien ne remplace le test : publie, puis regarde tes chiffres.</p>`;
     };
     $('[data-t]').addEventListener('input', grade);
@@ -291,12 +329,12 @@
   const COLS = [['idee', 'Idées'], ['a-tourner', 'À tourner'], ['tourne', 'Tourné'], ['publie', 'Publié']];
   V.tableau = () => {
     if (!S.user) return needLogin('Mon tableau <span class="it">de tournage</span>.', 'Connecte-toi pour garder tes idées et les suivre, de l’idée à la publication. C’est gratuit.');
-    const card = (i, ci) => `<div class="card-i" data-edit="${e(i.id)}" tabindex="0"><b>${e(i.title)}</b>${i.hook ? `<p>🪝 ${e(i.hook)}</p>` : ''}
-      <div class="meta">${i.tag ? `<span class="pill">${e(i.tag)}</span>` : ''}${i.planned_on ? `<span class="pill">📅 ${e(parseDay(i.planned_on).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }))}</span>` : ''}${i.video_id ? '<span class="pill">🎬 liée</span>' : ''}</div>
-      <div class="mv">${ci ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci - 1][0]}" aria-label="Reculer">←</button>` : ''}${ci < 3 ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci + 1][0]}" aria-label="Avancer">→</button>` : ''}</div></div>`;
+    const card = (i, ci) => `<div class="card-i" data-edit="${e(i.id)}" tabindex="0"><b>${e(i.title)}</b>${i.hook ? `<p>${I('hook')} ${e(i.hook)}</p>` : ''}
+      <div class="meta">${i.tag ? `<span class="pill">${e(i.tag)}</span>` : ''}${i.planned_on ? `<span class="pill">${I('calendar')}${e(parseDay(i.planned_on).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }))}</span>` : ''}${i.video_id ? `<span class="pill">${I('film')}liée</span>` : ''}</div>
+      <div class="mv">${ci ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci - 1][0]}" aria-label="Reculer">${I('left')}</button>` : ''}${ci < 3 ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci + 1][0]}" aria-label="Avancer">${I('right')}</button>` : ''}</div></div>`;
     main.innerHTML = `<div class="st-view"><p class="lab">De l’idée à la publication</p><h1 class="st-h">Mon <span class="it">tableau</span>.</h1>
       <p class="st-lead">Clique sur une carte pour écrire le script, choisir une date ou la relier à ta vidéo TikTok.</p>
-      <form class="row st-sec" data-add><input class="in" name="t" maxlength="160" placeholder="Nouvelle idée…" aria-label="Nouvelle idée" style="flex:1;min-width:200px"><button class="sbtn pri" type="submit">＋ Ajouter</button></form>
+      <form class="row st-sec" data-add><input class="in" name="t" maxlength="160" placeholder="Nouvelle idée…" aria-label="Nouvelle idée" style="flex:1;min-width:200px"><button class="sbtn pri" type="submit">${I('plus')}Ajouter</button></form>
       <div class="board" style="margin-top:16px">${COLS.map(([k, n], ci) => `<div class="col"><h3><span>${n}</span><span>${S.ideas.filter(i => i.status === k).length}</span></h3>${S.ideas.filter(i => i.status === k).map(i => card(i, ci)).join('')}</div>`).join('')}</div></div>`;
     $('[data-add]').addEventListener('submit', async ev => { ev.preventDefault(); const t = ev.target.t.value.trim(); if (!t) return; try { const r = await SXA.api('ideas', { method: 'POST', body: { title: t } }); S.ideas.unshift(r.idea); V.tableau(); } catch (er) { alert(er.message); } });
     main.addEventListener('click', boardClick);
@@ -347,9 +385,9 @@
     const rows = cells[35].getMonth() !== m ? cells.slice(0, 35) : cells;
     main.innerHTML = `<div class="st-view"><p class="lab">Planning</p><h1 class="st-h">Mon <span class="it">calendrier</span>.</h1>
       <p class="st-lead">Clique sur un jour pour y prévoir une vidéo. ${vids.length ? 'Les vidéos déjà publiées sur TikTok apparaissent en orange.' : ''}</p>
-      <div class="row st-sec"><button class="sbtn" type="button" data-m="-1" aria-label="Mois précédent">←</button><h2 style="margin:0;font-size:22px;min-width:180px;text-align:center;text-transform:capitalize">${e(calRef.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))}</h2><button class="sbtn" type="button" data-m="1" aria-label="Mois suivant">→</button><button class="sbtn" type="button" data-m="0">Aujourd’hui</button></div>
+      <div class="row st-sec"><button class="sbtn" type="button" data-m="-1" aria-label="Mois précédent">${I('left')}</button><h2 style="margin:0;font-size:22px;min-width:180px;text-align:center;text-transform:capitalize">${e(calRef.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))}</h2><button class="sbtn" type="button" data-m="1" aria-label="Mois suivant">${I('right')}</button><button class="sbtn" type="button" data-m="0">Aujourd’hui</button></div>
       <div class="cal">${['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'].map(d => `<div class="dn">${d}</div>`).join('')}
-      ${rows.map(d => { const k = iso(d), ev = S.ideas.filter(i => i.planned_on === k), pv = vids.filter(v => v.day === k); return `<button type="button" class="d${d.getMonth() !== m ? ' out' : ''}${k === today ? ' today' : ''}" data-day="${k}" aria-label="${e(dLong(k))}, ${ev.length + pv.length} élément(s)"><span>${d.getDate()}</span>${ev.map(i => `<div class="ev" data-edit="${e(i.id)}">${i.status === 'publie' ? '✓ ' : ''}${e(i.title)}</div>`).join('')}${pv.map(v => `<div class="ev pub">🎬 ${e(v.title)}</div>`).join('')}</button>`; }).join('')}</div>
+      ${rows.map(d => { const k = iso(d), ev = S.ideas.filter(i => i.planned_on === k), pv = vids.filter(v => v.day === k); return `<button type="button" class="d${d.getMonth() !== m ? ' out' : ''}${k === today ? ' today' : ''}" data-day="${k}" aria-label="${e(dLong(k))}, ${ev.length + pv.length} élément(s)"><span>${d.getDate()}</span>${ev.map(i => `<div class="ev" data-edit="${e(i.id)}">${i.status === 'publie' ? I('check') : ''}${e(i.title)}</div>`).join('')}${pv.map(v => `<div class="ev pub">${I('film')}${e(v.title)}</div>`).join('')}</button>`; }).join('')}</div>
       ${(() => { const un = S.ideas.filter(i => !i.planned_on && i.status !== 'publie'); return un.length ? `<div class="st-sec"><h2>Pas encore planifiées (${un.length})</h2><div class="row">${un.slice(0, 12).map(i => `<button class="sbtn" type="button" data-edit="${e(i.id)}">${e(i.title.slice(0, 40))}</button>`).join('')}</div></div>` : ''; })()}</div>`;
     $$('[data-m]').forEach(b => b.addEventListener('click', () => { const k = +b.dataset.m; calRef = k ? new Date(y, m + k, 1) : new Date(); V.calendrier(); }));
     main.onclick = ev => { const ed = ev.target.closest('[data-edit]'); if (ed) { ev.stopPropagation(); return editIdea(ed.dataset.edit); } const d = ev.target.closest('[data-day]'); if (d) editIdea(null, { planned_on: d.dataset.day }); };
@@ -358,7 +396,7 @@
   /* performances TikTok */
   V.performances = async () => {
     const q = new URLSearchParams(location.hash.split('?')[1] || '');
-    const flash = { ok: '✅ Ton compte TikTok est relié. Tes vidéos arrivent.', refus: 'Tu as annulé la liaison avec TikTok.', erreur: '⚠️ La liaison avec TikTok n’a pas abouti. Réessaie.' }[q.get('tiktok')] || '';
+    const flash = { ok: 'Ton compte TikTok est relié. Tes vidéos arrivent.', refus: 'Tu as annulé la liaison avec TikTok.', erreur: 'La liaison avec TikTok n’a pas abouti. Réessaie.' }[q.get('tiktok')] || '';
     const t = ttData();
     if (!t || !t.account) {
       const configured = t ? t.configured : false;
@@ -366,11 +404,11 @@
         <p class="st-lead">Relie ton compte TikTok. Le Studio récupère les chiffres de tes vidéos (vues, j’aime, commentaires, partages) chaque jour. Il compare chaque vidéo à tes habitudes et te dit quoi améliorer.</p>
         ${flash ? `<div class="demo">${e(flash)}</div>` : ''}
         <div class="grid g3 st-sec">
-          <div class="tile"><small>1 · Relier</small><b>🔗</b><span>Tu te connectes chez TikTok. On ne voit jamais ton mot de passe.</span></div>
-          <div class="tile"><small>2 · Lire</small><b>👀</b><span>Accès en lecture seule : le Studio ne publie rien et ne modifie rien.</span></div>
-          <div class="tile"><small>3 · Comprendre</small><b>💡</b><span>Un verdict par vidéo, tes meilleurs jours, horaires et durées.</span></div>
+          <div class="tile"><small>1 · Relier</small><b>${I('link')}</b><span>Tu te connectes chez TikTok. On ne voit jamais ton mot de passe.</span></div>
+          <div class="tile"><small>2 · Lire</small><b>${I('eye')}</b><span>Accès en lecture seule : le Studio ne publie rien et ne modifie rien.</span></div>
+          <div class="tile"><small>3 · Comprendre</small><b>${I('bulb')}</b><span>Un verdict par vidéo, tes meilleurs jours, horaires et durées.</span></div>
         </div>
-        <div class="row st-sec">${!S.user ? '<a class="sbtn pri" href="#/">Créer mon compte pour relier TikTok</a>' : configured ? '<a class="sbtn tt" href="/api/auth/tiktok">♪ Relier mon compte TikTok</a>' : '<span class="pill v-new">Liaison TikTok bientôt disponible</span>'}<button class="sbtn" type="button" data-demo>Voir la démo</button></div>
+        <div class="row st-sec">${!S.user ? '<a class="sbtn pri" href="#/">Créer mon compte pour relier TikTok</a>' : configured ? `<a class="sbtn tt" href="/api/auth/tiktok">${I('music')}Relier mon compte TikTok</a>` : '<span class="pill v-new">Liaison TikTok bientôt disponible</span>'}<button class="sbtn" type="button" data-demo>Voir la démo</button></div>
         <p class="m" style="font-size:13px;margin-top:16px;max-width:44em">Le Studio utilise l’API officielle de TikTok. Tu peux délier ton compte à tout moment : tes données TikTok sont alors effacées. Détails dans la <a href="/confidentialite/" style="color:inherit">politique de confidentialité</a>.</p></div>`;
       $('[data-demo]').addEventListener('click', () => { S.demo = true; V.performances(); });
       return;
@@ -380,16 +418,16 @@
     const tot = vs.reduce((s, v) => s + v.views, 0), counts = ['v-top', 'v-ok', 'v-mid', 'v-low'].map(c => vs.filter(v => v.cls === c).length);
     const ins = (title, arr, unit) => arr ? `<div class="tile"><small>${title}</small><b style="font-size:24px">${e(arr[0][0][0].toUpperCase() + arr[0][0].slice(1))}</b><span>${(arr[0][1]).toFixed(1).replace('.', ',')} × tes vues habituelles${unit ? '' : ''} (${arr[0][2]} vidéos). Le moins bon : ${e(arr[arr.length - 1][0])}.</span></div>` : `<div class="tile"><small>${title}</small><b style="font-size:24px">—</b><span>Pas encore assez de vidéos pour comparer.</span></div>`;
     main.innerHTML = `<div class="st-view"><p class="lab">Suivi TikTok</p><h1 class="st-h">Mes <span class="it">performances</span>.</h1>
-      ${S.demo ? `<div class="demo">🧪 <span><b>Démo</b> : ces chiffres sont des exemples inventés, pas un vrai compte.</span><span style="flex:1"></span><button class="sbtn" type="button" data-nodemo>Quitter la démo</button></div>` : ''}
+      ${S.demo ? `<div class="demo">${I('flask')}<span><b>Démo</b> : ces chiffres sont des exemples inventés, pas un vrai compte.</span><span style="flex:1"></span><button class="sbtn" type="button" data-nodemo>Quitter la démo</button></div>` : ''}
       ${flash && !S.demo ? `<div class="demo">${e(flash)}</div>` : ''}
       <div class="tt-head st-sec">${a.avatar_url ? `<img src="${e(a.avatar_url)}" alt="" referrerpolicy="no-referrer">` : '<img alt="">'}<div><b style="font-size:20px">${e(a.display_name || 'Mon compte')}</b><div class="m" style="font-size:14px">Mis à jour ${a.synced_at ? e(new Date(a.synced_at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })) : 'jamais'}</div></div><span style="flex:1"></span>
-        ${S.demo ? '' : '<button class="sbtn" type="button" data-sync>↻ Mettre à jour</button><button class="sbtn" type="button" data-unlink>Délier</button>'}</div>
+        ${S.demo ? '' : '<button class="sbtn" type="button" data-sync>' + I('refresh') + 'Mettre à jour</button><button class="sbtn" type="button" data-unlink>Délier</button>'}</div>
       <p class="msg" data-pm></p>
       <div class="grid g4" style="margin-top:8px">
         <div class="tile"><small>Abonnés</small><b>${fmt(a.followers || 0)}</b>${t.daily.length > 1 ? `<span>${(d => (d >= 0 ? '+' : '') + fmt(d))((t.daily.at(-1).followers || 0) - (t.daily[Math.max(0, t.daily.length - 8)].followers || 0))} en 7 jours</span>` : '<span>La courbe arrive dans quelques jours.</span>'}</div>
         <div class="tile"><small>Vues (${vs.length} vidéos)</small><b>${fmt(tot)}</b><span>${fmt(medViews)} vues pour une vidéo habituelle</span></div>
         <div class="tile"><small>Engagement moyen</small><b>${pct(A.medEr)}</b><span>(j’aime + commentaires + partages) ÷ vues</span></div>
-        <div class="tile"><small>Verdicts</small><b style="font-size:22px">🔥${counts[0]} ✅${counts[1]} 😐${counts[2]} ⚠️${counts[3]}</b><span>sur tes vidéos de plus de 48 h</span></div>
+        <div class="tile"><small>Verdicts</small><b class="vrow">${I('flame')}${counts[0]} ${I('ok')}${counts[1]} ${I('meh')}${counts[2]} ${I('alert')}${counts[3]}</b><span>sur tes vidéos de plus de 48 h</span></div>
       </div>
       ${chrono.length > 1 ? `<section class="box st-sec"><h2 style="margin:0;font-size:18px">Vues de tes ${chrono.length} dernières vidéos</h2><p class="m" style="font-size:14px;margin:6px 0 0">La ligne pointillée montre ta vidéo habituelle (médiane). Survole une barre pour le détail.</p><div class="chart" data-title="Vues par vidéo" data-c1></div>${tableOf(chrono.map(v => [new Date(v.posted_at).toLocaleDateString('fr-FR'), v.title || 'Sans titre', fmt(v.views)]), ['Date', 'Vidéo', 'Vues'])}</section>` : ''}
       ${t.daily.length > 1 ? `<section class="box st-sec"><h2 style="margin:0;font-size:18px">Abonnés, jour après jour</h2><div class="chart" data-title="Abonnés par jour" data-c2></div>${tableOf(t.daily.map(d => [parseDay(d.day).toLocaleDateString('fr-FR'), fmt(d.followers || 0)]), ['Jour', 'Abonnés'])}</section>` : ''}
@@ -397,8 +435,8 @@
         <p class="m" style="font-size:13px;margin-top:10px">Calculé sur tes propres vidéos. Plus tu publies, plus c’est fiable. TikTok ne donne pas la durée de visionnage à ce type d’application, donc le Studio ne peut pas l’afficher.</p></div>
       <div class="st-sec"><h2>Vidéo par vidéo</h2><div class="vids">${vs.map(v => `<article class="vid">${v.cover ? `<img src="${e(v.cover)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="ph"></div>'}
         <div><b>${v.url ? `<a href="${e(v.url)}" target="_blank" rel="noopener" style="color:inherit">${e(v.title || 'Sans titre')}</a>` : e(v.title || 'Sans titre')}</b>
-        <div class="nums"><span>${e(new Date(v.posted_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }))}</span><span>👁 ${fmt(v.views)}</span><span>❤️ ${fmt(v.likes)}</span><span>💬 ${fmt(v.comments)}</span><span>↗ ${fmt(v.shares)}</span><span>${v.duration} s</span><span>engagement ${pct(v.er)}</span></div>
-        ${v.tips.map(x => `<p>💡 ${e(x)}</p>`).join('')}</div><span class="pill ${v.cls}">${e(v.label)}</span></article>`).join('')}</div></div></div>`;
+        <div class="nums"><span>${e(new Date(v.posted_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }))}</span><span>${I('eye')}${fmt(v.views)}</span><span>${I('heart')}${fmt(v.likes)}</span><span>${I('msg')}${fmt(v.comments)}</span><span>${I('share')}${fmt(v.shares)}</span><span>${v.duration} s</span><span>engagement ${pct(v.er)}</span></div>
+        ${v.tips.map(x => `<p class="tip-l">${I('bulb')}<span>${e(x)}</span></p>`).join('')}</div><span class="pill ${v.cls}">${I(v.ic)}${e(v.label)}</span></article>`).join('')}</div></div></div>`;
     if (chrono.length > 1) chartBars($('[data-c1]'), chrono.map(v => ({ v: v.views, label: (v.title || 'Sans titre').slice(0, 40), dim: v.cls === 'v-new' })), { ref: medViews, refLabel: 'ta vidéo habituelle' });
     if (t.daily.length > 1) chartLine($('[data-c2]'), t.daily.map(d => ({ v: d.followers || 0, label: parseDay(d.day).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) })));
     $('[data-nodemo]')?.addEventListener('click', () => { S.demo = false; V.performances(); });
@@ -411,7 +449,7 @@
     if (!S.user) return needLogin('Mes <span class="it">objectifs</span>.', 'Connecte-toi pour te fixer un rythme de publication et suivre ta série.');
     const w = weeks(8), g = S.goals.per_week, st = streak(), t = ttData(), fol = t && t.account ? t.account.followers || 0 : null;
     main.innerHTML = `<div class="st-view"><p class="lab">Régularité</p><h1 class="st-h">Mes <span class="it">objectifs</span>.</h1>
-      <p class="st-lead">La régularité compte plus que la perfection. Fixe un rythme tenable, et garde ta série 🔥</p>
+      <p class="st-lead">La régularité compte plus que la perfection. Fixe un rythme tenable, et garde ta série.</p>
       <div class="grid g2 st-sec" style="align-items:start">
         <form class="box" data-gf><h2 style="margin:0;font-size:20px">Mon rythme</h2>
           <label class="fld">Vidéos par semaine<input class="in" type="number" name="per_week" min="0" max="50" value="${e(g)}"></label>
@@ -419,7 +457,7 @@
           <button class="sbtn pri" type="submit" style="margin-top:16px">Enregistrer</button><p class="msg" data-gm></p></form>
         <div class="grid">
           <div class="tile"><small>Cette semaine</small><b>${w.at(-1).n}${g ? ` / ${g}` : ''}</b>${g ? `<div class="bar"><i style="width:${Math.min(100, (w.at(-1).n / g) * 100)}%"></i></div>` : ''}</div>
-          <div class="tile"><small>Série</small><b>${st} semaine${st > 1 ? 's' : ''} ${st ? '🔥' : ''}</b><span>${st ? 'Ne casse pas la chaîne !' : 'Tiens ton objectif une semaine pour lancer ta série.'}</span></div>
+          <div class="tile"><small>Série</small><b>${st} semaine${st > 1 ? 's' : ''} ${st ? I('flame') : ''}</b><span>${st ? 'Ne casse pas la chaîne !' : 'Tiens ton objectif une semaine pour lancer ta série.'}</span></div>
           ${fol !== null && S.goals.followers ? `<div class="tile"><small>Abonnés</small><b>${fmt(fol)} / ${fmt(S.goals.followers)}</b><div class="bar"><i style="width:${Math.min(100, (fol / S.goals.followers) * 100)}%"></i></div></div>` : ''}
         </div></div>
       <section class="box st-sec"><h2 style="margin:0;font-size:18px">Vidéos publiées, semaine par semaine</h2><p class="m" style="font-size:14px;margin:6px 0 0">${t && t.account ? 'D’après ton compte TikTok.' : 'D’après les idées passées en « Publié » dans ton tableau.'} La ligne pointillée montre ton objectif.</p><div class="chart" data-title="Vidéos publiées par semaine" data-c3></div>
@@ -427,7 +465,7 @@
     chartBars($('[data-c3]'), w.map(x => ({ v: x.n, label: 'semaine du ' + x.a.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) })), { ref: g, refLabel: 'objectif' });
     $('[data-gf]').addEventListener('submit', async ev => {
       ev.preventDefault(); const d = Object.fromEntries(new FormData(ev.target));
-      try { S.goals = (await SXA.api('studio', { method: 'PUT', body: { per_week: Number(d.per_week || 0), followers: d.followers === '' ? null : Number(d.followers) } })).goals; V.objectifs(); $('[data-gm]').textContent = 'Enregistré ✓'; } catch (er) { $('[data-gm]').textContent = er.message; }
+      try { S.goals = (await SXA.api('studio', { method: 'PUT', body: { per_week: Number(d.per_week || 0), followers: d.followers === '' ? null : Number(d.followers) } })).goals; V.objectifs(); $('[data-gm]').innerHTML = I('check') + ' Enregistré'; } catch (er) { $('[data-gm]').textContent = er.message; }
     });
   };
 
