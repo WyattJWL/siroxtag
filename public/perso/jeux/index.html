@@ -39,7 +39,8 @@
 .side h3{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
 .side ol{margin:0;padding-left:1.4em}
 .side li{padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;gap:10px}
-.side li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side li .who{display:flex;align-items:center;min-width:0;flex:1}
+.side li .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .side .mine{margin-top:12px;font-size:14px;color:var(--mut)}
 .arena-b{position:relative;height:420px}
 .bug2{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border:0;background:none;font-size:36px;cursor:crosshair;transition:left 1.2s ease-in-out,top 1.2s ease-in-out,transform .2s,opacity .2s}
@@ -106,7 +107,7 @@ addEventListener('DOMContentLoaded', () => {
     $('[data-lbt]').textContent = 'Classement · ' + NAMES[game];
     try {
       const d = await SXA.api('scores?game=' + game);
-      $('[data-top]').innerHTML = d.top.length ? d.top.map(r => `<li><span>${e(r.pseudo)}${SXA.badges(r)}</span><b>${r.best}</b></li>`).join('') : '<li><span>Personne pour l’instant. À toi !</span></li>';
+      $('[data-top]').innerHTML = d.top.length ? d.top.map(r => `<li><span class="who"><span class="nm">${e(r.pseudo)}</span>${SXA.badges(r)}</span><b>${r.best.toLocaleString('fr-FR')}</b></li>`).join('') : '<li><span>Personne pour l’instant. À toi !</span></li>';
       $('[data-mine]').textContent = d.me ? `Ton record : ${d.me.best} · rang ${d.me.rang}` : (user ? 'Pas encore de score sur ce jeu.' : '');
     } catch (er) { $('[data-top]').innerHTML = `<li><span>${e(er.message)}</span></li>`; }
   }
