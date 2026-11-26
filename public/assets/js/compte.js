@@ -29,7 +29,7 @@ window.SXA = (() => {
           <label>Pseudo <small>3 à 20 caractères, visible dans les classements</small><input name="pseudo" autocomplete="nickname" minlength="3" maxlength="20" pattern="[A-Za-z0-9_.\\-]{3,20}" required></label>
           <label>E-mail <small>pour te connecter, jamais affiché</small><input name="email" type="email" autocomplete="email" required></label>
           <label>Mot de passe <small>10 caractères minimum</small><input name="password" type="password" autocomplete="new-password" minlength="10" required></label>
-          <label class="ax-ck"><input type="checkbox" name="consent" required> <span>J’ai lu la <a href="/confidentialite/" target="_blank">politique de confidentialité</a>. J’ai 15 ans ou plus, ou l’accord d’un parent.</span></label>
+          <label class="ax-ck"><input type="checkbox" name="consent" required> <span>J’accepte les <a href="/conditions/" target="_blank">conditions d’utilisation</a> et j’ai lu la <a href="/confidentialite/" target="_blank">politique de confidentialité</a>. J’ai 15 ans ou plus, ou l’accord d’un parent.</span></label>
           <button class="ax-btn" type="submit">Créer mon compte →</button>
         </form>
         <p class="ax-msg" aria-live="polite"></p>

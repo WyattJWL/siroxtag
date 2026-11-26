@@ -16,6 +16,12 @@ Site statique (dossier `public/`) + fonctions serverless (dossier `api/`) pour l
 | `ALLOWED_ORIGINS` | `https://www.siroxtag.fr` | Origines autorisées à appeler l’API (séparées par des virgules) |
 | `DISCORD_CLIENT_ID` | `123…` | Application Discord |
 | `DISCORD_CLIENT_SECRET` | *(secret)* | Application Discord, à ne jamais publier |
+| `TIKTOK_CLIENT_KEY` | `aw…` | Application TikTok for Developers (Login Kit + Display API) |
+| `TIKTOK_CLIENT_SECRET` | *(secret)* | Application TikTok, à ne jamais publier |
+| `TOKEN_KEY` | *(secret)* | Chiffre les jetons TikTok en base. Ne pas changer, sinon il faut relier TikTok à nouveau |
+| `CRON_SECRET` | *(secret)* | Protège la mise à jour quotidienne TikTok (Vercel Cron, voir `vercel.json`) |
+
+Redirection TikTok à déclarer : `https://www.siroxtag.fr/api/auth/tiktok`. Autorisations : `user.info.basic`, `user.info.stats`, `video.list`.
 
 Adresse de redirection à déclarer dans l’application Discord : `https://www.siroxtag.fr/api/auth/discord`.
 

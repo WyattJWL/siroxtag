@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mon compte — Siroxtag</title>
-<meta name="description" content="Ton espace Siroxtag : connexion, inscription et accès au Studio d’idées de vidéos.">
+<meta name="description" content="Ton espace Siroxtag : connexion, inscription et accès au Studio de création vidéo.">
 <meta name="robots" content="noindex, follow">
 <meta name="theme-color" content="#0B0B0B">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -39,7 +39,7 @@ addEventListener('DOMContentLoaded', async () => {
     lead.textContent = 'Bienvenue dans ton espace. Tout ce que tu enregistres ici n’est visible que par toi.';
     const via = u.methods.includes('discord') ? 'Discord' : 'e-mail';
     zone.innerHTML = `
-      <div class="acc-row"><a class="btn" href="/studio/">Ouvrir le Studio d’idées <span class="ar">→</span></a><button class="btn ghost" type="button" data-out>Se déconnecter</button></div>
+      <div class="acc-row"><a class="btn" href="/studio/">Ouvrir le Studio <span class="ar">→</span></a><button class="btn ghost" type="button" data-out>Se déconnecter</button></div>
       <div class="acc-card"><h2>Mon pseudo</h2><p>Connecté avec ${via}, membre depuis le ${new Date(u.since).toLocaleDateString('fr-FR', { dateStyle: 'long' })}.</p>
         <form data-ps style="display:flex;gap:10px;flex-wrap:wrap"><input name="pseudo" value="${e(u.pseudo)}" minlength="3" maxlength="20" aria-label="Nouveau pseudo"><button class="btn ghost" type="submit">Changer</button></form><p class="m" data-psm style="margin-top:8px"></p></div>
       <div class="acc-card"><h2>Mes données</h2><p>Télécharge tout ce que le site connaît de toi, dans un fichier.</p><a class="btn ghost" href="/api/account" download>Télécharger mes données</a></div>

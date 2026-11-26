@@ -1,15 +1,20 @@
 // Mon compte : GET = télécharger toutes mes données (RGPD), PATCH = changer de pseudo, DELETE = supprimer mon compte.
+import { revoke, open } from './_lib/tiktok.js';
 import { handle, readBody, send, q, HttpError, requireUser, endSession, cleanPseudo, validPseudo, publicUser, checkPassword, limit } from './_lib/core.js';
 
 export default handle(['GET', 'PATCH', 'DELETE'], async (req, res) => {
   const u = await requireUser(req);
   if (req.method === 'GET') {
-    const [ideas, scores] = await Promise.all([
-      q('select title, body, status, created_at, updated_at from ideas where user_id = $1 order by id', [u.id]),
-      q('select game, best, updated_at from scores where user_id = $1 order by game', [u.id])
+    const [ideas, scores, goals, tt, ttv, ttd] = await Promise.all([
+      q('select title, body, hook, tag, status, planned_on, video_id, created_at, updated_at from ideas where user_id = $1 order by id', [u.id]),
+      q('select game, best, updated_at from scores where user_id = $1 order by game', [u.id]),
+      q('select per_week, followers from studio_goals where user_id = $1', [u.id]),
+      q('select display_name, followers, likes, videos, synced_at, created_at from tiktok_accounts where user_id = $1', [u.id]),
+      q('select video_id, title, share_url, duration, posted_at, views, likes, comments, shares from tiktok_videos where user_id = $1 order by posted_at', [u.id]),
+      q('select day, followers, likes, views from tiktok_daily where user_id = $1 order by day', [u.id])
     ]);
     res.setHeader('Content-Disposition', 'attachment; filename="mes-donnees-siroxtag.json"');
-    return send(res, 200, { compte: { pseudo: u.pseudo, email: u.email, discord_id: u.discord_id, mot_de_passe: u.has_password ? 'oui (stocké chiffré, illisible)' : 'non', cree_le: u.created_at }, idees: ideas.rows, scores: scores.rows });
+    return send(res, 200, { compte: { pseudo: u.pseudo, email: u.email, discord_id: u.discord_id, mot_de_passe: u.has_password ? 'oui (stocké chiffré, illisible)' : 'non', cree_le: u.created_at }, idees: ideas.rows, scores: scores.rows, objectifs: goals.rows[0] || null, tiktok: tt.rows[0] ? { compte: tt.rows[0], videos: ttv.rows, historique: ttd.rows, jetons: 'stockés chiffrés, non exportés' } : null });
   }
   const b = await readBody(req);
   if (req.method === 'PATCH') {
@@ -27,6 +32,8 @@ export default handle(['GET', 'PATCH', 'DELETE'], async (req, res) => {
     const { rows } = await q('select pass_hash from users where id = $1', [u.id]);
     if (!(await checkPassword(String(b.password || ''), rows[0].pass_hash))) throw new HttpError(401, 'Mot de passe incorrect.');
   }
+  const tt = await q('select access_enc from tiktok_accounts where user_id = $1', [u.id]);
+  if (tt.rows[0]) { try { await revoke(open(tt.rows[0].access_enc)); } catch { /* au mieux */ } }
   await q('delete from users where id = $1', [u.id]);
   await endSession(req, res);
   send(res, 200, { ok: true });

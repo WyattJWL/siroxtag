@@ -18,13 +18,13 @@
 <main class="xp">
   <p class="lab">Données personnelles</p>
   <h1 class="h2" style="margin-top:14px">Politique de <span class="it">confidentialité</span>.</h1>
-  <p class="lead m" style="margin-top:18px">En bref : on collecte le minimum, on ne revend rien, on n’affiche aucune pub, et tu peux tout supprimer en un clic. Dernière mise à jour : 25 novembre 2026.</p>
+  <p class="lead m" style="margin-top:18px">En bref : on collecte le minimum, on ne revend rien, on n’affiche aucune pub, et tu peux tout supprimer en un clic. Dernière mise à jour : 26 novembre 2026.</p>
 
   <h2>Qui est responsable ?</h2>
   <p>Le site est édité par Siroxtag, créateur indépendant (voir les <a href="/mentions-legales/">mentions légales</a>). Pour toute question sur tes données : <a href="mailto:contact@siroxtag.fr">contact@siroxtag.fr</a>.</p>
 
   <h2>Quand des données sont-elles collectées ?</h2>
-  <p>Uniquement si tu crées un compte, pour utiliser les espaces membres (le Studio d’idées, les classements des jeux). Visiter le site sans compte ne crée aucune donnée chez nous : pas de mesure d’audience, pas de pub.</p>
+  <p>Uniquement si tu crées un compte, pour utiliser les espaces membres (le Studio, les classements des jeux). Visiter le site sans compte ne crée aucune donnée chez nous : pas de mesure d’audience, pas de pub.</p>
 
   <h2>Quelles données, et pourquoi ?</h2>
   <table>
@@ -33,15 +33,27 @@
     <tr><td>Adresse e-mail (inscription par e-mail)</td><td>Te connecter. Elle n’est jamais affichée ni partagée.</td><td>Tant que le compte existe</td></tr>
     <tr><td>Mot de passe (inscription par e-mail)</td><td>Te connecter. Il est stocké sous forme chiffrée et illisible (scrypt) : personne ne peut le lire, pas même nous.</td><td>Tant que le compte existe</td></tr>
     <tr><td>Identifiant Discord (connexion Discord)</td><td>Te connecter. On ne demande à Discord que ton identifiant et ton pseudo : ni e-mail, ni serveurs, ni messages.</td><td>Tant que le compte existe</td></tr>
-    <tr><td>Tes idées de vidéos</td><td>Les garder dans ton tableau. Visibles par toi seul.</td><td>Jusqu’à ce que tu les supprimes</td></tr>
+    <tr><td>Tes idées de vidéos, scripts, dates prévues et objectifs</td><td>Les garder dans ton Studio. Visibles par toi seul.</td><td>Jusqu’à ce que tu les supprimes</td></tr>
     <tr><td>Tes meilleurs scores</td><td>Les classements des jeux.</td><td>Tant que le compte existe</td></tr>
     <tr><td>Cookie de session <code>sx_session</code></td><td>Rester connecté. Cookie indispensable, sans pub ni pistage.</td><td>30 jours, ou jusqu’à la déconnexion</td></tr>
     <tr><td>Adresse IP, de façon temporaire</td><td>Bloquer les essais de connexion en masse (sécurité).</td><td>Quelques minutes à une heure</td></tr>
   </table>
+  <p>Les cases cochées de la checklist du Studio restent dans ton navigateur (clé <code>sx-studio-check</code>) : elles ne sont jamais envoyées.</p>
   <p>La base légale est l’exécution du service que tu demandes en créant un compte, et l’intérêt légitime pour la sécurité.</p>
 
+  <h2>Si tu relies ton compte TikTok</h2>
+  <p>C’est facultatif, et uniquement depuis l’onglet Performances du Studio. Tu te connectes directement chez TikTok, qui te demande ton accord : on ne voit jamais ton mot de passe TikTok. Le Studio utilise l’API officielle de TikTok, en <b>lecture seule</b> : il ne publie rien, ne modifie rien et ne lit pas tes messages.</p>
+  <table>
+    <tr><th>Donnée reçue de TikTok</th><th>Pourquoi</th><th>Durée</th></tr>
+    <tr><td>Ton profil public : nom affiché, photo, nombre d’abonnés, de j’aime et de vidéos (autorisations <code>user.info.basic</code> et <code>user.info.stats</code>)</td><td>Afficher ton tableau de bord et la courbe de tes abonnés.</td><td>Jusqu’à ce que tu délies ton compte</td></tr>
+    <tr><td>Tes vidéos publiques : titre, miniature, lien, durée, date, vues, j’aime, commentaires (le nombre seulement) et partages (autorisation <code>video.list</code>)</td><td>Comparer tes vidéos entre elles et te donner des conseils.</td><td>Jusqu’à ce que tu délies ton compte</td></tr>
+    <tr><td>Un relevé par jour de ces chiffres</td><td>Suivre ta progression.</td><td>90 jours affichés, effacés quand tu délies ton compte</td></tr>
+    <tr><td>Les jetons d’accès fournis par TikTok</td><td>Mettre à jour tes chiffres une fois par jour. Ils sont chiffrés en base (AES-256).</td><td>Jusqu’à ce que tu délies ton compte, ou leur expiration</td></tr>
+  </table>
+  <p>Le bouton « Délier » de l’onglet Performances retire l’accès auprès de TikTok et efface aussitôt toutes ces données. La suppression du compte fait de même. Ces données ne sont jamais vendues, partagées, ni utilisées pour de la publicité.</p>
+
   <h2>Qui peut y accéder ?</h2>
-  <p>Personne d’autre que l’éditeur, et les prestataires techniques qui hébergent le site : Vercel Inc. (hébergement) et le fournisseur de la base de données. Ils sont tenus par des contrats de protection des données. Ces prestataires peuvent être situés hors de l’Union européenne, dans le cadre des garanties prévues par le RGPD. Rien n’est vendu, ni utilisé pour de la publicité.</p>
+  <p>Personne d’autre que l’éditeur, et les prestataires techniques qui hébergent le site : Vercel Inc. (hébergement) et le fournisseur de la base de données. Ils sont tenus par des contrats de protection des données. Ces prestataires peuvent être situés hors de l’Union européenne, dans le cadre des garanties prévues par le RGPD. Rien n’est vendu, ni utilisé pour de la publicité. L’utilisation du site est aussi encadrée par les <a href="/conditions/">conditions d’utilisation</a>.</p>
 
   <h2>Les mineurs</h2>
   <p>En France, il faut avoir 15 ans, ou l’accord d’un parent, pour s’inscrire à ce type de service. En créant un compte, tu confirmes être dans l’un de ces deux cas. Un parent peut demander la suppression du compte de son enfant à l’adresse de contact.</p>

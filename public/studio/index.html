@@ -3,186 +3,43 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Studio d’idées : générateur d’idées de vidéos TikTok — Siroxtag</title>
-<meta name="description" content="Un générateur gratuit d’idées de vidéos courtes : format, accroche, plan en 3 temps, son et hashtags. Garde tes idées dans un tableau, de l’idée à la publication.">
+<title>Studio : idées de vidéos, accroches et suivi TikTok — Siroxtag</title>
+<meta name="description" content="Un studio gratuit pour créateurs de vidéos courtes : générateur d’idées, testeur d’accroches, tableau de tournage, calendrier de publication et suivi des performances TikTok.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.siroxtag.fr/studio/">
-<meta property="og:title" content="Studio d’idées — Siroxtag">
-<meta property="og:description" content="Un générateur gratuit d’idées de vidéos courtes, avec un tableau pour suivre tes tournages.">
+<meta property="og:title" content="Studio — Siroxtag">
+<meta property="og:description" content="Idées de vidéos, accroches, calendrier et suivi TikTok, au même endroit.">
 <meta name="theme-color" content="#0B0B0B">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/css/site.css">
 <link rel="stylesheet" href="/assets/css/extra.css">
-<style>
-.gen{margin-top:40px;border:1px solid var(--line);border-radius:24px;padding:clamp(22px,3vw,36px)}
-.gen-filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
-.gen-filters select{height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:inherit}
-.gen h2{margin:6px 0 0;font-weight:800;font-size:clamp(26px,3.4vw,44px);letter-spacing:-.03em;line-height:1.08}
-.gen .tags{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
-.plan3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
-.plan3 div{border:1px solid var(--line);border-radius:14px;padding:16px}
-.plan3 b{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
-.plan3 p{margin:0;line-height:1.45}
-.gen-meta{margin-top:16px;color:var(--mut);line-height:1.6}
-.gen-act{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
-.gen.flash{animation:gflash .5s ease}
-@keyframes gflash{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
-.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
-.col{border:1px solid var(--line);border-radius:18px;padding:14px;min-height:160px}
-.col h3{margin:0 0 12px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between}
-.card-i{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:rgba(127,127,127,.06)}
-.card-i b{display:block;font-size:15px;line-height:1.3}
-.card-i p{margin:6px 0 0;font-size:13px;color:var(--mut);white-space:pre-line}
-.card-i .mv{display:flex;gap:6px;margin-top:10px}
-.card-i .mv button{flex:1;height:30px;border:1px solid var(--line);border-radius:8px;background:none;color:var(--fg);cursor:pointer;font:inherit;font-size:13px}
-.card-i .mv button:hover{border-color:var(--fg)}
-.add{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.add input{flex:1;min-width:220px;height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:transparent;color:var(--fg);font:inherit}
-.check{columns:2;column-gap:30px;margin-top:20px;padding:0;list-style:none}
-.check li{break-inside:avoid;padding:8px 0;border-bottom:1px solid var(--line);color:var(--mut)}
-.check li::before{content:"☐ ";color:var(--fg)}
-@media (max-width:860px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}.plan3{grid-template-columns:1fr}.check{columns:1}}
-@media (max-width:520px){.board{grid-template-columns:1fr}}
-</style>
+<link rel="stylesheet" href="/assets/css/studio.css">
 </head>
 <body class="dark">
 <header class="top">
   <a class="brand" href="/" aria-label="Siroxtag, accueil">Siroxtag<span class="dot"></span></a>
   <nav class="nav" aria-label="Navigation principale"><a href="/#videos">Vidéos</a><a href="/wiki/">Wiki</a><a href="/compte/" data-acc>Mon compte</a></nav>
 </header>
-<main class="xp">
-  <p class="lab">Outil gratuit</p>
-  <h1 class="h2" style="margin-top:14px">Le Studio <span class="it">d’idées</span>.</h1>
-  <p class="lead m" style="margin-top:18px">En panne d’inspiration ? Le Studio te propose une idée de vidéo courte complète : le format, l’accroche, le plan en trois temps, le son et les hashtags. Garde les meilleures dans ton tableau, de l’idée à la publication.</p>
-
-  <section class="gen" aria-live="polite" data-gen>
-    <div class="gen-filters">
-      <select data-f="theme" aria-label="Thème"><option value="">Tous les thèmes</option></select>
-      <select data-f="format" aria-label="Format"><option value="">Tous les formats</option></select>
-      <select data-f="duree" aria-label="Durée"><option value="">Toutes les durées</option><option>7 à 15 s</option><option>15 à 30 s</option><option>30 à 60 s</option></select>
-    </div>
-    <p class="lab" data-o="format"></p>
-    <h2 data-o="titre"></h2>
-    <div class="tags"><span data-o="theme"></span><span data-o="duree"></span><span data-o="son"></span></div>
-    <div class="plan3">
-      <div><b>0 – 2 s · L’accroche</b><p data-o="hook"></p></div>
-      <div><b>Le milieu</b><p data-o="milieu"></p></div>
-      <div><b>La chute</b><p data-o="chute"></p></div>
-    </div>
-    <p class="gen-meta"><span data-o="bonus"></span><br><span data-o="tags"></span></p>
-    <div class="gen-act">
-      <button class="btn" type="button" data-next>Une autre idée <span class="ar">↻</span></button>
-      <button class="btn ghost" type="button" data-keep>Garder dans mon tableau</button>
-      <button class="btn ghost" type="button" data-copy>Copier</button>
-    </div>
-    <p class="m" data-gmsg style="margin-top:12px;min-height:1.4em"></p>
-  </section>
-
-  <section style="margin-top:70px">
-    <p class="lab">Membres</p>
-    <h2 class="h3" style="margin-top:10px">Mon tableau de <span class="it">tournage</span>.</h2>
-    <div data-board style="margin-top:18px"><p class="m">Chargement…</p></div>
-  </section>
-
-  <section style="margin-top:70px">
-    <p class="lab">Avant de publier</p>
-    <h2 class="h3" style="margin-top:10px">La checklist <span class="it">express</span>.</h2>
-    <ul class="check">
-      <li>L’accroche tient en moins de 2 secondes.</li>
-      <li>Les sous-titres sont lisibles sur un petit écran.</li>
-      <li>Le son est bien réglé, pas trop fort.</li>
-      <li>La vidéo fonctionne aussi sans le son.</li>
-      <li>Aucune personne n’est filmée sans son accord.</li>
-      <li>La musique utilisée est disponible dans l’appli.</li>
-      <li>Pas d’info personnelle visible : adresse, école, plaque.</li>
-      <li>La description pose une question pour faire réagir.</li>
-    </ul>
-  </section>
-  <a class="x-back" href="/">← Retour à l’accueil</a>
-</main>
+<div class="st">
+  <nav class="st-side" aria-label="Pages du Studio">
+    <p class="lab">Studio</p>
+    <a href="#/" data-r="accueil"><i>🏠</i>Accueil</a>
+    <a href="#/idees" data-r="idees"><i>💡</i>Idées</a>
+    <a href="#/accroches" data-r="accroches"><i>🪝</i>Accroches</a>
+    <a href="#/tableau" data-r="tableau"><i>📋</i>Tableau</a>
+    <a href="#/calendrier" data-r="calendrier"><i>📅</i>Calendrier</a>
+    <a href="#/performances" data-r="performances"><i>📈</i>Performances</a>
+    <a href="#/objectifs" data-r="objectifs"><i>🎯</i>Objectifs</a>
+    <a href="#/checklist" data-r="checklist"><i>✅</i>Checklist</a>
+    <span class="sep"></span>
+    <div class="st-user" data-user>Pas connecté</div>
+    <p style="font-size:12px;color:var(--mut);padding:10px 12px 0;line-height:1.5"><a href="/conditions/" style="display:inline;padding:0;font-size:12px;font-weight:500">Conditions</a> · <a href="/confidentialite/" style="display:inline;padding:0;font-size:12px;font-weight:500">Confidentialité</a></p>
+  </nav>
+  <main class="st-main" id="contenu" tabindex="-1"><p class="m">Chargement…</p></main>
+</div>
+<div class="modal" data-modal hidden role="dialog" aria-modal="true" aria-label="Modifier l’idée"><div class="box" data-mbox></div></div>
 <script src="/assets/js/compte.js"></script>
+<script src="/assets/js/studio.js" defer></script>
 <script src="/assets/js/term.js" data-site="siroxtag" defer></script>
-<script>
-addEventListener('DOMContentLoaded', () => {
-  const pick = a => a[Math.floor(Math.random() * a.length)];
-  const THEMES = {
-    'Jeux vidéo': { sujets: ['la dernière mise à jour de ton jeu préféré', 'un joueur qui rage pour rien', 'le pire coéquipier en ligne', 'la musique du menu principal', 'un bug complètement absurde'], tags: '#gaming #jeuxvideo #gamer' },
-    'GTA RP': { sujets: ['le premier jour d’un nouveau joueur RP', 'une course-poursuite qui tourne mal', 'un entretien d’embauche en RP', 'le patron d’entreprise trop sérieux', 'la police qui ne croit personne'], tags: '#gtarp #gta #roleplay' },
-    'Horreur': { sujets: ['la créature qui déteste la lumière', 'une lampe torche presque déchargée', 'un bruit dans le couloir à 3 h du matin', 'le seul joueur resté dans le noir', 'la porte qui s’ouvre toute seule'], tags: '#horreur #roblox #frisson' },
-    'Bouffe': { sujets: ['un burger maison raté', 'le goûter de 16 h', 'la recette la plus simple du monde', 'une dégustation à l’aveugle', 'le plat qu’on mange en jouant'], tags: '#food #bouffe #recette' },
-    'Code': { sujets: ['un bug qui disparaît dès qu’on le regarde', 'le point-virgule oublié', 'un site codé en une soirée', 'l’IA qui propose n’importe quoi', '« ça marche sur ma machine »'], tags: '#code #developpeur #tech' },
-    'Vie quotidienne': { sujets: ['le réveil du lundi matin', 'les notifications à 2 h du matin', 'le Wi-Fi qui coupe au pire moment', 'la batterie à 1 %', 'le groupe de discussion qui ne s’arrête jamais'], tags: '#humour #vraievie #pov' },
-    'Musique': { sujets: ['le son qui reste dans la tête', 'monter le volume beaucoup trop fort', 'deviner une musique en 3 secondes', 'un edit sur du phonk', 'la playlist pour coder'], tags: '#musique #phonk #edit' }
-  };
-  const FORMATS = {
-    'POV': { titre: s => `POV : ${s}`, hook: 'Commence directement dans la situation, regard caméra.', milieu: 'Fais monter la gêne ou la tension en 2 ou 3 plans.', chute: 'Une réaction exagérée, puis coupe net.' },
-    'Parodie': { titre: s => `Parodie : ${s}, version film d’action`, hook: 'Une musique épique sur une situation banale.', milieu: 'Exagère chaque geste, comme une bande-annonce.', chute: 'Retour au calme brutal : silence et regard vide.' },
-    'Avant / après': { titre: s => `Avant / après : ${s}`, hook: 'Montre le « avant » en moins d’une seconde.', milieu: 'Transition sur le temps fort du son.', chute: 'Le « après », avec un détail qui fait rire.' },
-    'Top 3': { titre: s => `Top 3 des pires moments : ${s}`, hook: 'Annonce le n° 1 dès le début pour donner envie de rester.', milieu: 'Le n° 3 puis le n° 2, un plan chacun.', chute: 'Le n° 1, le plus absurde.' },
-    'Storytime': { titre: s => `Storytime : ${s}`, hook: 'Commence par la fin : « Et c’est comme ça que… »', milieu: 'Raconte vite, avec des plans de coupe.', chute: 'Une dernière phrase qui retourne l’histoire.' },
-    'Réaction': { titre: s => `Ma réaction face à ${s}`, hook: 'Ta tête en gros plan, avant même de voir le sujet.', milieu: 'Montre le sujet en incrustation.', chute: 'Une note sur 10, totalement injuste.' },
-    'Fausse pub': { titre: s => `Fausse publicité : ${s}`, hook: 'Voix off de pub : « Vous en avez marre de… ? »', milieu: 'Présente le « produit » avec un sérieux total.', chute: 'Les conditions, lues beaucoup trop vite.' },
-    'Edit': { titre: s => `Edit : ${s}`, hook: 'Le plan le plus fort tout de suite, calé sur le son.', milieu: 'Des coupes sur chaque temps fort.', chute: 'Un ralenti, puis un écran noir.' },
-    'Défi': { titre: s => `Défi : ${s} en 10 secondes`, hook: 'Affiche le chrono à l’écran dès le départ.', milieu: 'Accélère, rate, recommence.', chute: 'Réussi ou raté : réaction honnête.' }
-  };
-  const SONS = ['du phonk', 'une musique épique', 'un son tendance du moment', 'un silence gênant', 'du lo-fi calme', 'un bruitage de jeu vidéo'];
-  const BONUS = ['Bonus : finis par une question en description pour faire réagir.', 'Bonus : ajoute un détail caché que seuls les plus attentifs verront.', 'Bonus : fais une partie 2 si les commentaires la demandent.', 'Bonus : épingle le meilleur commentaire.', 'Bonus : tourne deux versions et garde la plus courte.'];
-  const DUREES = ['7 à 15 s', '15 à 30 s', '30 à 60 s'];
-  const $ = s => document.querySelector(s), gen = $('[data-gen]'), gmsg = $('[data-gmsg]');
-  const fTheme = $('[data-f=theme]'), fFormat = $('[data-f=format]'), fDuree = $('[data-f=duree]');
-  Object.keys(THEMES).forEach(t => fTheme.add(new Option(t, t)));
-  Object.keys(FORMATS).forEach(f => fFormat.add(new Option(f, f)));
-  let cur = null;
-  function roll() {
-    const theme = fTheme.value || pick(Object.keys(THEMES)), format = fFormat.value || pick(Object.keys(FORMATS)), duree = fDuree.value || pick(DUREES);
-    const s = pick(THEMES[theme].sujets), F = FORMATS[format], son = pick(SONS);
-    cur = { theme, format, duree, son, titre: F.titre(s), hook: F.hook, milieu: F.milieu, chute: F.chute, bonus: pick(BONUS), tags: THEMES[theme].tags + ' #pourtoi' };
-    Object.entries({ format: 'Format · ' + format, titre: cur.titre, theme, duree, son: 'Son : ' + son, hook: cur.hook, milieu: cur.milieu, chute: cur.chute, bonus: cur.bonus, tags: cur.tags })
-      .forEach(([k, v]) => { gen.querySelector(`[data-o="${k}"]`).textContent = v; });
-    gen.classList.remove('flash'); void gen.offsetWidth; gen.classList.add('flash'); gmsg.textContent = '';
-  }
-  const asText = c => `${c.titre}\nFormat : ${c.format} · ${c.duree} · son : ${c.son}\nAccroche : ${c.hook}\nMilieu : ${c.milieu}\nChute : ${c.chute}\n${c.bonus}\n${c.tags}`;
-  [fTheme, fFormat, fDuree].forEach(s => s.addEventListener('change', roll));
-  $('[data-next]').addEventListener('click', roll);
-  $('[data-copy]').addEventListener('click', async () => { try { await navigator.clipboard.writeText(asText(cur)); gmsg.textContent = 'Copié ✓'; } catch (e) { gmsg.textContent = 'Copie impossible sur ce navigateur.'; } });
-  roll();
-
-  /* ----- tableau de tournage (membres) ----- */
-  const COLS = [['idee', 'Idées'], ['a-tourner', 'À tourner'], ['tourne', 'Tourné'], ['publie', 'Publié']];
-  const board = $('[data-board]'), e = SXA.esc;
-  let ideas = [], user = null;
-  async function load() {
-    user = await SXA.me();
-    if (!user) {
-      board.innerHTML = '<p class="m" style="max-width:34em">Connecte-toi pour garder tes idées et suivre tes tournages, de l’idée à la publication. C’est gratuit.</p><div style="margin-top:20px" data-login></div>';
-      SXA.form(board.querySelector('[data-login]'), { next: '/studio/', onDone: load }); return;
-    }
-    document.querySelector('[data-acc]').textContent = user.pseudo;
-    try { ideas = (await SXA.api('ideas')).ideas; } catch (er) { board.innerHTML = `<p class="m">${e(er.message)}</p>`; return; }
-    draw();
-  }
-  function draw() {
-    board.innerHTML = `<div class="board">${COLS.map(([k, n], ci) => `<div class="col"><h3><span>${n}</span><span>${ideas.filter(i => i.status === k).length}</span></h3>${ideas.filter(i => i.status === k).map(i => `<div class="card-i"><b>${e(i.title)}</b>${i.body ? `<p>${e(i.body)}</p>` : ''}<div class="mv">${ci ? `<button type="button" data-mv="${i.id}" data-to="${COLS[ci - 1][0]}" aria-label="Reculer">←</button>` : ''}<button type="button" data-del="${i.id}" aria-label="Supprimer">✕</button>${ci < 3 ? `<button type="button" data-mv="${i.id}" data-to="${COLS[ci + 1][0]}" aria-label="Avancer">→</button>` : ''}</div></div>`).join('')}</div>`).join('')}</div>
-      <form class="add" data-add><input name="t" maxlength="160" placeholder="Ajouter une idée à la main…" aria-label="Nouvelle idée"><button class="btn ghost" type="submit">Ajouter</button></form>`;
-  }
-  board.addEventListener('click', async ev => {
-    const mv = ev.target.closest('[data-mv]'), del = ev.target.closest('[data-del]');
-    try {
-      if (mv) { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +mv.dataset.mv, status: mv.dataset.to } }); ideas = ideas.map(i => i.id === r.idea.id ? r.idea : i); draw(); }
-      if (del) { await SXA.api('ideas', { method: 'DELETE', body: { id: +del.dataset.del } }); ideas = ideas.filter(i => i.id !== del.dataset.del); draw(); }
-    } catch (er) { alert(er.message); }
-  });
-  board.addEventListener('submit', async ev => {
-    if (!ev.target.matches('[data-add]')) return; ev.preventDefault();
-    const t = ev.target.t.value.trim(); if (!t) return;
-    try { const r = await SXA.api('ideas', { method: 'POST', body: { title: t } }); ideas.unshift(r.idea); draw(); } catch (er) { alert(er.message); }
-  });
-  $('[data-keep]').addEventListener('click', async () => {
-    if (!user) { gmsg.textContent = 'Connecte-toi plus bas pour garder tes idées.'; board.scrollIntoView({ behavior: 'smooth' }); return; }
-    try { const r = await SXA.api('ideas', { method: 'POST', body: { title: cur.titre, body: asText(cur).split('\n').slice(1).join('\n') } }); ideas.unshift(r.idea); draw(); gmsg.textContent = 'Ajoutée à ton tableau ✓'; } catch (er) { gmsg.textContent = er.message; }
-  });
-  load();
-});
-</script>
 </body>
 </html>
