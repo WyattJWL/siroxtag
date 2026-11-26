@@ -85,6 +85,7 @@
   /* ---------- succès, façon jeu vidéo ---------- */
   const ACH = SEC.ach; // [id, icône, titre, description]
   const achBox = document.createElement('div'); achBox.className = 'tm-ach-box'; achBox.setAttribute('aria-live', 'polite'); document.body.appendChild(achBox);
+  const SAISON = ['noel', 'avent']; // succès de saison : ils ne comptent pas pour le platine
   const achGet = () => { try { const v = JSON.parse(localStorage.getItem('sx-ach') || '{}'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } };
   const achToast = (a, gold) => {
     const t = document.createElement('div'); t.className = 'tm-ach' + (gold ? ' gold' : '');
@@ -97,7 +98,7 @@
     const got = achGet(); if (got[id]) return false;
     got[id] = Date.now(); try { localStorage.setItem('sx-ach', JSON.stringify(got)); } catch (e) {}
     achToast(a, id === 'platine');
-    if (id !== 'platine' && ACH.filter(x => x[0] !== 'platine').every(x => got[x[0]])) setTimeout(() => ach('platine'), 1200);
+    if (id !== 'platine' && ACH.filter(x => x[0] !== 'platine' && !SAISON.includes(x[0])).every(x => got[x[0]])) setTimeout(() => ach('platine'), 1200);
     return true;
   };
 
@@ -231,6 +232,10 @@
     linear: { d: 'le dossier RP', f: () => print('<a href="/Linear/">Ouvrir le dossier Linear.</a> (Espace pour avancer)') },
     studio: { d: 'le Studio d’idées de vidéos', f: () => nav('/studio/', 'Ouverture du Studio…') },
     m13: { d: 'la saga PROJECT-M13', f: () => nav('/m13/', 'Il pleut sur Luynes…') },
+    noel: { d: 'le compte à rebours de Noël', f: () => { const d = new Date(), x = new Date(d.getFullYear(), 11, 25), s = Math.floor((x - d) / 1000);
+      print('<span class="tm-y">        ★\n       /|\\\n      /*|o\\\n     /o*|*o\\\n    /*o*|o*o\\\n   /o*o*|*o*o\\\n         |</span>');
+      say(s > 0 ? `Noël dans ${Math.floor(s / 86400)} j ${Math.floor(s % 86400 / 3600)} h ${Math.floor(s % 3600 / 60)} min.` : (d.getMonth() === 11 && d.getDate() <= 26 ? 'Joyeux Noël !' : 'Noël est passé. Rendez-vous en décembre prochain.'));
+      if (window.SX_NOEL) { window.SX_NOEL.fireworks(); ach('noel'); } else say('Le mode Noël arrive le 15 décembre. Aperçu : ajoute ?noel=1 à l’adresse.', 'm'); } },
     compte: { d: 'mon compte', f: () => nav('/compte/', 'Direction ton compte…') },
     faq: { d: 'les questions', f: () => { go('#faq'); say('Les réponses sont en bas.', 'm'); } },
     inoxtag: { d: 'la question qui revient', f: () => { ach('inoxtag'); shake(); say('Erreur 404 : Inoxtag introuvable. Tu cherches Siroxtag. Avec un S. Et un R.', 'e'); } }
@@ -437,4 +442,8 @@
   if (document.querySelector('[data-arena]')) ach('perdu');
 
   window.SX = { hunt, toast, confettis, shake, ach, H };
+  // Noël : du 15 au 26 décembre, ou en aperçu avec ?noel=1 (gardé pour la visite)
+  try { if (/[?&]noel=1/.test(location.search)) sessionStorage.setItem('sx-noel-preview', '1'); if (/[?&]noel=0/.test(location.search)) sessionStorage.removeItem('sx-noel-preview'); } catch (e) {}
+  const nd = new Date(), noelOn = (nd.getMonth() === 11 && nd.getDate() >= 15 && nd.getDate() <= 26) || (() => { try { return sessionStorage.getItem('sx-noel-preview') === '1'; } catch (e) { return false; } })();
+  if (noelOn && !document.querySelector('script[data-noel]')) { const ns = document.createElement('script'); ns.src = '/assets/js/noel.js'; ns.dataset.noel = '1'; document.head.appendChild(ns); }
 })();

@@ -49,6 +49,8 @@ ACH = [
     ['nuit', '🌙', 'Noctambule', 'Visiter le site entre minuit et 5 h.'],
     ['m13', '🌧️', 'Bienvenue à Luynes', 'Entrer dans PROJECT-M13.'],
     ['m13miel', '🐕', 'Miel', 'Finir le premier chapitre de PROJECT-M13.'],
+    ['noel', '🎄', 'Esprit de Noël', 'Ouvrir une case du calendrier de l’Avent.'],
+    ['avent', '🎁', 'Calendrier complet', 'Ouvrir les dix cases du calendrier de l’Avent.'],
     ['platine', '💎', 'Platine', 'Débloquer tous les autres succès.', 'Tout débloquer.'],
 ]
 SEC = {

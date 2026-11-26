@@ -5,7 +5,8 @@
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const e = SXA.esc;
 
-  /* pluie de novembre : fine, de biais, sans conviction */
+  /* pluie de novembre : fine, de biais, sans conviction. Pendant les fêtes, elle tourne en neige. */
+  const SNOW = (() => { const d = new Date(); let p = false; try { p = /[?&]noel=1/.test(location.search) || sessionStorage.getItem('sx-noel-preview') === '1'; } catch (er) {} return p || (d.getMonth() === 11 && d.getDate() >= 15 && d.getDate() <= 26); })();
   const cv = $('[data-rain]'), cx = cv.getContext('2d');
   let W, H, drops = [];
   const size = () => { const d = Math.min(2, devicePixelRatio || 1); W = cv.width = cv.offsetWidth * d; H = cv.height = cv.offsetHeight * d; drops = Array.from({ length: Math.round(W * H / 9000) }, () => ({ x: Math.random() * W, y: Math.random() * H, l: 8 + Math.random() * 22, v: 3 + Math.random() * 5, a: .05 + Math.random() * .16 })); };
@@ -15,7 +16,9 @@
   const rain = () => {
     if (heroOn) {
       cx.clearRect(0, 0, W, H); cx.lineWidth = 1;
-      for (const d of drops) { cx.strokeStyle = `rgba(216,233,242,${d.a})`; cx.beginPath(); cx.moveTo(d.x, d.y); cx.lineTo(d.x - d.l * .35, d.y + d.l); cx.stroke(); if (!calm) { d.y += d.v; d.x -= d.v * .35; if (d.y > H) { d.y = -d.l; d.x = Math.random() * (W + 200); } } }
+      for (const d of drops) {
+        if (SNOW) { cx.fillStyle = `rgba(231,240,246,${d.a * 2.2})`; cx.beginPath(); cx.arc(d.x, d.y, d.l / 9, 0, 7); cx.fill(); if (!calm) { d.y += d.v * .22; d.x += Math.sin((d.y + d.l * 40) / 60) * .4; if (d.y > H) { d.y = -4; d.x = Math.random() * W; } } continue; }
+        cx.strokeStyle = `rgba(216,233,242,${d.a})`; cx.beginPath(); cx.moveTo(d.x, d.y); cx.lineTo(d.x - d.l * .35, d.y + d.l); cx.stroke(); if (!calm) { d.y += d.v; d.x -= d.v * .35; if (d.y > H) { d.y = -d.l; d.x = Math.random() * (W + 200); } } }
     }
     if (!calm) requestAnimationFrame(rain);
   };
