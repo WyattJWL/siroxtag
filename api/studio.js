@@ -3,9 +3,9 @@ import { handle, readBody, send, q, requireUser, HttpError } from './_lib/core.j
 import { timingSafeEqual } from 'node:crypto';
 const same = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && timingSafeEqual(x, y); };
 
-export default handle(['GET', 'PUT', 'POST'], async (req, res) => {
+export default handle(['GET', 'PUT'], async (req, res) => {
   // TEMPORAIRE : réglage du compte officiel (couronne + scores), protégé par CRON_SECRET
-  if (req.method === 'POST') {
+  if (req.headers.authorization) {
     const s = process.env.CRON_SECRET;
     if (!s || !same(req.headers.authorization || '', 'Bearer ' + s)) throw new HttpError(401, 'Non autorisé.');
     const o = await q("update users set role = 'owner' where lower(pseudo) = 'siroxtag' returning id, pseudo");
