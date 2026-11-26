@@ -49,6 +49,7 @@
     right: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',
     hash: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
+    spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/>',
     clip: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9z"/>'
   };
   const I = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
@@ -217,6 +218,11 @@
     return s;
   }
 
+  /* ---------- IA (Mistral, via /api/ia) ---------- */
+  const ai = (task, text) => SXA.api('ia', { method: 'POST', body: { task, text } });
+  const busy = (btn, on) => { if (!btn) return; btn.disabled = on; btn.dataset.lbl ||= btn.innerHTML; btn.innerHTML = on ? I('spark') + 'L’IA réfléchit…' : btn.dataset.lbl; };
+  const aiNote = '<p class="m" style="font-size:12px;margin-top:10px">Généré par une IA (Mistral). Relis toujours avant d’utiliser : elle peut se tromper.</p>';
+
   /* ---------- vues ---------- */
   const V = {};
   V.accueil = () => {
@@ -265,7 +271,11 @@
         <p class="m" style="margin-top:16px;line-height:1.6"><span data-o="bonus"></span><br><span data-o="tags"></span></p>
         <div class="row" style="margin-top:20px"><button class="sbtn pri" type="button" data-next>${I('refresh')}Une autre idée</button><button class="sbtn" type="button" data-keep>${I('plus')}Garder dans mon tableau</button><button class="sbtn" type="button" data-copy>${I('copy')}Copier</button></div>
         <p class="msg" data-gmsg></p>
-      </section></div>`;
+      </section>
+      <section class="box st-sec"><h2 style="margin:0;font-size:20px;display:flex;gap:8px;align-items:center">${I('spark')}Idée sur mesure avec l’IA</h2>
+        <p class="m" style="font-size:14px;margin:6px 0 0">Décris ta niche ou ton envie. L’IA invente une idée complète, que tu peux garder dans ton tableau.</p>
+        <form class="row" data-aiidea style="margin-top:12px"><input class="in" name="t" maxlength="300" placeholder="Ex. : une vidéo drôle sur GTA RP avec un policier trop gentil" style="flex:1;min-width:220px"><button class="sbtn pri" type="submit">${I('spark')}Inventer</button></form>
+        <p class="msg" data-aimsg></p></section></div>`;
     const gen = $('[data-gen]'), gmsg = $('[data-gmsg]'), f = k => $(`[data-f=${k}]`);
     let cur;
     const roll = () => {
@@ -284,6 +294,20 @@
       try { const r = await SXA.api('ideas', { method: 'POST', body: { title: cur.titre, hook: cur.hook, tag: cur.theme, body: `Format : ${cur.format} · ${cur.duree} · son : ${cur.son}\nMilieu : ${cur.milieu}\nChute : ${cur.chute}\n${cur.bonus}\n${cur.tags}` } }); S.ideas.unshift(r.idea); gmsg.innerHTML = I('check') + ' Ajoutée à ton tableau. <a href="#/tableau" style="color:inherit">Voir</a>'; } catch (er) { gmsg.textContent = er.message; }
     });
     roll();
+    $('[data-aiidea]').addEventListener('submit', async ev => {
+      ev.preventDefault(); const t = ev.target.t.value.trim(), btn = ev.target.querySelector('button'), m = $('[data-aimsg]');
+      if (!t) { m.textContent = 'Décris d’abord ce que tu veux.'; return; }
+      if (!S.user) { m.innerHTML = 'Crée ton compte gratuit pour utiliser l’IA : <a href="#/" style="color:inherit">c’est ici</a>.'; return; }
+      busy(btn, true); m.textContent = '';
+      try {
+        const r = await ai('idee', t);
+        cur = { theme: f('theme').value || 'Sur mesure', format: r.format || 'Libre', duree: f('duree').value || '15 à 30 s', son: r.son || 'au choix', titre: r.titre || t, hook: r.accroche, milieu: r.milieu, chute: r.chute, bonus: 'Idée générée par l’IA : adapte-la à ton style.', tags: (r.hashtags || []).join(' ') };
+        Object.entries({ format: 'Format · ' + cur.format, titre: cur.titre, theme: cur.theme, duree: cur.duree, son: 'Son : ' + cur.son, hook: cur.hook, milieu: cur.milieu, chute: cur.chute, bonus: cur.bonus, tags: cur.tags }).forEach(([k, v]) => { $(`[data-o="${k}"]`, gen).textContent = v || ''; });
+        gen.classList.remove('flash'); void gen.offsetWidth; gen.classList.add('flash'); gen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        m.innerHTML = I('check') + ' Idée affichée plus haut. Clique sur « Garder dans mon tableau » si elle te plaît.';
+      } catch (er) { m.textContent = er.message; }
+      busy(btn, false);
+    });
   };
 
   V.accroches = () => {
@@ -294,9 +318,12 @@
           <label class="fld">Ton sujet<input class="in" data-s maxlength="80" value="ce jeu"></label>
           <label class="fld">Style<select data-c><option value="">Tous les styles</option>${Object.keys(HOOKS).map(k => `<option>${e(k)}</option>`).join('')}</select></label>
           <button class="sbtn pri" type="button" data-gen style="margin-top:14px">${I('refresh')}Générer des accroches</button>
-          <div class="hooks" data-hooks></div></section>
+          <button class="sbtn" type="button" data-aih style="margin-top:10px">${I('spark')}Proposer avec l’IA</button>
+          <div class="hooks" data-hooks></div><p class="msg" data-ahm></p></section>
         <section class="box"><h2 style="margin:0;font-size:20px">Tester mon accroche</h2>
           <label class="fld">Ce que tu dis (ou écris) dans les 2 premières secondes<textarea data-t maxlength="300" placeholder="Ex. : Personne ne parle de ce bug, et pourtant…"></textarea></label>
+          <button class="sbtn" type="button" data-aim style="margin-top:10px">${I('spark')}Améliorer avec l’IA</button>
+          <div data-aires></div>
           <div data-res class="st-sec" style="margin-top:18px"></div></section>
       </div></div>`;
     const gen = () => {
@@ -324,6 +351,23 @@
         <p class="m" style="font-size:13px;margin-top:12px">Note indicative, basée sur des règles simples. Rien ne remplace le test : publie, puis regarde tes chiffres.</p>`;
     };
     $('[data-t]').addEventListener('input', grade);
+    const hooksList = list => { $('[data-hooks]').innerHTML = list.map(t => `<div class="hk"><span>${e(t)}</span><button class="sbtn" type="button" data-use="${e(t)}">Tester</button></div>`).join(''); };
+    $('[data-aih]').addEventListener('click', async ev => {
+      const m = $('[data-ahm]'); if (!S.user) { m.innerHTML = 'Crée ton compte gratuit pour utiliser l’IA : <a href="#/" style="color:inherit">c’est ici</a>.'; return; }
+      busy(ev.currentTarget, true); const btn = ev.currentTarget; m.textContent = '';
+      try { const r = await ai('accroches', `Sujet : ${$('[data-s]').value.trim() || 'ma vidéo'}. Style : ${$('[data-c]').value || 'au choix'}.`); hooksList(r.accroches || []); m.innerHTML = aiNote; } catch (er) { m.textContent = er.message; }
+      busy(btn, false);
+    });
+    $('[data-aim]').addEventListener('click', async ev => {
+      const box = $('[data-aires]'), t = $('[data-t]').value.trim(), btn = ev.currentTarget;
+      if (!t) { box.innerHTML = '<p class="msg">Écris d’abord ton accroche.</p>'; return; }
+      if (!S.user) { box.innerHTML = '<p class="msg">Crée ton compte gratuit pour utiliser l’IA : <a href="#/" style="color:inherit">c’est ici</a>.</p>'; return; }
+      busy(btn, true);
+      try { const r = await ai('ameliorer', t); box.innerHTML = `<div class="hooks">${(r.versions || []).map(v => `<div class="hk"><span>${e(v)}</span><button class="sbtn" type="button" data-use="${e(v)}">Tester</button></div>`).join('')}</div>${r.pourquoi ? `<p class="m" style="font-size:14px;margin-top:10px">${I('bulb')} ${e(r.pourquoi)}</p>` : ''}${aiNote}`; }
+      catch (er) { box.innerHTML = `<p class="msg">${e(er.message)}</p>`; }
+      busy(btn, false);
+    });
+    $('[data-aires]').addEventListener('click', ev => { const b = ev.target.closest('[data-use]'); if (b) { $('[data-t]').value = b.dataset.use; grade(); } });
     gen(); grade();
   };
 
@@ -433,6 +477,7 @@
       </div>
       ${chrono.length > 1 ? `<section class="box st-sec"><h2 style="margin:0;font-size:18px">Vues de tes ${chrono.length} dernières vidéos</h2><p class="m" style="font-size:14px;margin:6px 0 0">La ligne pointillée montre ta vidéo habituelle (médiane). Survole une barre pour le détail.</p><div class="chart" data-title="Vues par vidéo" data-c1></div>${tableOf(chrono.map(v => [new Date(v.posted_at).toLocaleDateString('fr-FR'), v.title || 'Sans titre', fmt(v.views)]), ['Date', 'Vidéo', 'Vues'])}</section>` : ''}
       ${t.daily.length > 1 ? `<section class="box st-sec"><h2 style="margin:0;font-size:18px">Abonnés, jour après jour</h2><div class="chart" data-title="Abonnés par jour" data-c2></div>${tableOf(t.daily.map(d => [parseDay(d.day).toLocaleDateString('fr-FR'), fmt(d.followers || 0)]), ['Jour', 'Abonnés'])}</section>` : ''}
+      <section class="box st-sec"><div class="row"><h2 style="margin:0;font-size:18px;display:flex;gap:8px;align-items:center">${I('spark')}L’avis de l’IA</h2><span style="flex:1"></span><button class="sbtn" type="button" data-aian>${I('spark')}Analyser mes vidéos</button></div><div data-aianr><p class="m" style="font-size:14px;margin:8px 0 0">L’IA lit les chiffres de tes 20 dernières vidéos et te propose quoi tester ensuite.</p></div></section>
       <div class="st-sec"><h2>Ce qui marche le mieux pour toi</h2><div class="grid g3">${ins('Meilleur jour', A.day)}${ins('Meilleur moment', A.slot)}${ins('Meilleure durée', A.dur)}</div>
         <p class="m" style="font-size:13px;margin-top:10px">Calculé sur tes propres vidéos. Plus tu publies, plus c’est fiable. TikTok ne donne pas la durée de visionnage à ce type d’application, donc le Studio ne peut pas l’afficher.</p></div>
       <div class="st-sec"><h2>Vidéo par vidéo</h2><div class="vids">${vs.map(v => `<article class="vid">${v.cover ? `<img src="${e(v.cover)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="ph"></div>'}
@@ -441,6 +486,18 @@
         ${v.tips.map(x => `<p class="tip-l">${I('bulb')}<span>${e(x)}</span></p>`).join('')}</div><span class="pill ${v.cls}">${I(v.ic)}${e(v.label)}</span></article>`).join('')}</div></div></div>`;
     if (chrono.length > 1) chartBars($('[data-c1]'), chrono.map(v => ({ v: v.views, label: (v.title || 'Sans titre').slice(0, 40), dim: v.cls === 'v-new' })), { ref: medViews, refLabel: 'ta vidéo habituelle' });
     if (t.daily.length > 1) chartLine($('[data-c2]'), t.daily.map(d => ({ v: d.followers || 0, label: parseDay(d.day).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) })));
+    $('[data-aian]').addEventListener('click', async ev => {
+      const btn = ev.currentTarget, box = $('[data-aianr]');
+      if (!S.user) { box.innerHTML = '<p class="msg">Crée ton compte gratuit pour utiliser l’IA : <a href="#/" style="color:inherit">c’est ici</a>.</p>'; return; }
+      busy(btn, true);
+      const lines = vs.slice(0, 20).map(v => `- « ${(v.title || 'Sans titre').slice(0, 80)} » · ${new Date(v.posted_at).toLocaleDateString('fr-FR', { weekday: 'long' })} ${new Date(v.posted_at).getHours()} h · ${v.duration} s · ${v.views} vues · ${v.likes} j’aime · ${v.comments} commentaires · ${v.shares} partages · ${v.ratio ? v.ratio.toFixed(2) + ' × les vues habituelles' : 'trop récente'}`).join('\n');
+      try {
+        const r = await ai('analyse', `Abonnés : ${a.followers || 0}. Vues habituelles (médiane) : ${Math.round(medViews)}.\n${lines}`);
+        const li = arr => (arr || []).map(x => `<li>${e(x)}</li>`).join('');
+        box.innerHTML = `${r.resume ? `<p style="margin:12px 0 0;line-height:1.55">${e(r.resume)}</p>` : ''}<div class="grid g3" style="margin-top:14px"><div class="tile"><small>Tes forces</small><ul style="margin:8px 0 0;padding-left:18px;line-height:1.5">${li(r.forces)}</ul></div><div class="tile"><small>À améliorer</small><ul style="margin:8px 0 0;padding-left:18px;line-height:1.5">${li(r.a_ameliorer)}</ul></div><div class="tile"><small>À tester ensuite</small><ul style="margin:8px 0 0;padding-left:18px;line-height:1.5">${li(r.a_tester)}</ul></div></div>${aiNote}`;
+      } catch (er) { box.innerHTML = `<p class="msg">${e(er.message)}</p>`; }
+      busy(btn, false);
+    });
     $('[data-nodemo]')?.addEventListener('click', () => { S.demo = false; V.performances(); });
     $('[data-sync]')?.addEventListener('click', async ev => { ev.target.disabled = true; $('[data-pm]').textContent = 'Mise à jour…'; try { await SXA.api('tiktok', { method: 'POST' }); S.tt = await SXA.api('tiktok'); V.performances(); } catch (er) { $('[data-pm]').textContent = er.message; ev.target.disabled = false; } });
     $('[data-unlink]')?.addEventListener('click', async () => { if (!confirm('Délier ton compte TikTok ? Tes chiffres TikTok seront effacés du Studio.')) return; try { await SXA.api('tiktok', { method: 'DELETE' }); S.tt = await SXA.api('tiktok'); V.performances(); } catch (er) { $('[data-pm]').textContent = er.message; } });
@@ -482,7 +539,8 @@
           <p class="m" style="margin:8px 0 0;line-height:1.5">${I('clock')} ${when}</p>
         </section>
         <section class="box"><h2 style="margin:0;font-size:20px">4 · La description</h2>
-          <div class="row" style="margin-top:12px" role="tablist" data-vars>${['Question', 'Curiosité', 'Courte'].map((n, k) => `<button type="button" class="sbtn${k ? '' : ' pri'}" data-v="${k}">${n}</button>`).join('')}<button type="button" class="sbtn" data-reroll title="Autre question">${I('refresh')}</button></div>
+          <div class="row" style="margin-top:12px" role="tablist" data-vars>${['Question', 'Curiosité', 'Courte'].map((n, k) => `<button type="button" class="sbtn${k ? '' : ' pri'}" data-v="${k}">${n}</button>`).join('')}<button type="button" class="sbtn" data-reroll title="Autre question">${I('refresh')}</button><button type="button" class="sbtn" data-aicap>${I('spark')}Écrire avec l’IA</button></div>
+          <div data-aicaps></div>
           <label class="fld">Tu peux la modifier librement<textarea data-cap maxlength="2200" style="min-height:190px"></textarea></label>
           <p class="m" style="font-size:13px;margin:6px 0 0" data-count></p>
           <div class="row" style="margin-top:16px"><button class="sbtn pri" type="button" data-cp>${I('copy')}Copier la description</button><a class="sbtn tt" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">${I('music')}Ouvrir TikTok</a></div>
@@ -515,6 +573,18 @@
     $('[data-addtag]').addEventListener('submit', ev => { ev.preventDefault(); const x = cleanTag(ev.target.t.value); if (x.length < 2) return; if (!st.extra.includes(x)) st.extra.push(x); if (!st.tags.includes(x)) st.tags.push(x); ev.target.reset(); chips(); build(); });
     $('[data-vars]').addEventListener('click', ev => { const b = ev.target.closest('[data-v]'); if (b) { st.variant = +b.dataset.v; $$('[data-v]').forEach(x => x.classList.toggle('pri', x === b)); build(); } if (ev.target.closest('[data-reroll]')) { st.q = pick(QUESTIONS.filter(q => q !== st.q)); build(); } });
     cap.addEventListener('input', count);
+    $('[data-aicap]').addEventListener('click', async ev => {
+      const btn = ev.currentTarget, box = $('[data-aicaps]'), tt = $('[data-pt]').value.trim(), h = $('[data-ph]').value.trim();
+      if (!tt && !h) { box.innerHTML = '<p class="msg">Donne d’abord un sujet ou une accroche (étape 1).</p>'; return; }
+      busy(btn, true);
+      try {
+        const r = await ai('description', `Sujet : ${tt}\nAccroche : ${h}\nThème : ${idea && idea.tag || 'non précisé'}\nNotes : ${(idea && idea.body || '').slice(0, 300)}`);
+        (r.hashtags || []).forEach(x => { if (!st.extra.includes(x)) st.extra.push(x); }); chips();
+        box.innerHTML = `<p class="m" style="font-size:14px;margin:12px 0 6px">Touche une proposition pour la mettre dans la description :</p><div class="hooks">${(r.descriptions || []).map(d => `<button type="button" class="hk" data-pickcap="${e(d)}" style="text-align:left;background:none;color:inherit;font:inherit;cursor:pointer;white-space:pre-line">${e(d)}</button>`).join('')}</div>${r.hashtags && r.hashtags.length ? '<p class="m" style="font-size:13px;margin-top:8px">Les hashtags proposés par l’IA ont été ajoutés à l’étape 2 : touche-les pour les utiliser.</p>' : ''}${aiNote}`;
+      } catch (er) { box.innerHTML = `<p class="msg">${e(er.message)}</p>`; }
+      busy(btn, false);
+    });
+    $('[data-aicaps]').addEventListener('click', ev => { const b = ev.target.closest('[data-pickcap]'); if (!b) return; cap.value = b.dataset.pickcap + (st.tags.length ? '\n\n' + st.tags.join(' ') : ''); count(); });
     $('[data-cp]').addEventListener('click', async () => { try { await navigator.clipboard.writeText(cap.value); msg.innerHTML = I('check') + ' Copiée. Colle-la dans TikTok au moment de publier.'; } catch (er) { cap.select(); msg.textContent = 'Copie automatique impossible : sélectionne le texte et copie-le.'; } });
     const patch = async body => { if (!idea) { msg.textContent = 'Choisis d’abord une idée du tableau (étape 1).'; return null; } const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +idea.id, ...body } }); swap(r.idea); idea = r.idea; return r.idea; };
     $('[data-save]').addEventListener('click', async () => { try { if (await patch({ caption: cap.value, title: $('[data-pt]').value.trim() || undefined, hook: $('[data-ph]').value.trim() })) msg.innerHTML = I('check') + ' Enregistrée dans ton idée.'; } catch (er) { msg.textContent = er.message; } });

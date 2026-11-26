@@ -200,7 +200,18 @@
     contact: { d: 'me contacter', f: () => print(`<a href="mailto:${MAIL}">${MAIL}</a>`) },
     date: { d: 'la date et l’heure', f: () => say(new Date().toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' })) },
     historique: { d: 'les commandes déjà tapées', f: () => say(hist.length ? hist.map((h, i) => `${String(i + 1).padStart(3)}  ${h}`).join('\n') : 'Rien pour l’instant.') },
-    echo: { d: 'répète ce que tu écris', f: a => say(a || '') }
+    echo: { d: 'répète ce que tu écris', f: a => say(a || '') },
+    ia: { d: 'poser une question à l’IA (/ia une idée de vidéo ?)', f: async a => {
+      if (!a) { say('Exemple : /ia donne-moi une idée de vidéo sur GTA RP', 'm'); return; }
+      print('<span class="tm-m">L’IA réfléchit…</span>'); const wait = out.lastChild;
+      let txt, bad = false;
+      try {
+        const r = await fetch('/api/ia', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-SX': '1' }, body: JSON.stringify({ task: 'chat', text: String(a).slice(0, 600) }) });
+        const d = await r.json().catch(() => ({})); bad = !r.ok; txt = r.ok ? d.text : (d.error || 'L’IA ne répond pas.');
+      } catch (e) { bad = true; txt = 'L’IA ne répond pas. Vérifie ta connexion.'; }
+      if (wait && wait.parentNode) wait.remove();
+      say(txt || '…', bad ? 'e' : ''); if (!bad) say('Réponse d’une IA (Mistral) : elle peut se tromper.', 'm');
+    } }
   });
   chap('modes', 'Les modes', 'changer l’ambiance du site', {
     fun: { d: 'des couleurs partout', f: () => { if (isFun()) { say('Déjà en mode fun. Tape /serieux pour calmer le jeu.', 'm'); return; } funOn(); say('Mode fun activé. Les couleurs sont lâchées.'); toast('Mode fun activé 🎨'); } },
