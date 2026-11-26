@@ -95,3 +95,8 @@ create table if not exists tiktok_daily (
   followers      integer, likes bigint, views bigint,
   primary key (user_id, day)
 );
+
+-- Badges : rôle (« owner » = le compte officiel Siroxtag, attribué à la main) et compte TikTok certifié
+alter table users add column if not exists role text not null default '';
+alter table tiktok_accounts add column if not exists verified boolean not null default false;
+alter table tiktok_accounts add column if not exists username text not null default '';

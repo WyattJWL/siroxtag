@@ -51,5 +51,8 @@ window.SXA = (() => {
       btn.disabled = false;
     }));
   }
-  return { api, me, logout, form, esc };
+  // badges : check bleu = compte TikTok certifié, couronne = compte officiel Siroxtag
+  const badges = u => (u && u.verified ? '<span class="sx-badge sx-ver" tabindex="0" role="img" aria-label="Compte TikTok certifié" data-tip="Compte TikTok certifié"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#20D5EC" stroke="#20D5EC" stroke-width="1.2" stroke-linejoin="round" d="M23.00,12.00 L21.27,14.48 L21.53,17.50 L18.79,18.79 L17.50,21.53 L14.48,21.27 L12.00,23.00 L9.52,21.27 L6.50,21.53 L5.21,18.79 L2.47,17.50 L2.73,14.48 L1.00,12.00 L2.73,9.52 L2.47,6.50 L5.21,5.21 L6.50,2.47 L9.52,2.73 L12.00,1.00 L14.48,2.73 L17.50,2.47 L18.79,5.21 L21.53,6.50 L21.27,9.52Z"/><path d="M7.6 12.3l3 3 5.8-6.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '')
+    + (u && u.owner ? '<span class="sx-badge sx-crown" tabindex="0" role="img" aria-label="OUI C’EST BIEN MOI" data-tip="OUI C’EST BIEN MOI"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z" fill="#FFC93C" stroke="#E0A400" stroke-width="1.2" stroke-linejoin="round"/><circle cx="12" cy="15" r="1.6" fill="#FF5B14"/></svg></span>' : '');
+  return { api, me, logout, form, esc, badges };
 })();

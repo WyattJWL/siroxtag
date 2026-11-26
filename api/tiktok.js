@@ -31,7 +31,7 @@ export default handle(['GET', 'POST', 'DELETE'], async (req, res) => {
     return send(res, 200, { ok: true });
   }
   const configured = !!(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET);
-  const a = (await q('select display_name, avatar_url, followers, likes, videos, synced_at, refresh_exp > now() as alive from tiktok_accounts where user_id = $1', [u.id])).rows[0];
+  const a = (await q('select display_name, username, verified, avatar_url, followers, likes, videos, synced_at, refresh_exp > now() as alive from tiktok_accounts where user_id = $1', [u.id])).rows[0];
   if (!a) return send(res, 200, { configured, account: null });
   const [v, d] = await Promise.all([
     q('select video_id as id, title, cover_url as cover, share_url as url, duration, posted_at, views::float8 as views, likes::float8 as likes, comments::float8 as comments, shares::float8 as shares from tiktok_videos where user_id = $1 order by posted_at desc limit 100', [u.id]),

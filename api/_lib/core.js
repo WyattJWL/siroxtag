@@ -109,7 +109,8 @@ export async function endSession(req, res) {
 export async function currentUser(req) {
   const t = cookies(req)[COOKIE]; if (!t) return null;
   const { rows } = await q(
-    `select u.id, u.pseudo, u.email, u.discord_id, u.pass_hash is not null as has_password, u.created_at
+    `select u.id, u.pseudo, u.email, u.discord_id, u.pass_hash is not null as has_password, u.created_at, u.role,
+            exists (select 1 from tiktok_accounts t where t.user_id = u.id and t.verified) as verified
        from sessions s join users u on u.id = s.user_id
       where s.token_hash = $1 and s.expires_at > now()`, [sha(t)]);
   if (!rows[0]) return null;
@@ -117,7 +118,7 @@ export async function currentUser(req) {
   return rows[0];
 }
 export async function requireUser(req) { const u = await currentUser(req); if (!u) throw new HttpError(401, 'Connecte-toi d’abord.'); return u; }
-export const publicUser = u => ({ pseudo: u.pseudo, methods: [u.has_password || u.pass_hash ? 'email' : null, u.discord_id ? 'discord' : null].filter(Boolean), since: u.created_at });
+export const publicUser = u => ({ pseudo: u.pseudo, methods: [u.has_password || u.pass_hash ? 'email' : null, u.discord_id ? 'discord' : null].filter(Boolean), since: u.created_at, owner: u.role === 'owner', verified: !!u.verified });
 
 /* ---------- validation ---------- */
 export const cleanPseudo = s => String(s || '').trim();

@@ -99,14 +99,14 @@ addEventListener('DOMContentLoaded', () => {
   async function who() {
     user = await SXA.me(true);
     const w = $('[data-who]'), lg = $('[data-login]');
-    if (user) { w.innerHTML = `Connecté en tant que <b>${e(user.pseudo)}</b> · <button type="button" data-out>se déconnecter</button>`; lg.innerHTML = ''; w.querySelector('[data-out]').onclick = async () => { await SXA.logout(); who(); board(); }; }
+    if (user) { w.innerHTML = `Connecté en tant que <b>${e(user.pseudo)}${SXA.badges(user)}</b> · <button type="button" data-out>se déconnecter</button>`; lg.innerHTML = ''; w.querySelector('[data-out]').onclick = async () => { await SXA.logout(); who(); board(); }; }
     else { w.innerHTML = 'Tu joues en invité : tes scores ne sont pas enregistrés. <button type="button" data-lg>Se connecter</button>'; w.querySelector('[data-lg]').onclick = () => { SXA.form(lg, { next: '/perso/jeux/', onDone: () => { who(); board(); } }); lg.scrollIntoView({ behavior: 'smooth' }); }; }
   }
   async function board() {
     $('[data-lbt]').textContent = 'Classement · ' + NAMES[game];
     try {
       const d = await SXA.api('scores?game=' + game);
-      $('[data-top]').innerHTML = d.top.length ? d.top.map(r => `<li><span>${e(r.pseudo)}</span><b>${r.best}</b></li>`).join('') : '<li><span>Personne pour l’instant. À toi !</span></li>';
+      $('[data-top]').innerHTML = d.top.length ? d.top.map(r => `<li><span>${e(r.pseudo)}${SXA.badges(r)}</span><b>${r.best}</b></li>`).join('') : '<li><span>Personne pour l’instant. À toi !</span></li>';
       $('[data-mine]').textContent = d.me ? `Ton record : ${d.me.best} · rang ${d.me.rang}` : (user ? 'Pas encore de score sur ce jeu.' : '');
     } catch (er) { $('[data-top]').innerHTML = `<li><span>${e(er.message)}</span></li>`; }
   }

@@ -8,7 +8,8 @@ export default handle(['GET', 'POST'], async (req, res) => {
   if (req.method === 'GET') {
     const game = new URL(req.url, 'http://x').searchParams.get('game');
     if (!(game in GAMES)) throw new HttpError(400, 'Jeu inconnu.');
-    const top = await q('select u.pseudo, s.best from scores s join users u on u.id = s.user_id where s.game = $1 order by s.best desc, s.updated_at asc limit 10', [game]);
+    const top = await q(`select u.pseudo, s.best, u.role = 'owner' as owner, exists (select 1 from tiktok_accounts t where t.user_id = u.id and t.verified) as verified
+        from scores s join users u on u.id = s.user_id where s.game = $1 order by s.best desc, s.updated_at asc limit 10`, [game]);
     const u = await currentUser(req);
     let me = null;
     if (u) {

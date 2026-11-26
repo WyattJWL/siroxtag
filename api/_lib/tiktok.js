@@ -3,7 +3,7 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import { q, HttpError } from './core.js';
 
-export const SCOPES = 'user.info.basic,user.info.stats,video.list';
+export const SCOPES = 'user.info.basic,user.info.profile,user.info.stats,video.list';
 export const site = () => (process.env.SITE_URL || 'https://www.siroxtag.fr').replace(/\/$/, '');
 export const redirectUri = () => site() + '/api/auth/tiktok';
 export const conf = () => {
@@ -57,15 +57,17 @@ const str = (v, n) => String(v ?? '').slice(0, n);
 /* récupère le profil et jusqu’à 100 vidéos, enregistre tout, et garde une photo du jour */
 export async function sync(userId) {
   const token = await accessToken(userId);
-  const { user = {} } = await call(token, '/user/info/?fields=open_id,display_name,avatar_url,follower_count,likes_count,video_count');
+  // is_verified et username demandent l’autorisation user.info.profile : sans elle, on se contente du reste
+  const base = 'open_id,display_name,avatar_url,follower_count,likes_count,video_count';
+  const { user = {} } = await call(token, '/user/info/?fields=' + base + ',is_verified,username').catch(() => call(token, '/user/info/?fields=' + base));
   const fields = 'id,title,video_description,create_time,cover_image_url,share_url,duration,view_count,like_count,comment_count,share_count';
   const vids = []; let cursor, more = true;
   for (let page = 0; more && page < 5; page++) {
     const d = await call(token, '/video/list/?fields=' + fields, { method: 'POST', body: JSON.stringify(cursor ? { max_count: 20, cursor } : { max_count: 20 }) });
     vids.push(...(d.videos || [])); cursor = d.cursor; more = !!d.has_more;
   }
-  await q('update tiktok_accounts set display_name = $2, avatar_url = $3, followers = $4, likes = $5, videos = $6, synced_at = now() where user_id = $1',
-    [userId, str(user.display_name, 80), str(user.avatar_url, 1000), num(user.follower_count), num(user.likes_count), num(user.video_count)]);
+  await q('update tiktok_accounts set display_name = $2, avatar_url = $3, followers = $4, likes = $5, videos = $6, verified = $7, username = $8, synced_at = now() where user_id = $1',
+    [userId, str(user.display_name, 80), str(user.avatar_url, 1000), num(user.follower_count), num(user.likes_count), num(user.video_count), user.is_verified === true, str(user.username, 40)]);
   for (const v of vids) {
     if (!/^[\w-]{1,40}$/.test(String(v.id || ''))) continue;
     await q(`insert into tiktok_videos (user_id, video_id, title, cover_url, share_url, duration, posted_at, views, likes, comments, shares, updated_at)

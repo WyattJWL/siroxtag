@@ -97,3 +97,12 @@
 .acc-card input{height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--fg);font:inherit}
 .btn.danger{border-color:#c0392b;color:#e57373}
 .ax-f[hidden]{display:none}
+
+/* badges de compte (check certifié, couronne du compte officiel) */
+.sx-badge{position:relative;display:inline-flex;vertical-align:middle;margin-left:.22em;cursor:default;outline:none}
+.sx-badge svg{width:.95em;height:.95em;min-width:16px;min-height:16px}
+.sx-crown svg{width:1.05em;height:1.05em}
+.sx-badge::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);background:#0B0B0B;color:#F2F1EC;border:1px solid rgba(242,241,236,.2);font:700 12px/1.2 var(--sans);letter-spacing:.02em;padding:7px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
+.sx-badge:hover::after,.sx-badge:focus::after{opacity:1;transform:translate(-50%,0)}
+.sx-crown:hover svg,.sx-crown:focus svg{animation:sxCrown .6s ease}
+@keyframes sxCrown{0%,100%{transform:rotate(0)}30%{transform:rotate(-12deg) scale(1.15)}60%{transform:rotate(8deg)}}

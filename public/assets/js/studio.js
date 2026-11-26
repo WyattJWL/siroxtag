@@ -189,7 +189,7 @@
     S.user = await SXA.me();
     if (S.user) {
       $('[data-acc]').textContent = S.user.pseudo;
-      $('[data-user]').innerHTML = `<b>${e(S.user.pseudo)}</b><a href="/compte/" style="padding:0;display:inline;color:var(--mut);font-size:13px;font-weight:500">Mon compte ${I('right')}</a>`;
+      $('[data-user]').innerHTML = `<b>${e(S.user.pseudo)}${SXA.badges(S.user)}</b><a href="/compte/" style="padding:0;display:inline;color:var(--mut);font-size:13px;font-weight:500">Mon compte ${I('right')}</a>`;
       const [i, g, t] = await Promise.all([SXA.api('ideas').catch(() => ({ ideas: [] })), SXA.api('studio').catch(() => ({})), SXA.api('tiktok').catch(() => null)]);
       S.ideas = i.ideas || []; if (g.goals) S.goals = g.goals; S.tt = t;
     }
@@ -242,7 +242,7 @@
     const w = weeks(1)[0], g = S.goals.per_week, st = streak(), stock = S.ideas.filter(i => i.status === 'idee' || i.status === 'a-tourner').length;
     const today = iso(new Date()), next = S.ideas.filter(i => i.planned_on && i.planned_on >= today && i.status !== 'publie').sort((a, b) => a.planned_on.localeCompare(b.planned_on))[0];
     const t = S.tt && S.tt.account ? S.tt : null, last = t && t.videos.length ? analyze(t.videos).vs[0] : null;
-    main.innerHTML = `<div class="st-view"><p class="lab">Tableau de bord</p><h1 class="st-h">${hello}, ${e(S.user.pseudo)}.</h1>
+    main.innerHTML = `<div class="st-view"><p class="lab">Tableau de bord</p><h1 class="st-h">${hello}, ${e(S.user.pseudo)}${SXA.badges(S.user)}.</h1>
       <p class="st-lead">${g ? (w.n >= g ? 'Objectif de la semaine atteint. Bien joué !' : `Encore ${g - w.n} vidéo${g - w.n > 1 ? 's' : ''} pour tenir ton objectif de la semaine.`) : 'Fixe-toi un objectif dans l’onglet Objectifs.'}</p>
       <div class="grid g4 st-sec">
         <div class="tile"><small>Cette semaine</small><b>${w.n}${g ? ` / ${g}` : ''}</b><span>vidéo${w.n > 1 ? 's' : ''} publiée${w.n > 1 ? 's' : ''}</span>${g ? `<div class="bar"><i style="width:${Math.min(100, (w.n / g) * 100)}%"></i></div>` : ''}</div>
@@ -466,7 +466,7 @@
     main.innerHTML = `<div class="st-view"><p class="lab">Suivi TikTok</p><h1 class="st-h">Mes <span class="it">performances</span>.</h1>
       ${S.demo ? `<div class="demo">${I('flask')}<span><b>Démo</b> : ces chiffres sont des exemples inventés, pas un vrai compte.</span><span style="flex:1"></span><button class="sbtn" type="button" data-nodemo>Quitter la démo</button></div>` : ''}
       ${flash && !S.demo ? `<div class="demo">${e(flash)}</div>` : ''}
-      <div class="tt-head st-sec">${a.avatar_url ? `<img src="${e(a.avatar_url)}" alt="" referrerpolicy="no-referrer">` : '<img alt="">'}<div><b style="font-size:20px">${e(a.display_name || 'Mon compte')}</b><div class="m" style="font-size:14px">Mis à jour ${a.synced_at ? e(new Date(a.synced_at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })) : 'jamais'}</div></div><span style="flex:1"></span>
+      <div class="tt-head st-sec">${a.avatar_url ? `<img src="${e(a.avatar_url)}" alt="" referrerpolicy="no-referrer">` : '<img alt="">'}<div><b style="font-size:20px">${e(a.display_name || 'Mon compte')}${a.verified ? SXA.badges({ verified: true }) : ''}</b>${a.username ? `<div class="m" style="font-size:14px">@${e(a.username)}</div>` : ''}<div class="m" style="font-size:14px">Mis à jour ${a.synced_at ? e(new Date(a.synced_at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })) : 'jamais'}</div></div><span style="flex:1"></span>
         ${S.demo ? '' : '<button class="sbtn" type="button" data-sync>' + I('refresh') + 'Mettre à jour</button><button class="sbtn" type="button" data-unlink>Délier</button>'}</div>
       <p class="msg" data-pm></p>
       <div class="grid g4" style="margin-top:8px">

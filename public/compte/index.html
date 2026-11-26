@@ -35,7 +35,7 @@ addEventListener('DOMContentLoaded', async () => {
     const u = await SXA.me(true);
     if (!u) { title.innerHTML = 'Ton <span class="it">compte</span>.'; SXA.form(zone, { next: next || '/compte/', onDone: () => next ? (location.href = next) : show() }); return; }
     if (next) { location.href = next; return; }
-    title.innerHTML = `Salut, <span class="it">${e(u.pseudo)}</span>.`;
+    title.innerHTML = `Salut, <span class="it">${e(u.pseudo)}</span>${SXA.badges(u)}.`;
     lead.textContent = 'Bienvenue dans ton espace. Tout ce que tu enregistres ici n’est visible que par toi.';
     const via = u.methods.includes('discord') ? 'Discord' : 'e-mail';
     zone.innerHTML = `

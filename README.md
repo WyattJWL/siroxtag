@@ -21,7 +21,9 @@ Site statique (dossier `public/`) + fonctions serverless (dossier `api/`) pour l
 | `TOKEN_KEY` | *(secret)* | Chiffre les jetons TikTok en base. Ne pas changer, sinon il faut relier TikTok à nouveau |
 | `CRON_SECRET` | *(secret)* | Protège la mise à jour quotidienne TikTok (Vercel Cron, voir `vercel.json`) |
 
-Redirection TikTok à déclarer : `https://www.siroxtag.fr/api/auth/tiktok`. Autorisations : `user.info.basic`, `user.info.stats`, `video.list`.
+Redirection TikTok à déclarer : `https://www.siroxtag.fr/api/auth/tiktok`. Autorisations : `user.info.basic`, `user.info.profile` (badge certifié), `user.info.stats`, `video.list`.
+
+Compte officiel (couronne) : `update users set role = 'owner' where lower(pseudo) = 'siroxtag';` dans la console SQL de Neon.
 
 Adresse de redirection à déclarer dans l’application Discord : `https://www.siroxtag.fr/api/auth/discord`.
 
