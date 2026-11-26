@@ -377,7 +377,7 @@
     if (!S.user) return needLogin('Mon tableau <span class="it">de tournage</span>.', 'Connecte-toi pour garder tes idées et les suivre, de l’idée à la publication. C’est gratuit.');
     const card = (i, ci) => `<div class="card-i" data-edit="${e(i.id)}" tabindex="0"><b>${e(i.title)}</b>${i.hook ? `<p>${I('hook')} ${e(i.hook)}</p>` : ''}
       <div class="meta">${i.tag ? `<span class="pill">${e(i.tag)}</span>` : ''}${i.planned_on ? `<span class="pill">${I('calendar')}${e(parseDay(i.planned_on).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }))}</span>` : ''}${i.video_id ? `<span class="pill">${I('film')}liée</span>` : ''}</div>
-      <div class="mv">${ci ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci - 1][0]}" aria-label="Reculer">${I('left')}</button>` : ''}${ci < 3 ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci + 1][0]}" aria-label="Avancer">${I('right')}</button>` : ''}</div></div>`;
+      <div class="mv">${ci ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci - 1][0]}" aria-label="Reculer">${I('left')}</button>` : ''}${ci < 3 ? `<button type="button" data-mv="${e(i.id)}" data-to="${COLS[ci + 1][0]}" aria-label="Avancer">${I('right')}</button>` : ''}${ci < 3 ? `<a class="pub" href="#/publier?id=${e(i.id)}&ia=1" aria-label="Préparer la publication" title="Préparer la publication">${I('send')}</a>` : ''}</div></div>`;
     main.innerHTML = `<div class="st-view"><p class="lab">De l’idée à la publication</p><h1 class="st-h">Mon <span class="it">tableau</span>.</h1>
       <p class="st-lead">Clique sur une carte pour écrire le script, choisir une date ou la relier à ta vidéo TikTok.</p>
       <form class="row st-sec" data-add><input class="in" name="t" maxlength="160" placeholder="Nouvelle idée…" aria-label="Nouvelle idée" style="flex:1;min-width:200px"><button class="sbtn pri" type="submit">${I('plus')}Ajouter</button></form>
@@ -386,6 +386,7 @@
     main.addEventListener('click', boardClick);
   };
   async function boardClick(ev) {
+    if (ev.target.closest('a')) return;
     const mv = ev.target.closest('[data-mv]');
     if (mv) { ev.stopPropagation(); try { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +mv.dataset.mv, status: mv.dataset.to } }); swap(r.idea); route(); } catch (er) { alert(er.message); } return; }
     const c = ev.target.closest('[data-edit]'); if (c) editIdea(c.dataset.edit);
@@ -445,6 +446,7 @@
       <div class="row st-sec"><button class="sbtn" type="button" data-m="-1" aria-label="Mois précédent">${I('left')}</button><h2 style="margin:0;font-size:22px;min-width:180px;text-align:center;text-transform:capitalize">${e(calRef.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }))}</h2><button class="sbtn" type="button" data-m="1" aria-label="Mois suivant">${I('right')}</button><button class="sbtn" type="button" data-m="0">Aujourd’hui</button></div>
       <div class="cal">${['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'].map(d => `<div class="dn">${d}</div>`).join('')}
       ${rows.map(d => { const k = iso(d), ev = S.ideas.filter(i => i.planned_on === k), pv = vids.filter(v => v.day === k); return `<button type="button" class="d${d.getMonth() !== m ? ' out' : ''}${k === today ? ' today' : ''}" data-day="${k}" aria-label="${e(dLong(k))}, ${ev.length + pv.length} élément(s)"><span>${d.getDate()}</span>${ev.map(i => `<div class="ev" data-edit="${e(i.id)}">${i.status === 'publie' ? I('check') : ''}${e(i.title)}</div>`).join('')}${pv.map(v => `<div class="ev pub">${I('film')}${e(v.title)}</div>`).join('')}</button>`; }).join('')}</div>
+      ${(() => { const up = S.ideas.filter(i => i.planned_on && i.planned_on >= today && i.status !== 'publie').sort((a, b) => a.planned_on.localeCompare(b.planned_on)).slice(0, 10); return up.length ? `<div class="st-sec"><h2>À venir</h2><div class="hooks">${up.map(i => `<div class="hk"><span><b>${e(dLong(i.planned_on))}</b><br>${e(i.title)}${i.caption ? ` <span class="pill v-ok">${I('check')}description prête</span>` : ''}</span><a class="sbtn" href="#/publier?id=${e(i.id)}${i.caption ? '' : '&ia=1'}">${I('send')}${i.caption ? 'Revoir' : 'Préparer'}</a></div>`).join('')}</div></div>` : ''; })()}
       ${(() => { const un = S.ideas.filter(i => !i.planned_on && i.status !== 'publie'); return un.length ? `<div class="st-sec"><h2>Pas encore planifiées (${un.length})</h2><div class="row">${un.slice(0, 12).map(i => `<button class="sbtn" type="button" data-edit="${e(i.id)}">${e(i.title.slice(0, 40))}</button>`).join('')}</div></div>` : ''; })()}</div>`;
     $$('[data-m]').forEach(b => b.addEventListener('click', () => { const k = +b.dataset.m; calRef = k ? new Date(y, m + k, 1) : new Date(); V.calendrier(); }));
     planner();
@@ -475,12 +477,14 @@
         const btn = ev.currentTarget, keep = P.items.filter((x, k) => $(`[data-pk="${k}"]`).checked); if (!keep.length) return;
         btn.disabled = true; $('[data-pm2]').textContent = 'Ajout en cours…';
         try {
+          const done = [];
           for (const x of keep) {
-            if (x.idea) { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +x.idea, planned_on: x.day } }); swap(r.idea); }
-            else { const r = await SXA.api('ideas', { method: 'POST', body: { title: x.titre, hook: x.accroche, tag: P.niche.slice(0, 40), planned_on: x.day, body: `Heure prévue : ${x.hour}${x.format ? '\nFormat : ' + x.format : ''}\nIdée proposée par l’IA.` } }); S.ideas.unshift(r.idea); }
+            if (x.idea) { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +x.idea, planned_on: x.day } }); swap(r.idea); done.push(r.idea); }
+            else { const r = await SXA.api('ideas', { method: 'POST', body: { title: x.titre, hook: x.accroche, tag: P.niche.slice(0, 40), planned_on: x.day, body: `Heure prévue : ${x.hour}${x.format ? '\nFormat : ' + x.format : ''}\nIdée proposée par l’IA.` } }); S.ideas.unshift(r.idea); done.push(r.idea); }
           }
           S.plan = null; calRef = parseDay(keep[0].day); V.calendrier();
-          $('[data-pp]').innerHTML = `<p class="msg">${I('check')} ${keep.length} vidéo${keep.length > 1 ? 's ajoutées' : ' ajoutée'} au calendrier.</p>`;
+          $('[data-pp]').innerHTML = `<p class="msg">${I('check')} ${keep.length} vidéo${keep.length > 1 ? 's ajoutées' : ' ajoutée'} au calendrier. Prépare la description et les hashtags de chacune :</p>
+            <div class="hooks">${done.sort((a, b) => String(a.planned_on).localeCompare(String(b.planned_on))).map(i => `<div class="hk"><span><b>${e(dLong(i.planned_on))}</b><br>${e(i.title)}</span><a class="sbtn" href="#/publier?id=${e(i.id)}&ia=1">${I('send')}Préparer</a></div>`).join('')}</div>`;
         } catch (er) { $('[data-pm2]').textContent = er.message; btn.disabled = false; }
       };
     };
@@ -652,6 +656,7 @@
     $('[data-save]').addEventListener('click', async () => { try { if (await patch({ caption: cap.value, title: $('[data-pt]').value.trim() || undefined, hook: $('[data-ph]').value.trim() })) msg.innerHTML = I('check') + ' Enregistrée dans ton idée.'; } catch (er) { msg.textContent = er.message; } });
     $('[data-done]').addEventListener('click', async () => { try { if (await patch({ caption: cap.value, status: 'publie', planned_on: idea.planned_on || iso(new Date()) })) msg.innerHTML = I('check') + ' Bravo ! L’idée passe dans « Publié ». Pense à revenir voir ses chiffres dans 48 h.'; } catch (er) { msg.textContent = er.message; } });
     init();
+    if (qs.get('ia') === '1' && idea && !idea.caption) $('[data-aicap]').click();
   };
 
   /* objectifs */

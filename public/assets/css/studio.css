@@ -141,3 +141,5 @@
 .demo .ic{color:var(--o)}
 .c-ok .ic{color:#3cb46e}.c-half .ic{color:#e6aa28}.c-no .ic{color:var(--mut)}
 .v-ok .ic{color:#3cb46e}.v-low .ic{color:#e6aa28}
+.card-i .mv .pub{flex:none;width:36px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;color:var(--fg)}
+.card-i .mv .pub:hover{border-color:var(--o);color:var(--o)}
