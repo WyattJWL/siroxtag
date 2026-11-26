@@ -53,6 +53,7 @@ alter table ideas add column if not exists hook       text not null default '' c
 alter table ideas add column if not exists planned_on date;
 alter table ideas add column if not exists video_id   text;
 alter table ideas add column if not exists tag        text not null default '' check (char_length(tag) <= 40);
+alter table ideas add column if not exists caption    text not null default '' check (char_length(caption) <= 2200);
 
 create table if not exists studio_goals (
   user_id        uuid primary key references users(id) on delete cascade,

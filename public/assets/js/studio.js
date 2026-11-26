@@ -47,6 +47,8 @@
     half: '<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
     left: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
     right: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',
+    hash: '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
     clip: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9z"/>'
   };
   const I = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
@@ -245,7 +247,7 @@
       ${t ? `<div class="grid g2 st-sec"><div class="tile"><small>Abonnés TikTok</small><b>${fmt(t.account.followers || 0)}</b><span>${S.goals.followers ? `Objectif : ${fmt(S.goals.followers)}` : 'Fixe un objectif d’abonnés dans Objectifs.'}</span>${S.goals.followers ? `<div class="bar"><i style="width:${Math.min(100, ((t.account.followers || 0) / S.goals.followers) * 100)}%"></i></div>` : ''}</div>
         ${last ? `<a class="tile" href="#/performances" style="color:inherit;text-decoration:none"><small>Dernière vidéo</small><b style="font-size:20px;line-height:1.2">${e(last.title || 'Sans titre')}</b><span><span class="pill ${last.cls}">${I(last.ic)}${e(last.label)}</span> ${fmt(last.views)} vues</span></a>` : ''}</div>`
         : `<div class="demo">${I('chart')} Relie ton TikTok dans <a href="#/performances" style="color:inherit;font-weight:700">Performances</a> pour savoir si tes vidéos marchent.</div>`}
-      <div class="st-sec"><h2>On fait quoi maintenant ?</h2><div class="row"><a class="sbtn pri" href="#/idees">${I('bulb')}Trouver une idée</a><a class="sbtn" href="#/accroches">${I('hook')}Tester une accroche</a><a class="sbtn" href="#/tableau">${I('board')}Mon tableau</a><a class="sbtn" href="#/checklist">${I('checksq')}Checklist avant publication</a></div></div></div>`;
+      <div class="st-sec"><h2>On fait quoi maintenant ?</h2><div class="row"><a class="sbtn pri" href="#/idees">${I('bulb')}Trouver une idée</a><a class="sbtn" href="#/accroches">${I('hook')}Tester une accroche</a><a class="sbtn" href="#/tableau">${I('board')}Mon tableau</a><a class="sbtn" href="#/publier">${I('send')}Préparer une publication</a><a class="sbtn" href="#/checklist">${I('checksq')}Checklist avant publication</a></div></div></div>`;
   };
 
   V.idees = () => {
@@ -357,11 +359,11 @@
       <label class="fld">Date prévue<input class="in" type="date" name="planned_on" value="${e(i.planned_on || '')}"></label></div>
       <div class="grid g2"><label class="fld">Étape<select name="status">${COLS.map(([k, n]) => `<option value="${k}"${i.status === k ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
       <label class="fld">Vidéo TikTok liée<select name="video_id"><option value="">Aucune</option>${vids.map(v => `<option value="${e(v.id)}"${i.video_id === v.id ? ' selected' : ''}>${e((v.title || 'Sans titre').slice(0, 50))} · ${e(new Date(v.posted_at).toLocaleDateString('fr-FR'))}</option>`).join('')}</select></label></div>
-      <div class="row" style="margin-top:20px"><button class="sbtn pri" type="submit">Enregistrer</button><button class="sbtn" type="button" data-close>Annuler</button>${id ? '<span style="flex:1"></span><button class="sbtn" type="button" data-del>Supprimer</button>' : ''}</div>
+      <div class="row" style="margin-top:20px"><button class="sbtn pri" type="submit">Enregistrer</button><button class="sbtn" type="button" data-close>Annuler</button>${id ? `<a class="sbtn" href="#/publier?id=${e(id)}" data-close>${I('send')}Préparer la publication</a><span style="flex:1"></span><button class="sbtn" type="button" data-del>Supprimer</button>` : ''}</div>
       <p class="msg" data-em></p></form>`;
     modal.hidden = false; $('input[name=title]', mbox).focus();
     const close = () => { modal.hidden = true; mbox.innerHTML = ''; };
-    $('[data-close]', mbox).addEventListener('click', close);
+    $$('[data-close]', mbox).forEach(b => b.addEventListener('click', close));
     $('[data-del]', mbox)?.addEventListener('click', async () => { if (!confirm('Supprimer cette idée ?')) return; try { await SXA.api('ideas', { method: 'DELETE', body: { id: +id } }); S.ideas = S.ideas.filter(x => String(x.id) !== String(id)); close(); route(); } catch (er) { $('[data-em]', mbox).textContent = er.message; } });
     $('[data-ef]', mbox).addEventListener('submit', async ev => {
       ev.preventDefault(); const d = Object.fromEntries(new FormData(ev.target));
@@ -444,6 +446,82 @@
     $('[data-unlink]')?.addEventListener('click', async () => { if (!confirm('Délier ton compte TikTok ? Tes chiffres TikTok seront effacés du Studio.')) return; try { await SXA.api('tiktok', { method: 'DELETE' }); S.tt = await SXA.api('tiktok'); V.performances(); } catch (er) { $('[data-pm]').textContent = er.message; } });
   };
 
+
+  /* atelier de publication : description, hashtags, meilleur moment */
+  const FTAG = { 'POV': '#pov', 'Parodie': '#parodie', 'Avant / après': '#avantapres', 'Top 3': '#top3', 'Storytime': '#storytime', 'Réaction': '#reaction', 'Fausse pub': '#faussepub', 'Edit': '#edit', 'Défi': '#defi' };
+  const BROAD = ['#pourtoi', '#humour', '#tiktokfrance', '#viral'];
+  const QUESTIONS = ['Et toi, tu aurais fait quoi ?', 'Ça t’est déjà arrivé ?', 'Tu veux une partie 2 ?', 'Ta note sur 10 en commentaire.', 'Dis-moi en commentaire si tu es d’accord.', 'Identifie quelqu’un qui fait exactement ça.'];
+  const cleanTag = t => '#' + String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9_]/g, '');
+  V.publier = () => {
+    if (!S.user) return needLogin('L’atelier <span class="it">de publication</span>.', 'Connecte-toi pour préparer la description et les hashtags de tes vidéos.');
+    const qs = new URLSearchParams(location.hash.split('?')[1] || '');
+    const cands = S.ideas.filter(i => i.status !== 'publie');
+    let idea = S.ideas.find(i => String(i.id) === qs.get('id')) || null;
+    const st = { tags: [], extra: [], variant: 0, q: pick(QUESTIONS) };
+    const themeOf = i => (i && (Object.keys(THEMES).find(t => t.toLowerCase() === String(i.tag || '').toLowerCase()) || Object.keys(THEMES).find(t => (i.body || '').includes(t)))) || '';
+    const formatOf = i => (i && Object.keys(FORMATS).find(f => (i.body || '').includes('Format : ' + f) || (i.title || '').startsWith(f))) || '';
+    const pool = () => {
+      const th = themeOf(idea), fo = formatOf(idea);
+      const niche = th ? THEMES[th].tags.split(' ') : idea && idea.tag ? [cleanTag(idea.tag)] : [];
+      return [...new Set([...niche, ...(fo ? [FTAG[fo]] : []), ...BROAD, ...st.extra])].filter(t => t.length > 1);
+    };
+    const t = ttData(), A = t && t.account && t.videos && t.videos.length ? analyze(t.videos) : null;
+    const when = A && (A.day || A.slot) ? `D’après tes vidéos : publie plutôt <b>${A.day ? e(A.day[0][0]) : ''}${A.day && A.slot ? ', ' : ''}${A.slot ? e(A.slot[0][0]) : ''}</b>.` : 'Pas encore assez de vidéos analysées pour te conseiller un horaire. Relie ton TikTok dans Performances : le conseil apparaîtra ici.';
+    main.innerHTML = `<div class="st-view"><p class="lab">Avant de poster</p><h1 class="st-h">L’atelier <span class="it">de publication</span>.</h1>
+      <p class="st-lead">Choisis une idée de ton tableau. Le Studio te prépare la description et les hashtags. Tu copies, tu ouvres TikTok, tu publies.</p>
+      <div class="grid g2 st-sec" style="align-items:start">
+        <section class="box"><h2 style="margin:0;font-size:20px">1 · La vidéo</h2>
+          <label class="fld">Idée du tableau<select data-pi><option value="">Écrire sans idée</option>${cands.map(i => `<option value="${e(i.id)}"${idea && String(idea.id) === String(i.id) ? ' selected' : ''}>${e(i.title.slice(0, 70))}</option>`).join('')}</select></label>
+          <label class="fld">Sujet ou titre<input class="in" data-pt maxlength="160" value="${e(idea ? idea.title : '')}" placeholder="Ex. : POV : la batterie à 1 %"></label>
+          <label class="fld">Accroche (première ligne de la description)<input class="in" data-ph maxlength="300" value="${e(idea ? idea.hook || '' : '')}" placeholder="Ex. : Personne ne parle de ça…"></label>
+          <h2 style="margin:26px 0 0;font-size:20px">2 · Les hashtags</h2>
+          <p class="m" style="font-size:14px;margin:6px 0 0">Touche un hashtag pour l’ajouter ou le retirer. Conseil courant : 3 à 5 hashtags précis valent mieux que 15 au hasard.</p>
+          <div class="row" data-chips style="margin-top:12px"></div>
+          <form class="row" data-addtag style="margin-top:10px"><input class="in" name="t" maxlength="40" placeholder="Ajouter un hashtag" style="flex:1;min-width:160px"><button class="sbtn" type="submit">${I('plus')}Ajouter</button></form>
+          <h2 style="margin:26px 0 0;font-size:20px">3 · Le bon moment</h2>
+          <p class="m" style="margin:8px 0 0;line-height:1.5">${I('clock')} ${when}</p>
+        </section>
+        <section class="box"><h2 style="margin:0;font-size:20px">4 · La description</h2>
+          <div class="row" style="margin-top:12px" role="tablist" data-vars>${['Question', 'Curiosité', 'Courte'].map((n, k) => `<button type="button" class="sbtn${k ? '' : ' pri'}" data-v="${k}">${n}</button>`).join('')}<button type="button" class="sbtn" data-reroll title="Autre question">${I('refresh')}</button></div>
+          <label class="fld">Tu peux la modifier librement<textarea data-cap maxlength="2200" style="min-height:190px"></textarea></label>
+          <p class="m" style="font-size:13px;margin:6px 0 0" data-count></p>
+          <div class="row" style="margin-top:16px"><button class="sbtn pri" type="button" data-cp>${I('copy')}Copier la description</button><a class="sbtn tt" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">${I('music')}Ouvrir TikTok</a></div>
+          <div class="row" style="margin-top:10px">${'<button class="sbtn" type="button" data-save>' + I('check') + 'Enregistrer dans l’idée</button><button class="sbtn" type="button" data-done>' + I('send') + 'Marquer comme publiée</button>'}</div>
+          <p class="msg" data-pmsg></p>
+          <ul class="crit" style="margin-top:18px">${['Les sous-titres sont lisibles sur un petit écran.', 'Aucune info personnelle visible.', 'La musique est disponible dans l’appli.'].map(x => `<li class="c-half">${I('checksq')} ${e(x)}</li>`).join('')}</ul>
+          <a href="#/checklist" class="m" style="font-size:14px;color:inherit">Voir la checklist complète ${I('right')}</a>
+        </section></div></div>`;
+    const cap = $('[data-cap]'), msg = $('[data-pmsg]');
+    const build = () => {
+      const tt = $('[data-pt]').value.trim(), h = $('[data-ph]').value.trim(), tags = st.tags.join(' ');
+      const first = h || tt || 'Ma nouvelle vidéo';
+      const v = [
+        `${first}\n\n${st.q}\n\n${tags}`,
+        `${first}${/[.!?…]$/.test(first) ? '' : '…'} attends la fin.\n\n${tt && h ? tt + '\n\n' : ''}${tags}`,
+        `${(tt || first).slice(0, 90)} ${tags}`
+      ][st.variant];
+      cap.value = v.trim(); count();
+    };
+    const count = () => { const n = [...cap.value].length, h = (cap.value.match(/#[\p{L}\p{N}_]+/gu) || []).length; $('[data-count]').textContent = `${n} caractères · ${h} hashtag${h > 1 ? 's' : ''}${h > 6 ? ' : c’est beaucoup, garde les plus précis.' : ''}`; };
+    const chips = () => { $('[data-chips]').innerHTML = pool().map(x => `<button type="button" class="pill${st.tags.includes(x) ? ' v-top' : ''}" data-tag="${e(x)}" style="cursor:pointer;background:${st.tags.includes(x) ? '' : 'none'};color:inherit">${I('hash')}${e(x.slice(1))}</button>`).join(''); };
+    const init = () => {
+      const p = pool(); st.tags = p.slice(0, Math.min(4, p.length)); if (!st.tags.includes('#pourtoi') && p.includes('#pourtoi')) st.tags.push('#pourtoi');
+      chips();
+      if (idea && idea.caption) { cap.value = idea.caption; count(); } else build();
+    };
+    $('[data-pi]').addEventListener('change', ev => { idea = S.ideas.find(i => String(i.id) === ev.target.value) || null; history.replaceState(null, '', '#/publier' + (idea ? '?id=' + idea.id : '')); $('[data-pt]').value = idea ? idea.title : ''; $('[data-ph]').value = idea ? idea.hook || '' : ''; st.extra = []; init(); });
+    [$('[data-pt]'), $('[data-ph]')].forEach(x => x.addEventListener('input', build));
+    $('[data-chips]').addEventListener('click', ev => { const b = ev.target.closest('[data-tag]'); if (!b) return; const x = b.dataset.tag; st.tags = st.tags.includes(x) ? st.tags.filter(y => y !== x) : [...st.tags, x]; chips(); build(); });
+    $('[data-addtag]').addEventListener('submit', ev => { ev.preventDefault(); const x = cleanTag(ev.target.t.value); if (x.length < 2) return; if (!st.extra.includes(x)) st.extra.push(x); if (!st.tags.includes(x)) st.tags.push(x); ev.target.reset(); chips(); build(); });
+    $('[data-vars]').addEventListener('click', ev => { const b = ev.target.closest('[data-v]'); if (b) { st.variant = +b.dataset.v; $$('[data-v]').forEach(x => x.classList.toggle('pri', x === b)); build(); } if (ev.target.closest('[data-reroll]')) { st.q = pick(QUESTIONS.filter(q => q !== st.q)); build(); } });
+    cap.addEventListener('input', count);
+    $('[data-cp]').addEventListener('click', async () => { try { await navigator.clipboard.writeText(cap.value); msg.innerHTML = I('check') + ' Copiée. Colle-la dans TikTok au moment de publier.'; } catch (er) { cap.select(); msg.textContent = 'Copie automatique impossible : sélectionne le texte et copie-le.'; } });
+    const patch = async body => { if (!idea) { msg.textContent = 'Choisis d’abord une idée du tableau (étape 1).'; return null; } const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +idea.id, ...body } }); swap(r.idea); idea = r.idea; return r.idea; };
+    $('[data-save]').addEventListener('click', async () => { try { if (await patch({ caption: cap.value, title: $('[data-pt]').value.trim() || undefined, hook: $('[data-ph]').value.trim() })) msg.innerHTML = I('check') + ' Enregistrée dans ton idée.'; } catch (er) { msg.textContent = er.message; } });
+    $('[data-done]').addEventListener('click', async () => { try { if (await patch({ caption: cap.value, status: 'publie', planned_on: idea.planned_on || iso(new Date()) })) msg.innerHTML = I('check') + ' Bravo ! L’idée passe dans « Publié ». Pense à revenir voir ses chiffres dans 48 h.'; } catch (er) { msg.textContent = er.message; } });
+    init();
+  };
+
   /* objectifs */
   V.objectifs = () => {
     if (!S.user) return needLogin('Mes <span class="it">objectifs</span>.', 'Connecte-toi pour te fixer un rythme de publication et suivre ta série.');
@@ -488,7 +566,7 @@
     $$('[data-r]').forEach(a => (a.dataset.r === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
     $(`[data-r="${name}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center' });
     V[name]();
-    document.title = ({ accueil: 'Tableau de bord', idees: 'Idées', accroches: 'Accroches', tableau: 'Tableau', calendrier: 'Calendrier', performances: 'Performances', objectifs: 'Objectifs', checklist: 'Checklist' }[name]) + ' — Studio Siroxtag';
+    document.title = ({ accueil: 'Tableau de bord', idees: 'Idées', accroches: 'Accroches', tableau: 'Tableau', calendrier: 'Calendrier', publier: 'Publier', performances: 'Performances', objectifs: 'Objectifs', checklist: 'Checklist' }[name]) + ' — Studio Siroxtag';
     if (S.navigated) { main.focus({ preventScroll: true }); scrollTo({ top: 0 }); }
     S.navigated = true;
   }

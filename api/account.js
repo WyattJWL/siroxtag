@@ -6,7 +6,7 @@ export default handle(['GET', 'PATCH', 'DELETE'], async (req, res) => {
   const u = await requireUser(req);
   if (req.method === 'GET') {
     const [ideas, scores, goals, tt, ttv, ttd] = await Promise.all([
-      q('select title, body, hook, tag, status, planned_on, video_id, created_at, updated_at from ideas where user_id = $1 order by id', [u.id]),
+      q('select title, body, hook, tag, caption, status, planned_on, video_id, created_at, updated_at from ideas where user_id = $1 order by id', [u.id]),
       q('select game, best, updated_at from scores where user_id = $1 order by game', [u.id]),
       q('select per_week, followers from studio_goals where user_id = $1', [u.id]),
       q('select display_name, followers, likes, videos, synced_at, created_at from tiktok_accounts where user_id = $1', [u.id]),
