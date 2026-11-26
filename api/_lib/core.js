@@ -42,11 +42,11 @@ export const handle = (methods, fn) => async (req, res) => {
     else { console.error(e); send(res, 500, { error: 'Erreur du serveur. Réessaie dans un moment.' }); }
   }
 };
-export const readBody = async req => {
+export const readBody = async (req, max = 20000) => {
   if (req.body && typeof req.body === 'object') return req.body;
   if (typeof req.body === 'string') { try { return JSON.parse(req.body); } catch { throw new HttpError(400, 'Requête invalide.'); } }
   const chunks = []; let size = 0;
-  for await (const c of req) { size += c.length; if (size > 20000) throw new HttpError(413, 'Requête trop grosse.'); chunks.push(c); }
+  for await (const c of req) { size += c.length; if (size > max) throw new HttpError(413, 'Requête trop grosse.'); chunks.push(c); }
   try { return chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {}; } catch { throw new HttpError(400, 'Requête invalide.'); }
 };
 
