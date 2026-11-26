@@ -9,7 +9,7 @@ window.SXA = (() => {
   };
   let meP = null;
   const me = (fresh) => { if (!meP || fresh) meP = api('auth/me').then(d => d.user).catch(() => null); return meP; };
-  const logout = async () => { await api('auth/logout', { method: 'POST' }).catch(() => {}); meP = null; };
+  const logout = async () => { await api('auth/me', { method: 'DELETE' }).catch(() => {}); meP = null; };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   // bloc connexion / inscription
