@@ -145,3 +145,5 @@
 .card-i .mv .pub:hover{border-color:var(--o);color:var(--o)}
 .st-side a[hidden]{display:none!important}
 .tbl td .sbtn{height:32px;padding:0 10px}
+.st-main.no-anim .st-view,.st-main.no-anim .flash{animation:none}
+html,body,.st-main{overflow-anchor:none}

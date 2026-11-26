@@ -66,7 +66,7 @@
   /* les chapitres, leur date de sortie et ma progression */
   const TOMES = ['La Page 404', 'Les Pages retirées', 'Les Pages ajoutées', 'Les Pages effacées'];
   const fmtDate = d => new Date(d).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-  let nextAt = null;
+  let nextAt = null, lastLoad = 0;
   async function loadToc() {
     let d;
     try { d = await SXA.api('m13'); } catch (er) { $('[data-toc]').innerHTML = `<p class="mono" style="padding:20px 0">${e(er.message)}</p>`; return; }
@@ -76,13 +76,20 @@
       return `<div class="tome-h" id="tome-${t}"><h3>Tome ${t} · ${e(TOMES[t - 1])}</h3><span class="mono">${open ? `${open} / ${chs.length} sortis` : `à partir du ${e(fmtDate(chs[0].date))}`}</span></div>` +
         chs.map(c => {
           const p = prog[t + '-' + c.c], pct = p ? (p.done ? 100 : p.pct) : 0;
-          if (!c.open) return `<div class="ch lock"><span class="no">${String(c.c).padStart(2, '0')}</span><span class="tt" aria-label="Chapitre pas encore sorti"></span><span class="st">${e(fmtDate(c.date))}</span></div>`;
+          if (!c.open) return `<div class="ch lock" data-at="${e(c.date)}"><span class="no">${String(c.c).padStart(2, '0')}</span><span class="tt" aria-label="Chapitre pas encore sorti"></span><span class="st">${e(fmtDate(c.date))}</span></div>`;
           return `<a class="ch${p && p.done ? ' done' : ''}" style="--p:${pct}" href="/m13/lire/?t=${t}&c=${c.c}"><span class="no">${String(c.c).padStart(2, '0')}</span><span class="tt">${e(c.title)}</span><span class="st">${p && p.done ? 'lu' : pct ? `${pct} %` : `${Math.max(1, Math.round(c.words / 230))} min`}</span></a>`;
         }).join('');
     }).join('');
     if (d.next) { nextAt = Date.parse(d.next); $('[data-next]').hidden = false; $('[data-nd]').textContent = fmtDate(d.next) + ', 7 h'; tick(); }
   }
+  const left = s => `${String(Math.floor(s / 3600)).padStart(2, '0')} h ${String(Math.floor(s % 3600 / 60)).padStart(2, '0')} min ${String(s % 60).padStart(2, '0')} s`;
   const tick = () => {
+    // dans les 24 h avant sa sortie, un chapitre affiche le temps restant, à la seconde
+    let reload = false;
+    $$('[data-at]').forEach(r => { const s = Math.floor((Date.parse(r.dataset.at) - Date.now()) / 1000), st = r.querySelector('.st');
+      if (s <= 0) { reload = true; return; }
+      if (s < 86400) { r.classList.add('soon'); st.innerHTML = `<b>Sortie dans</b> ${left(s)}`; } });
+    if (reload && Date.now() - lastLoad > 10000) { lastLoad = Date.now(); loadToc(); return; }
     if (!nextAt) return; const s = Math.max(0, Math.floor((nextAt - Date.now()) / 1000));
     if (!s) { loadToc(); return; }
     const j = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;

@@ -388,13 +388,13 @@
       <p class="st-lead">Clique sur une carte pour écrire le script, choisir une date ou la relier à ta vidéo TikTok.</p>
       <form class="row st-sec" data-add><input class="in" name="t" maxlength="160" placeholder="Nouvelle idée…" aria-label="Nouvelle idée" style="flex:1;min-width:200px"><button class="sbtn pri" type="submit">${I('plus')}Ajouter</button></form>
       <div class="board" style="margin-top:16px">${COLS.map(([k, n], ci) => `<div class="col"><h3><span>${n}</span><span>${S.ideas.filter(i => i.status === k).length}</span></h3>${S.ideas.filter(i => i.status === k).map(i => card(i, ci)).join('')}</div>`).join('')}</div></div>`;
-    $('[data-add]').addEventListener('submit', async ev => { ev.preventDefault(); const t = ev.target.t.value.trim(); if (!t) return; try { const r = await SXA.api('ideas', { method: 'POST', body: { title: t } }); S.ideas.unshift(r.idea); V.tableau(); } catch (er) { alert(er.message); } });
+    $('[data-add]').addEventListener('submit', async ev => { ev.preventDefault(); const t = ev.target.t.value.trim(); if (!t) return; try { const r = await SXA.api('ideas', { method: 'POST', body: { title: t } }); S.ideas.unshift(r.idea); refresh(); $('[data-add] input')?.focus({ preventScroll: true }); } catch (er) { alert(er.message); } });
     main.addEventListener('click', boardClick);
   };
   async function boardClick(ev) {
     if (ev.target.closest('a')) return;
     const mv = ev.target.closest('[data-mv]');
-    if (mv) { ev.stopPropagation(); try { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +mv.dataset.mv, status: mv.dataset.to } }); swap(r.idea); route(); } catch (er) { alert(er.message); } return; }
+    if (mv) { ev.stopPropagation(); try { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +mv.dataset.mv, status: mv.dataset.to } }); swap(r.idea); refresh(); } catch (er) { alert(er.message); } return; }
     const c = ev.target.closest('[data-edit]'); if (c) editIdea(c.dataset.edit);
   }
   const swap = idea => { S.ideas = S.ideas.map(i => (String(i.id) === String(idea.id) ? idea : i)); };
@@ -415,13 +415,13 @@
     modal.hidden = false; $('input[name=title]', mbox).focus();
     const close = () => { modal.hidden = true; mbox.innerHTML = ''; };
     $$('[data-close]', mbox).forEach(b => b.addEventListener('click', close));
-    $('[data-del]', mbox)?.addEventListener('click', async () => { if (!confirm('Supprimer cette idée ?')) return; try { await SXA.api('ideas', { method: 'DELETE', body: { id: +id } }); S.ideas = S.ideas.filter(x => String(x.id) !== String(id)); close(); route(); } catch (er) { $('[data-em]', mbox).textContent = er.message; } });
+    $('[data-del]', mbox)?.addEventListener('click', async () => { if (!confirm('Supprimer cette idée ?')) return; try { await SXA.api('ideas', { method: 'DELETE', body: { id: +id } }); S.ideas = S.ideas.filter(x => String(x.id) !== String(id)); close(); refresh(); } catch (er) { $('[data-em]', mbox).textContent = er.message; } });
     $('[data-ef]', mbox).addEventListener('submit', async ev => {
       ev.preventDefault(); const d = Object.fromEntries(new FormData(ev.target));
       try {
         if (id) { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +id, ...d } }); swap(r.idea); }
         else { const r = await SXA.api('ideas', { method: 'POST', body: { title: d.title, hook: d.hook, body: d.body, tag: d.tag, planned_on: d.planned_on || null } }); let idea = r.idea; if (d.status !== 'idee' || d.video_id) idea = (await SXA.api('ideas', { method: 'PATCH', body: { id: +idea.id, status: d.status, video_id: d.video_id } })).idea; S.ideas.unshift(idea); }
-        close(); route();
+        close(); refresh();
       } catch (er) { $('[data-em]', mbox).textContent = er.message; }
     });
   }
@@ -454,7 +454,7 @@
       ${rows.map(d => { const k = iso(d), ev = S.ideas.filter(i => i.planned_on === k), pv = vids.filter(v => v.day === k); return `<button type="button" class="d${d.getMonth() !== m ? ' out' : ''}${k === today ? ' today' : ''}" data-day="${k}" aria-label="${e(dLong(k))}, ${ev.length + pv.length} élément(s)"><span>${d.getDate()}</span>${ev.map(i => `<div class="ev" data-edit="${e(i.id)}">${i.status === 'publie' ? I('check') : ''}${e(i.title)}</div>`).join('')}${pv.map(v => `<div class="ev pub">${I('film')}${e(v.title)}</div>`).join('')}</button>`; }).join('')}</div>
       ${(() => { const up = S.ideas.filter(i => i.planned_on && i.planned_on >= today && i.status !== 'publie').sort((a, b) => a.planned_on.localeCompare(b.planned_on)).slice(0, 10); return up.length ? `<div class="st-sec"><h2>À venir</h2><div class="hooks">${up.map(i => `<div class="hk"><span><b>${e(dLong(i.planned_on))}</b><br>${e(i.title)}${i.caption ? ` <span class="pill v-ok">${I('check')}description prête</span>` : ''}</span><a class="sbtn" href="#/publier?id=${e(i.id)}${i.caption ? '' : '&ia=1'}">${I('send')}${i.caption ? 'Revoir' : 'Préparer'}</a></div>`).join('')}</div></div>` : ''; })()}
       ${(() => { const un = S.ideas.filter(i => !i.planned_on && i.status !== 'publie'); return un.length ? `<div class="st-sec"><h2>Pas encore planifiées (${un.length})</h2><div class="row">${un.slice(0, 12).map(i => `<button class="sbtn" type="button" data-edit="${e(i.id)}">${e(i.title.slice(0, 40))}</button>`).join('')}</div></div>` : ''; })()}</div>`;
-    $$('[data-m]').forEach(b => b.addEventListener('click', () => { const k = +b.dataset.m; calRef = k ? new Date(y, m + k, 1) : new Date(); V.calendrier(); }));
+    $$('[data-m]').forEach(b => b.addEventListener('click', () => { const k = +b.dataset.m; calRef = k ? new Date(y, m + k, 1) : new Date(); refresh(); }));
     planner();
     main.onclick = ev => { const ed = ev.target.closest('[data-edit]'); if (ed) { ev.stopPropagation(); return editIdea(ed.dataset.edit); } const d = ev.target.closest('[data-day]'); if (d) editIdea(null, { planned_on: d.dataset.day }); };
   };
@@ -488,7 +488,7 @@
             if (x.idea) { const r = await SXA.api('ideas', { method: 'PATCH', body: { id: +x.idea, planned_on: x.day } }); swap(r.idea); done.push(r.idea); }
             else { const r = await SXA.api('ideas', { method: 'POST', body: { title: x.titre, hook: x.accroche, tag: P.niche.slice(0, 40), planned_on: x.day, body: `Heure prévue : ${x.hour}${x.format ? '\nFormat : ' + x.format : ''}\nIdée proposée par l’IA.` } }); S.ideas.unshift(r.idea); done.push(r.idea); }
           }
-          S.plan = null; calRef = parseDay(keep[0].day); V.calendrier();
+          S.plan = null; calRef = parseDay(keep[0].day); refresh();
           $('[data-pp]').innerHTML = `<p class="msg">${I('check')} ${keep.length} vidéo${keep.length > 1 ? 's ajoutées' : ' ajoutée'} au calendrier. Prépare la description et les hashtags de chacune :</p>
             <div class="hooks">${done.sort((a, b) => String(a.planned_on).localeCompare(String(b.planned_on))).map(i => `<div class="hk"><span><b>${e(dLong(i.planned_on))}</b><br>${e(i.title)}</span><a class="sbtn" href="#/publier?id=${e(i.id)}&ia=1">${I('send')}Préparer</a></div>`).join('')}</div>`;
         } catch (er) { $('[data-pm2]').textContent = er.message; btn.disabled = false; }
@@ -528,7 +528,7 @@
         </div>
         <div class="row st-sec">${!S.user ? '<a class="sbtn pri" href="#/">Créer mon compte pour relier TikTok</a>' : configured ? `<a class="sbtn tt" href="/api/auth/tiktok">${I('music')}Relier mon compte TikTok</a>` : '<span class="pill v-new">Liaison TikTok bientôt disponible</span>'}<button class="sbtn" type="button" data-demo>Voir la démo</button></div>
         <p class="m" style="font-size:13px;margin-top:16px;max-width:44em">Le Studio utilise l’API officielle de TikTok. Tu peux délier ton compte à tout moment : tes données TikTok sont alors effacées. Détails dans la <a href="/confidentialite/" style="color:inherit">politique de confidentialité</a>.</p></div>`;
-      $('[data-demo]').addEventListener('click', () => { S.demo = true; V.performances(); });
+      $('[data-demo]').addEventListener('click', () => { S.demo = true; refresh(); });
       return;
     }
     const A = analyze(t.videos), a = t.account, vs = A.vs, mature = vs.filter(v => v.ratio !== null && v.cls !== 'v-new');
@@ -570,9 +570,9 @@
       } catch (er) { box.innerHTML = `<p class="msg">${e(er.message)}</p>`; }
       busy(btn, false);
     });
-    $('[data-nodemo]')?.addEventListener('click', () => { S.demo = false; V.performances(); });
-    $('[data-sync]')?.addEventListener('click', async ev => { ev.target.disabled = true; $('[data-pm]').textContent = 'Mise à jour…'; try { await SXA.api('tiktok', { method: 'POST' }); S.tt = await SXA.api('tiktok'); V.performances(); } catch (er) { $('[data-pm]').textContent = er.message; ev.target.disabled = false; } });
-    $('[data-unlink]')?.addEventListener('click', async () => { if (!confirm('Délier ton compte TikTok ? Tes chiffres TikTok seront effacés du Studio.')) return; try { await SXA.api('tiktok', { method: 'DELETE' }); S.tt = await SXA.api('tiktok'); V.performances(); } catch (er) { $('[data-pm]').textContent = er.message; } });
+    $('[data-nodemo]')?.addEventListener('click', () => { S.demo = false; refresh(); });
+    $('[data-sync]')?.addEventListener('click', async ev => { ev.target.disabled = true; $('[data-pm]').textContent = 'Mise à jour…'; try { await SXA.api('tiktok', { method: 'POST' }); S.tt = await SXA.api('tiktok'); refresh(); } catch (er) { $('[data-pm]').textContent = er.message; ev.target.disabled = false; } });
+    $('[data-unlink]')?.addEventListener('click', async () => { if (!confirm('Délier ton compte TikTok ? Tes chiffres TikTok seront effacés du Studio.')) return; try { await SXA.api('tiktok', { method: 'DELETE' }); S.tt = await SXA.api('tiktok'); refresh(); } catch (er) { $('[data-pm]').textContent = er.message; } });
   };
 
 
@@ -673,10 +673,16 @@
   V.admin = async () => {
     if (!S.user) return needLogin('Admin.', 'Connecte-toi avec le compte officiel.');
     if (!S.user.owner) { main.innerHTML = '<div class="st-view"><h1 class="st-h">Accès réservé.</h1><p class="st-lead">Cette page est réservée au compte officiel Siroxtag.</p></div>'; return; }
-    main.innerHTML = '<div class="st-view"><p class="m">Chargement de l’admin…</p></div>';
-    let D; try { D = await SXA.api('studio?admin=1'); } catch (er) { main.innerHTML = `<div class="st-view"><p class="msg">${e(er.message)}</p></div>`; return; }
+    if (!S.admD) {
+      main.innerHTML = '<div class="st-view"><p class="m">Chargement de l’admin…</p></div>';
+      try { S.admD = await SXA.api('studio?admin=1'); } catch (er) { main.innerHTML = `<div class="st-view"><p class="msg">${e(er.message)}</p></div>`; return; }
+    }
+    const D = S.admD;
     const tabs = [['apercu', 'chart', 'Aperçu'], ['bannieres', 'megaphone', 'Bannières'], ['m13', 'book', 'Sorties M13'], ['membres', 'users', 'Membres']];
-    const act = async (body, okMsg) => { try { await SXA.api('studio', { method: 'POST', body }); if (okMsg && window.SX) window.SX.toast(okMsg); V.admin(); } catch (er) { alert(er.message); } };
+    const act = async (body, okMsg) => {
+      try { await SXA.api('studio', { method: 'POST', body }); S.admD = await SXA.api('studio?admin=1'); if (okMsg && window.SX) window.SX.toast(okMsg); refresh(); }
+      catch (er) { alert(er.message); }
+    };
     const st = D.stats;
     const panes = {
       apercu: () => `<div class="grid g4">${[['Membres', st.users, `+${st.users_7j} cette semaine`], ['Actifs 7 jours', st.actifs_7j, 'connectés récemment'], ['Lecteurs M13', st.lecteurs_m13, `${st.chapitres_lus} chapitres terminés`], ['Idées au Studio', st.idees, `${st.tiktok} compte${st.tiktok > 1 ? 's' : ''} TikTok relié${st.tiktok > 1 ? 's' : ''}`]].map(([a, b, c]) => `<div class="tile"><small>${a}</small><b>${fmt(b)}</b><span>${e(c)}</span></div>`).join('')}</div>
@@ -706,7 +712,7 @@
     main.innerHTML = `<div class="st-view"><p class="lab">Compte officiel</p><h1 class="st-h">Admin<span class="it">.</span></h1>
       <div class="row st-sec" role="tablist">${tabs.map(([k, ic, n]) => `<button class="sbtn${k === admTab ? ' pri' : ''}" type="button" role="tab" aria-selected="${k === admTab}" data-tab="${k}">${I(ic)}${n}</button>`).join('')}</div>
       <div class="st-sec" data-pane>${panes[admTab]()}</div></div>`;
-    $$('[data-tab]').forEach(b => b.onclick = () => { admTab = b.dataset.tab; V.admin(); });
+    $$('[data-tab]').forEach(b => b.onclick = () => { admTab = b.dataset.tab; refresh(); });
     const pane = $('[data-pane]');
     const iso = v => (v ? new Date(v).toISOString() : null);
     $('[data-bf]', pane)?.addEventListener('submit', ev => { ev.preventDefault(); const f = Object.fromEntries(new FormData(ev.target)); act({ admin: 'banner-save', ...f, starts_at: iso(f.starts_at), ends_at: iso(f.ends_at), active: true }, 'Bannière publiée'); });
@@ -743,7 +749,7 @@
     chartBars($('[data-c3]'), w.map(x => ({ v: x.n, label: 'semaine du ' + x.a.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) })), { ref: g, refLabel: 'objectif' });
     $('[data-gf]').addEventListener('submit', async ev => {
       ev.preventDefault(); const d = Object.fromEntries(new FormData(ev.target));
-      try { S.goals = (await SXA.api('studio', { method: 'PUT', body: { per_week: Number(d.per_week || 0), followers: d.followers === '' ? null : Number(d.followers) } })).goals; V.objectifs(); $('[data-gm]').innerHTML = I('check') + ' Enregistré'; } catch (er) { $('[data-gm]').textContent = er.message; }
+      try { S.goals = (await SXA.api('studio', { method: 'PUT', body: { per_week: Number(d.per_week || 0), followers: d.followers === '' ? null : Number(d.followers) } })).goals; refresh(); $('[data-gm]').innerHTML = I('check') + ' Enregistré'; } catch (er) { $('[data-gm]').textContent = er.message; }
     });
   };
 
@@ -755,13 +761,23 @@
       ${Object.entries(CHECK).map(([g, items]) => `<section class="st-sec"><h2>${e(g)}</h2><ul class="ck">${items.map((t, i) => { const k = g + i; return `<li><label><input type="checkbox" data-k="${e(k)}"${done[k] ? ' checked' : ''}><span>${e(t)}</span></label></li>`; }).join('')}</ul></section>`).join('')}
       <button class="sbtn st-sec" type="button" data-reset>Tout décocher pour la prochaine vidéo</button></div>`;
     main.onchange = ev => { const k = ev.target.dataset.k; if (!k) return; const d = store.get('sx-studio-check', {}); if (ev.target.checked) d[k] = 1; else delete d[k]; store.set('sx-studio-check', d); if (Object.keys(d).length === Object.values(CHECK).flat().length && window.SX) window.SX.confettis?.(); };
-    $('[data-reset]').addEventListener('click', () => { store.set('sx-studio-check', {}); V.checklist(); });
+    $('[data-reset]').addEventListener('click', () => { store.set('sx-studio-check', {}); refresh(); });
   };
 
   /* ---------- routeur ---------- */
+  // met à jour la vue en place : pas d’animation, pas de retour en haut de page
+  let CUR = 'accueil';
+  function refresh() {
+    const y = scrollY;
+    main.classList.add('no-anim'); main.onclick = null; main.onchange = null; main.removeEventListener('click', boardClick);
+    const r = V[CUR]();
+    const back = () => { scrollTo(0, y); requestAnimationFrame(() => { scrollTo(0, y); requestAnimationFrame(() => scrollTo(0, y)); }); };
+    if (r && r.then) r.then(back); else back();
+  }
   function route() {
     const r = (location.hash.replace(/^#\/?/, '').split('?')[0] || 'accueil');
     const name = V[r] ? r : 'accueil';
+    CUR = name; main.classList.remove('no-anim'); if (name === 'admin') S.admD = null;
     main.onclick = null; main.onchange = null; main.removeEventListener('click', boardClick);
     $$('[data-r]').forEach(a => (a.dataset.r === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
     $(`[data-r="${name}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center' });

@@ -97,7 +97,13 @@ addEventListener('DOMContentLoaded', async () => {
   setInterval(() => send(false), 8000);
   addEventListener('pagehide', () => send(false));
   // compte à rebours vers le prochain chapitre
-  if (d.next && !d.next.open) { const at = Date.parse(d.next.date); const tick = () => { const s = Math.max(0, Math.floor((at - Date.now()) / 1000)); const el = $('[data-cd]'); if (el) el.textContent = `${Math.floor(s / 86400)} j ${String(Math.floor(s % 86400 / 3600)).padStart(2, '0')} h ${String(Math.floor(s % 3600 / 60)).padStart(2, '0')} min`; }; tick(); setInterval(tick, 30000); }
+  if (d.next && !d.next.open) {
+    const at = Date.parse(d.next.date), z = n => String(n).padStart(2, '0');
+    const tick = () => { const s = Math.max(0, Math.floor((at - Date.now()) / 1000)), el = $('[data-cd]'); if (!el) return;
+      if (!s) { el.innerHTML = `<a class="m-btn fill" href="/m13/lire/?t=${d.next.t}&c=${d.next.c}">Il est sorti : lire</a>`; return; }
+      el.textContent = s < 86400 ? `${z(Math.floor(s / 3600))} h ${z(Math.floor(s % 3600 / 60))} min ${z(s % 60)} s` : `${Math.floor(s / 86400)} j ${z(Math.floor(s % 86400 / 3600))} h ${z(Math.floor(s % 3600 / 60))} min`; };
+    tick(); setInterval(tick, 1000);
+  }
   addEventListener('keydown', ev => { if (ev.target.closest('input,textarea')) return; if (ev.key === 'ArrowRight' && d.next && d.next.open) location.href = `/m13/lire/?t=${d.next.t}&c=${d.next.c}`; if (ev.key === 'ArrowLeft' && d.prev) location.href = `/m13/lire/?t=${d.prev.t}&c=${d.prev.c}`; });
 });
 </script>
