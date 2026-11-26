@@ -46,8 +46,10 @@ async function mistral(task, text) {
       });
       // modèle hors forfait ou inconnu : on essaie le suivant
       if (![400, 402, 403, 404].includes(r.status)) break;
-      console.error('mistral', model, r.status, (await r.text()).slice(0, 160));
+      const err = (await r.text()).slice(0, 160); console.error('mistral', model, r.status, err);
+      r.failed = r.status === 402 ? 'Le compte Mistral du site n’a pas encore d’accès à l’API. L’IA arrive bientôt.' : 'L’IA ne répond pas. Réessaie dans un moment.';
     }
+    if (r.failed) throw new HttpError(503, r.failed);
     if (r.status === 429) throw new HttpError(429, 'L’IA est très demandée. Réessaie dans une minute.');
     if (!r.ok) { console.error('mistral', r.status, (await r.text()).slice(0, 200)); throw new HttpError(502, 'L’IA ne répond pas. Réessaie dans un moment.'); }
     const d = await r.json();
