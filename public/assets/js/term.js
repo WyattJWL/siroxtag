@@ -210,7 +210,7 @@
         const d = await r.json().catch(() => ({})); bad = !r.ok; txt = r.ok ? d.text : (d.error || 'L’IA ne répond pas.');
       } catch (e) { bad = true; txt = 'L’IA ne répond pas. Vérifie ta connexion.'; }
       if (wait && wait.parentNode) wait.remove();
-      say(txt || '…', bad ? 'e' : ''); if (!bad) say('Réponse d’une IA (Mistral) : elle peut se tromper.', 'm');
+      say(txt || '…', bad ? 'e' : ''); if (!bad) say('Réponse d’une IA : elle peut se tromper.', 'm');
     } }
   });
   chap('modes', 'Les modes', 'changer l’ambiance du site', {

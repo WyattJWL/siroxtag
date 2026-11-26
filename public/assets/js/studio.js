@@ -218,10 +218,10 @@
     return s;
   }
 
-  /* ---------- IA (Mistral, via /api/ia) ---------- */
+  /* ---------- IA (via /api/ia) ---------- */
   const ai = (task, text) => SXA.api('ia', { method: 'POST', body: { task, text } });
   const busy = (btn, on) => { if (!btn) return; btn.disabled = on; btn.dataset.lbl ||= btn.innerHTML; btn.innerHTML = on ? I('spark') + 'L’IA réfléchit…' : btn.dataset.lbl; };
-  const aiNote = '<p class="m" style="font-size:12px;margin-top:10px">Généré par une IA (Mistral). Relis toujours avant d’utiliser : elle peut se tromper.</p>';
+  const aiNote = '<p class="m" style="font-size:12px;margin-top:10px">Généré par une IA. Relis toujours avant d’utiliser : elle peut se tromper.</p>';
 
   /* ---------- vues ---------- */
   const V = {};

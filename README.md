@@ -19,6 +19,9 @@ Site statique (dossier `public/`) + fonctions serverless (dossier `api/`) pour l
 | `TIKTOK_CLIENT_KEY` | `aw…` | Application TikTok for Developers (Login Kit + Display API) |
 | `TIKTOK_CLIENT_SECRET` | *(secret)* | Application TikTok, à ne jamais publier |
 | `TOKEN_KEY` | *(secret)* | Chiffre les jetons TikTok en base. Ne pas changer, sinon il faut relier TikTok à nouveau |
+| `AI_API_KEY` | *(secret)* | Clé du fournisseur d’IA (Groq par défaut) |
+| `AI_BASE_URL` | `https://api.groq.com/openai/v1` | Fournisseur d’IA au format chat/completions (Groq, OpenRouter, Mistral…) |
+| `AI_MODEL` | *(facultatif)* | Impose un modèle précis |
 | `CRON_SECRET` | *(secret)* | Protège la mise à jour quotidienne TikTok (Vercel Cron, voir `vercel.json`) |
 
 Redirection TikTok à déclarer : `https://www.siroxtag.fr/api/auth/tiktok`. Autorisations : `user.info.basic`, `user.info.profile` (badge certifié), `user.info.stats`, `video.list`.
